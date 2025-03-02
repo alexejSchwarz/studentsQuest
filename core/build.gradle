@@ -10,8 +10,15 @@ dependencies {
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "games.rednblack.hyperlap2d:runtime-libgdx:$h2dVersion"
   api "net.onedaybeard.artemis:artemis-odb:$artemisOdbVersion"
+  api "com.badlogicgames.ashley:ashley:$ashleyVersion"
+
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
+  }
+
+  repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
   }
 }
