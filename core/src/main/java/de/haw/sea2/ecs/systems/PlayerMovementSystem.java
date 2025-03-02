@@ -12,7 +12,6 @@ import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
 
-//TODO see at https://www.youtube.com/watch?v=E4tZ7e032tI&t=5s  24:38
 public class PlayerMovementSystem extends IteratingSystem implements KeyInputListener {
 
     private boolean directionChange;

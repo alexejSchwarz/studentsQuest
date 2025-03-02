@@ -5,14 +5,17 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
+import de.haw.sea2.ecs.systems.PlayerCameraSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
+import de.haw.sea2.map.CollisionArea;
 
 /**
  * Create Engine in Main Class
@@ -23,31 +26,12 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<Box2DComponent> BOX2D_COMP_MAPPER = ComponentMapper.getFor(Box2DComponent.class);
 
     private final World world;
-    private final BodyDef bodyDef;
-    private final FixtureDef fixtureDef;
 
     public ECSEngine(final StudentsQuest context) {
         super();
         this.world = context.getWorld();
-        this.bodyDef = new BodyDef();
-        this.fixtureDef = new FixtureDef();
-
         this.addSystem(new PlayerMovementSystem(context));
-    }
-
-    private void resetBodieAndFixtureDefinition() {
-        this.bodyDef.position.set(0, 0);
-        this.bodyDef.gravityScale = 1;
-        this.bodyDef.type = BodyDef.BodyType.StaticBody;
-        this.bodyDef.fixedRotation = false;
-
-        this. fixtureDef.density = 0;
-        this.fixtureDef.isSensor = false;
-        this.fixtureDef.restitution = 0;
-        this.fixtureDef.friction = 0.2f;
-        this.fixtureDef.filter.categoryBits = 0x0001;
-        this.fixtureDef.filter.maskBits = -1;
-        this.fixtureDef.shape = null;
+        this.addSystem(new PlayerCameraSystem(context));
     }
 
     /**
@@ -62,29 +46,55 @@ public class ECSEngine extends PooledEngine {
         player.add(playerComp);
 
         // box2d component
-        resetBodieAndFixtureDefinition();
+        StudentsQuest.resetBodieAndFixtureDefinition();
         final Box2DComponent b2dComp = this.createComponent(Box2DComponent.class);
 
-        //TODO change that later
-        this.bodyDef.position.set(playerSpawnLocation.x, playerSpawnLocation.y);
+        StudentsQuest.BODY_DEF.position.set(playerSpawnLocation.x, playerSpawnLocation.y);
 
-        this.bodyDef.fixedRotation = true;
-        this.bodyDef.type = BodyDef.BodyType.DynamicBody;
-        b2dComp.body = this.world.createBody(this.bodyDef);
+        StudentsQuest.BODY_DEF.fixedRotation = true;
+        StudentsQuest.BODY_DEF.type = BodyDef.BodyType.DynamicBody;
+        b2dComp.body = this.world.createBody(StudentsQuest.BODY_DEF);
         b2dComp.body.setUserData("PLAYER");
         b2dComp.width = width;
         b2dComp.height = height;
 
-        this.fixtureDef.filter.categoryBits = Bits.BIT_PLAYER.value;
-        this.fixtureDef.filter.maskBits = Bits.BIT_WALL.value;
+        StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_PLAYER.value;
+        StudentsQuest.FIXTURE_DEF.filter.maskBits = Bits.BIT_WALL.value;
         final PolygonShape pShape = new PolygonShape();
         pShape.setAsBox(width * 0.5f, height * 0.5f);
-        this.fixtureDef.shape = pShape;
-        b2dComp.body.createFixture(this.fixtureDef);
+        StudentsQuest.FIXTURE_DEF.shape = pShape;
+        b2dComp.body.createFixture(StudentsQuest.FIXTURE_DEF);
         pShape.dispose();
 
         player.add(b2dComp);
         this.addEntity(player);
+    }
 
+    //TODO check if done here
+    public void createCollisionWalls(Array<CollisionArea> collisionAreas) {
+        collisionAreas.forEach(collisionArea -> {
+            Entity wall = this.createEntity();
+
+            StudentsQuest.resetBodieAndFixtureDefinition();
+            final Box2DComponent b2dComp = this.createComponent(Box2DComponent.class);
+
+            StudentsQuest.BODY_DEF.position.set(collisionArea.getX(), collisionArea.getY());
+            StudentsQuest.BODY_DEF.type = BodyDef.BodyType.StaticBody;
+            b2dComp.body = this.world.createBody(StudentsQuest.BODY_DEF);
+            b2dComp.body.setUserData("WALL");
+
+            StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_WALL.value;
+            StudentsQuest.FIXTURE_DEF.filter.maskBits = -1; // TODO  "collides with everything" put into the enum
+
+            final ChainShape cShape = new ChainShape();
+            cShape.createChain(collisionArea.getVertices());
+
+            StudentsQuest.FIXTURE_DEF.shape = cShape;
+            b2dComp.body.createFixture(StudentsQuest.FIXTURE_DEF);
+            cShape.dispose();
+
+            wall.add(b2dComp);
+            this.addEntity(wall);
+        });
     }
 }
