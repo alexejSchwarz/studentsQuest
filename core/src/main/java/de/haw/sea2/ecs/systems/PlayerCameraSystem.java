@@ -23,6 +23,5 @@ public class PlayerCameraSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         Box2DComponent box2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
         gameCamera.position.set(box2DComponent.body.getPosition(),0);
-
     }
 }

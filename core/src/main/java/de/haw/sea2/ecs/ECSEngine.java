@@ -60,6 +60,7 @@ public class ECSEngine extends PooledEngine {
 
         StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_PLAYER.value;
         StudentsQuest.FIXTURE_DEF.filter.maskBits = Bits.BIT_WALL.value;
+
         final PolygonShape pShape = new PolygonShape();
         pShape.setAsBox(width * 0.5f, height * 0.5f);
         StudentsQuest.FIXTURE_DEF.shape = pShape;

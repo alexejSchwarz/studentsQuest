@@ -1,36 +1,26 @@
 package de.haw.sea2;
 
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.ecs.components.Box2DComponent;
-import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.map.GameMap;
+import de.haw.sea2.screen.MainMenuScreen;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 
@@ -40,16 +30,16 @@ public class StudentsQuest extends Game implements KeyInputListener {
     //scale of the tiles in game from the map
     public static final float UNIT_SCALE = 1 / 64f;
 
-    //should not be static
-    private AssetManager assetManager;
-
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
-    //TODO find more fitting name
-    private GameMap map;
-
     //For Physics
     public static final BodyDef BODY_DEF = new BodyDef();
     public static final FixtureDef FIXTURE_DEF = new FixtureDef();
+
+    //should not be static
+    private AssetManager assetManager;
+    private InputManager inputManager;
+
+    private OrthogonalTiledMapRenderer tiledMapRenderer;
+    private Box2DDebugRenderer debugRenderer;
 
     //TODO pass instance to all screens
     private World world;
@@ -59,60 +49,32 @@ public class StudentsQuest extends Game implements KeyInputListener {
     //evt ExtendViewPort?
     public FitViewport viewport;
     private OrthographicCamera gameCamera;
-
-    //TODO change later
-    private SpriteBatch batch;
-    private Texture image;
-
     private Stage stage;
 
-    private InputManager inputManager;
+    //TODO Use MapManager
+    private GameMap map;
+
+    private SpriteBatch spriteBatch;
+
     private ECSEngine engine;
-
-    private Box2DDebugRenderer debugRenderer;
-
-    //TODO relocate into ecs later
-    private Texture playerTexture;
-    private Sprite playerSprite;
 
     @Override
     public void create() {
 
-        //gravity? needed?
-        //physics simulation
-        Box2D.init();
-
-        batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
-
-        //TODO Auslagern in nen LoadingScreen
+        this.spriteBatch = new SpriteBatch();
 
         this.assetManager = new AssetManager();
-        this.assetManager.setLoader(TiledMap.class, new TmxMapLoader(this.assetManager.getFileHandleResolver()));
-        this.assetManager.load("mapMitObj.tmx", TiledMap.class);
-        this.assetManager.finishLoading();
 
-        //TODO only temporary remove later
-        this.assetManager.load("tmpGuy.png", Texture.class);
-        this.assetManager.finishLoading();
-        this.playerTexture = this.assetManager.get("tmpGuy.png", Texture.class);
-        this.playerSprite = new Sprite(this.playerTexture);
-
-        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(null, UNIT_SCALE, this.batch);
-
-        // auslagern in screen
-        TiledMap tiledMap = this.assetManager.get("mapMitObj.tmx", TiledMap.class);
-        this.tiledMapRenderer.setMap(tiledMap);
-        this.map = new GameMap(tiledMap);
+        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(null, UNIT_SCALE, this.spriteBatch);
 
         this.world = new World(new Vector2(0f, 0f), true);
         this.worldContactListener = new WorldContactListener();
         this.world.setContactListener(worldContactListener);
-        //TODO more world stuff
 
         this.debugRenderer = new Box2DDebugRenderer();
 
         this.gameCamera = new OrthographicCamera();
+        // 16f 9f aspect ratio plus window size in logical units
         this.viewport = new FitViewport(16f, 9f, gameCamera);
         this.stage = new Stage(this.viewport);
 
@@ -122,75 +84,23 @@ public class StudentsQuest extends Game implements KeyInputListener {
         Gdx.input.setInputProcessor(new InputMultiplexer(this.inputManager,this.stage));
         this.inputManager.addKeyInputListener(this);
 
-
-        //TODO makle it work
-        this.engine.createCollisionWalls(map.getCollisionAreas());
-
-        // sets center of Pplayer entity
-        this.engine.createPlayer(new Vector2(3.5f, 3.5f), 1f, 1f);
-    }
-
-
-
-    public void setScreen(){
-        //TODO implement
+        this.setScreen(new MainMenuScreen(this));
     }
 
     @Override
     public void render() {
-
-        /*
-        assetManager.getProgress()
-        if (this.assetManager.update()) {
-            // change to next screen
-        }*/
-
-        float delta = Gdx.graphics.getDeltaTime();
-        this.engine.update(delta);
-
-        //TODO to be removed
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-
-        //TODO look this up
-        /*
-        stage.getViewport().apply();
-        stage.act();
-        stage.draw();
-        */
-
-
-        this.viewport.apply(false);
-
-        //applies physics
-        this.world.step(delta, 6,2);
-
-        this.tiledMapRenderer.setView(this.gameCamera);
-        this.tiledMapRenderer.render();
-
-        this.debugRenderer.render(this.world, this.viewport.getCamera().combined);
-
-        //TODO this is temporary RenderSystem to be implemented
-        ImmutableArray<Entity> entities = this.engine.getEntitiesFor(Family.all(PlayerComponent.class, Box2DComponent.class).get());
-        Entity player = entities.get(0);
-        Box2DComponent box2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(player);
-
-        this.batch.begin();
-        this.batch.draw(this.playerTexture, box2DComponent.body.getPosition().x - 0.5f, box2DComponent.body.getPosition().y - 0.5f, 1f, 1f);
-        this.batch.end();
-
+        super.render();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        image.dispose();
+        //TODO check all fields in class if there is more to dispose
+        spriteBatch.dispose();
         world.dispose();
         debugRenderer.dispose();
         this.assetManager.dispose();
         this.tiledMapRenderer.dispose();
         this.tiledMapRenderer.dispose();
-        //TODO only tmp render
-        this.playerTexture.dispose();
     }
 
     @Override
@@ -219,34 +129,49 @@ public class StudentsQuest extends Game implements KeyInputListener {
 
     @Override
     public void keyDown(InputManager manager, GameKey key) {
-        //TODO implement
+        //TODO implement or find better place, maybe GameScreen?
     }
 
     @Override
     public void keyUp(InputManager manager, GameKey key) {
-        //TODO implement
+        //TODO implement or find better place, maybe GameScreen?
     }
 
     public World getWorld() {
-        return world;
+        return this.world;
     }
 
     public AssetManager getAssetManager() {
-        return assetManager;
+        return this.assetManager;
     }
 
     public Box2DDebugRenderer getDebugRenderer() {
-        return debugRenderer;
+        return this.debugRenderer;
     }
 
     public OrthographicCamera getGameCamera() {
-        return gameCamera;
+        return this.gameCamera;
     }
 
     public InputManager getInputManager() {
-        return inputManager;
+        return this.inputManager;
     }
 
+    public SpriteBatch getSpriteBatch() {
+        return this.spriteBatch;
+    }
+
+    public OrthogonalTiledMapRenderer getTiledMapRenderer() {
+        return tiledMapRenderer;
+    }
+
+    public GameMap getMap() {
+        return this.map;
+    }
+
+    public void setMap(GameMap map) {
+        this.map = map;
+    }
 
     /*public static final short BIT_CIRCLE = 1 << 0;
     public static final short BIT_BOX = 1 << 1;
