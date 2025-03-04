@@ -42,10 +42,10 @@ public enum GameKey {
     RIGHT(Input.Keys.D, Input.Keys.RIGHT),
 
     /**
-     * Tastenaktion zum Zurückgehen oder Abbrechen.
-     * Wird mit der ESC-Taste ausgelöst.
+     * Taste zum Pausieren des Spiels.
+     * Kann mit der ESCAPE-Taste ausgelöst werden.
      */
-    BACK(Input.Keys.ESCAPE);
+    PAUSE(Input.Keys.ESCAPE);
 
     /**
      * Array von Tastencodes, die dieser Spielaktion zugeordnet sind.

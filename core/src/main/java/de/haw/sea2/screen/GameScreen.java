@@ -4,23 +4,22 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.ScreenUtils;
-
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
-import de.haw.sea2.map.GameMap;
+import de.haw.sea2.ecs.systems.PlayerCameraSystem;
+import de.haw.sea2.ecs.systems.PlayerMovementSystem;
+import de.haw.sea2.input.GameKey;
+import de.haw.sea2.input.InputManager;
+import de.haw.sea2.input.KeyInputListener;
 
 /**
  * Der Haupt-Spielbildschirm, der die aktive Spielwelt darstellt und verwaltet.
- * 
+ *
  * <p>
  * Diese Klasse implementiert das libGDX Screen-Interface und ist verantwortlich
  * für:
@@ -31,18 +30,18 @@ import de.haw.sea2.map.GameMap;
  * <li>Die Aktualisierung und Darstellung der Spielwelt in jedem Frame</li>
  * </ul>
  * </p>
- * 
+ *
  * <p>
  * Die Klasse folgt dem libGDX-Lebenszyklus für Screens mit Methoden wie show(),
  * render(), resize(), pause(), resume(), hide() und dispose().
  * </p>
  */
-public class GameScreen implements Screen {
+public class GameScreen implements Screen, KeyInputListener {
 
     /**
      * Der Hauptkontext des Spiels, der Zugriff auf zentrale Ressourcen und Systeme
      * bietet.
-     * 
+     *
      * <p>
      * Über dieses Objekt hat der GameScreen Zugriff auf wichtige Komponenten wie:
      * <ul>
@@ -59,7 +58,7 @@ public class GameScreen implements Screen {
     // TODO relocate into ecs later
     /**
      * Die Textur für den Spielercharakter.
-     * 
+     *
      * <p>
      * Diese Textur wird temporär hier verwaltet und direkt gerendert.
      * Später soll dies in das Entity-Component-System ausgelagert werden.
@@ -75,11 +74,12 @@ public class GameScreen implements Screen {
      */
     public GameScreen(StudentsQuest context) {
         this.context = context;
+        initialize();
     }
 
     /**
      * Wird aufgerufen, wenn dieser Screen der aktive Screen wird.
-     * 
+     *
      * <p>
      * Diese Methode initialisiert die gesamte Spielwelt:
      * <ul>
@@ -93,44 +93,36 @@ public class GameScreen implements Screen {
      */
     @Override
     public void show() {
+        // Es sollte sichergestellt werden, dass der KeyInputListener registriert ist,
+        // falls wir ihn mit hide() entfernt haben
+        if (!this.context.getInputManager().getKeyInputListeners().contains(this, true)) {
+            this.context.getInputManager().addKeyInputListener(this);
+        }
+        // Stelle sicher, dass das PlayerMovementSystem als KeyInputListener registriert
+        // ist
+        PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
+        if (!this.context.getInputManager().getKeyInputListeners().contains(playerMovementSystem, true)) {
+            this.context.getInputManager().addKeyInputListener(playerMovementSystem);
+        }
 
-        // physics simulation
-        Box2D.init();
+    }
 
-        // TODO Auslagern in nen LoadingScreen
-        // Lädt die TiledMap-Datei über den AssetManager
-        // 1. Registriert den TmxMapLoader, um .tmx-Dateien laden zu können
-        this.context.getAssetManager().setLoader(TiledMap.class,
-                new TmxMapLoader(this.context.getAssetManager().getFileHandleResolver()));
-        // 2. Fordert das Laden der Kartendatei "mapMitObj.tmx" an
-        this.context.getAssetManager().load("mapMitObj.tmx", TiledMap.class);
-        // 3. Wartet, bis der Ladevorgang abgeschlossen ist (blockiert den Thread)
-        this.context.getAssetManager().finishLoading();
+    private void initialize() {
+        //Erstellung von Spieler und Wall-Entities soll hier passieren und nicht im show(), da sonst Duplikate entstehen
 
-        // TODO only temporary remove later rendering of Entities and maybe even asset
-        // loading of entities in ecs
-        // Lädt die Spielertextur auf ähnliche Weise wie die Karte
-        this.context.getAssetManager().setLoader(Texture.class,
-                new TextureLoader(this.context.getAssetManager().getFileHandleResolver()));
-        this.context.getAssetManager().load("tmpGuy.png", Texture.class);
-        this.context.getAssetManager().finishLoading();
+        // Konstanten für Asset-Pfade
+        final String MAP_PATH = "mapMitObj.tmx";
+        final String PLAYER_TEXTURE_PATH = "tmpGuy.png";
 
-        // Holt die geladene Textur aus dem AssetManager
-        this.playerTexture = this.context.getAssetManager().get("tmpGuy.png", Texture.class);
-        // this.playerSprite = new Sprite(this.playerTexture);
+        // Keine Box2D-Initialisierung mehr nötig - wurde im LoadingScreen gemacht
 
-        // TODO auslagern in Loadingscreen
-        // Holt die geladene Karte aus dem AssetManager
-        TiledMap tiledMap = this.context.getAssetManager().get("mapMitObj.tmx", TiledMap.class);
-        // Setzt die Karte im TiledMapRenderer, damit sie gerendert werden kann
-        this.context.getTiledMapRenderer().setMap(tiledMap);
+        // Kein Asset-Loading mehr nötig - wurde im LoadingScreen gemacht
 
-        // TODO handle in map manager? dispose when no longer needed or chache it
-        // someHow
-        // Erstellt ein GameMap-Objekt aus der geladenen TiledMap und setzt es im
-        // Kontext
-        // Die GameMap-Klasse extrahiert Kollisionsbereiche aus der Karte
-        this.context.setMap(new GameMap(tiledMap));
+        // Holt die bereits geladene Textur aus dem AssetManager
+        this.playerTexture = this.context.getAssetManager().get(PLAYER_TEXTURE_PATH, Texture.class);
+
+        // Map aktivieren (nicht mehr laden!)
+        this.context.getMapManager().activateMap(MAP_PATH);
 
         // TODO entity and components creation in the coresponding GameScreens
         // Erstellt die Kollisionswände in der Box2D-Welt basierend auf den Bereichen
@@ -141,12 +133,15 @@ public class GameScreen implements Screen {
         // Die Position ist relativ zur Box2D-Welt und nicht zu Pixeln auf dem
         // Bildschirm
         this.context.getEngine().createPlayer(new Vector2(3.5f, 3.5f), 1f, 1f);
+
+        // Registriere diesen Screen als KeyInputListener
+        this.context.getInputManager().addKeyInputListener(this);
     }
 
     /**
      * Wird in jedem Frame aufgerufen, um die Spielwelt zu aktualisieren und
      * darzustellen.
-     * 
+     *
      * <p>
      * Diese Methode:
      * <ul>
@@ -168,7 +163,6 @@ public class GameScreen implements Screen {
         // float delta = Gdx.graphics.getDeltaTime();
         this.context.getEngine().update(delta);
 
-        // TODO to be removed
         // Löscht den Bildschirm mit einer dunkelblau-grauen Farbe
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
@@ -220,7 +214,7 @@ public class GameScreen implements Screen {
 
     /**
      * Wird aufgerufen, wenn die Größe des Fensters geändert wird.
-     * 
+     *
      * <p>
      * Aktualisiert den Viewport, damit die Grafiken korrekt skaliert werden.
      * Der Parameter true bewirkt, dass die Kamera an der Position zentriert wird.
@@ -238,7 +232,7 @@ public class GameScreen implements Screen {
     /**
      * Wird aufgerufen, wenn das Spiel pausiert wird (z.B. wenn die App in den
      * Hintergrund wechselt).
-     * 
+     *
      * <p>
      * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
      * um Ressourcen freizugeben oder den Spielzustand zu speichern.
@@ -246,12 +240,12 @@ public class GameScreen implements Screen {
      */
     @Override
     public void pause() {
-
+        System.out.println("GameScreen.pause() wurde aufgerufen!");
     }
 
     /**
      * Wird aufgerufen, wenn das Spiel fortgesetzt wird (z.B. nach einer Pause).
-     * 
+     *
      * <p>
      * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
      * um Ressourcen neu zu laden oder den Spielzustand wiederherzustellen.
@@ -259,12 +253,18 @@ public class GameScreen implements Screen {
      */
     @Override
     public void resume() {
+        System.out.println("GameScreen.resume() wurde aufgerufen!");
 
+        // Stelle sicher, dass das PlayerMovementSystem ein KeyInputListener ist
+        PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
+        this.context.getInputManager()
+                .addKeyInputListener(playerMovementSystem);
+        // wir müssen die Kamera hier nicht aktualisieren, da sie im render() aufgerufen wird
     }
 
     /**
      * Wird aufgerufen, wenn dieser Screen nicht mehr der aktive Screen ist.
-     * 
+     *
      * <p>
      * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
      * um temporäre Ressourcen freizugeben oder den Zustand zu speichern.
@@ -272,12 +272,28 @@ public class GameScreen implements Screen {
      */
     @Override
     public void hide() {
+        // entfernt den KeyInputListener aus dem InputManager, wenn er verstekt wird
+        this.context.getInputManager().removeKeyInputListener(this);
 
+        // Stelle sicher, dass das der KeyInputListener vom PlayerMovementSystem nicht
+        // mehr aktiv ist
+        this.context.getInputManager().removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
+    }
+
+    @Override
+    public void keyDown(InputManager manager, GameKey key) {
+        if (key == GameKey.PAUSE) {
+            this.context.getScreenManager().showScreen(ScreenType.PAUSE);
+        }
+    }
+
+    @Override
+    public void keyUp(InputManager manager, GameKey key) {
     }
 
     /**
      * Wird aufgerufen, wenn dieser Screen zerstört wird.
-     * 
+     *
      * <p>
      * Gibt alle Ressourcen frei, die explizit für diesen Screen geladen wurden.
      * In diesem Fall nur die Spielertextur.
@@ -287,4 +303,5 @@ public class GameScreen implements Screen {
     public void dispose() {
         this.playerTexture.dispose();
     }
+
 }

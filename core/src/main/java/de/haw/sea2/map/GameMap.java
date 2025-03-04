@@ -1,5 +1,7 @@
 package de.haw.sea2.map;
 
+import java.rmi.dgc.DGC;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 
 /**
  * Verarbeitet und verwaltet die Spielkarte mit ihren Kollisionsbereichen.
@@ -34,7 +37,7 @@ import com.badlogic.gdx.utils.Array;
  * <li>Polylinien (PolylineMapObject): Werden direkt als Linien übernommen</li>
  * </ul>
  */
-public class GameMap {
+public class GameMap implements Disposable {
     /**
      * Die geladene Tiled-Karte, die alle Ebenen und Objekte enthält.
      */
@@ -45,11 +48,11 @@ public class GameMap {
      * Diese Liste enthält die umgewandelten und für Box2D aufbereiteten
      * Kollisionsbereiche.
      */
-    private final Array<CollisionArea> collisiomAreas;
+    private final Array<CollisionArea> collisionAreas;
 
     public GameMap(final TiledMap tiledMap) {
         this.tiledMap = tiledMap;
-        this.collisiomAreas = new Array<>();
+        this.collisionAreas = new Array<>();
         parseCollisionLayer();
     }
 
@@ -81,7 +84,7 @@ public class GameMap {
      * konvertieren.
      * </p>
      */
-    //TODO parse auch custom polygone
+    // TODO parse auch custom polygone
     private void parseCollisionLayer() {
         // Sucht nach einer Ebene mit dem Namen "collision" in der Tiled-Karte
         final MapLayer collisionLayer = this.tiledMap.getLayers().get("collision");
@@ -141,7 +144,7 @@ public class GameMap {
                 // Erstellt ein CollisionArea-Objekt mit der Position des Rechtecks und den
                 // Vertices
                 // Die Skalierung mit UNIT_SCALE findet im Konstruktor der CollisionArea statt
-                this.collisiomAreas.add(new CollisionArea(rectangle.x, rectangle.y, rectVertices));
+                this.collisionAreas.add(new CollisionArea(rectangle.x, rectangle.y, rectVertices));
 
             } else if (mapObject instanceof PolylineMapObject) {
                 // Verarbeitung von Polylinien-Objekten (offene Pfade)
@@ -152,7 +155,7 @@ public class GameMap {
                 // Vertices (Knotenpunkten der Geometrie)
                 // Die Vertices werden direkt aus dem Polyline-Objekt übernommen
                 // Die Skalierung mit UNIT_SCALE findet im Konstruktor der CollisionArea statt
-                this.collisiomAreas.add(new CollisionArea(polyline.getX(), polyline.getY(), polyline.getVertices()));
+                this.collisionAreas.add(new CollisionArea(polyline.getX(), polyline.getY(), polyline.getVertices()));
             } else {
                 Gdx.app.debug("TAG", "MoapObject of Type: " + mapObject + "is not supported!");
             }
@@ -174,6 +177,20 @@ public class GameMap {
      *         Karte
      */
     public Array<CollisionArea> getCollisionAreas() {
-        return this.collisiomAreas;
+        return this.collisionAreas;
+    }
+
+    /**
+     * Gibt die zugrunde liegende TiledMap zurück.
+     *
+     * @return Die TiledMap-Instanz dieser GameMap
+     */
+    public TiledMap getTiledMap() {
+        return this.tiledMap;
+    }
+
+    @Override
+    public void dispose() {
+        this.tiledMap.dispose();
     }
 }

@@ -83,12 +83,9 @@ public class MainMenuScreen implements Screen {
      */
     @Override
     public void show() {
-        // eventuell hier oder im ctor
 
-        // font has 15pt, but we need to scale it to our viewport by ratio of viewport
-        // height to screen height
+        // Font konfigurieren
         this.font.setUseIntegerPositions(false);
-        // default scled 15p scaled 30p
         this.font.getData().setScale((this.context.viewport.getWorldHeight() / Gdx.graphics.getHeight()) * 2);
         this.font.setColor(Color.WHITE);
     }
@@ -127,12 +124,7 @@ public class MainMenuScreen implements Screen {
         this.context.getSpriteBatch().end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-            // TODO change to LoadingScreen later, do initial asset loading there with
-            // progress bar in background
-            this.context.setScreen(new GameScreen(this.context));
-            // TODO apply correct Logging
-            System.out.println("dispose from MainMenu instance was called!");
-            dispose();
+            this.context.getScreenManager().showScreenWithLoading(ScreenType.GAME);
         }
 
     }
@@ -190,7 +182,8 @@ public class MainMenuScreen implements Screen {
      */
     @Override
     public void hide() {
-
+        // Nur Logging, KEINE Ressourcenfreigabe
+        System.out.println("MainMenuScreen hidden");
     }
 
     /**
