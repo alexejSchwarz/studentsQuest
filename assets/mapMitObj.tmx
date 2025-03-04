@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="13">
+ <tileset firstgid="1" source="tileset.tsx"/>
+ <layer id="1" name="Kachelebene 1" width="32" height="32">
+  <data encoding="base64" compression="zlib">
+   eJzt0zduQmEQReF5T/KKMBjcktkW2S2ZlsxKXk80rU1sbTC44jT/EkYUTPFJI91iqhO8iAQP9isiZ1zwhytu+MeP6O3uf8ITSSKFNDLIIoe4p7e7/3XuBppooY0Ouqh5erv7/829xQ57HHDECV+e3u7+v/oiYUTwhihieEfI19vd/wJ3ESWUUUEVH8j7erv7P+deYIkV1vjEBjNfb3f/+7QwwBAjjDHBFD3R261/69/6t/6tf+vf+rf+rX/r/xn7f6Q7DPmNIQ==
+  </data>
+ </layer>
+ <objectgroup color="#ff0000" id="4" name="collision">
+  <object id="8" x="0" y="0" width="31.5" height="1023.5"/>
+  <object id="10" x="30.6667" y="992" width="992" height="29.3333"/>
+  <object id="11" x="30.6667" y="0" width="993.333" height="32"/>
+  <object id="12" x="990.667" y="30.6667" width="32" height="960"/>
+ </objectgroup>
+</map>
