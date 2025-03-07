@@ -22,7 +22,10 @@ import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.map.GameMap;
+import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.MainMenuScreen;
+import de.haw.sea2.screen.ScreenManager;
+import de.haw.sea2.screen.ScreenType;
 
 /**
  * Die Hauptklasse des Spiels, die alle grundlegenden Komponenten initialisiert
@@ -49,7 +52,7 @@ import de.haw.sea2.screen.MainMenuScreen;
  * </p>
  */
 // TODO wirklich implements?
-public class StudentsQuest extends Game implements KeyInputListener {
+public class StudentsQuest extends Game {
 
     /**
      * Der Skalierungsfaktor für die Umrechnung von Pixeln zu Physik-Welteinheiten.
@@ -228,7 +231,6 @@ public class StudentsQuest extends Game implements KeyInputListener {
      * Kollisionsobjekte, die für die Navigation und Physik verwendet werden.
      * </p>
      */
-    // TODO Use MapManager
     private GameMap map;
 
     /**
@@ -254,6 +256,12 @@ public class StudentsQuest extends Game implements KeyInputListener {
      */
     private ECSEngine engine;
 
+    /**
+     * Verwaltet alle Screens des Spiels und den Übergang zwischen ihnen.
+     */
+    private ScreenManager screenManager;
+
+    private MapManager mapManager;
 
     /**
      * Wird einmalig beim Start des Spiels aufgerufen und initialisiert alle
@@ -307,11 +315,14 @@ public class StudentsQuest extends Game implements KeyInputListener {
 
         // Konfiguriert den InputProcessor mit einem Multiplexer für mehrere Quellen
         Gdx.input.setInputProcessor(new InputMultiplexer(this.inputManager, this.stage));
-        // Registriert diese Klasse als Listener für Tastatureingaben
-        this.inputManager.addKeyInputListener(this);
+
+        // Initialisiert den ScreenManager
+        this.screenManager = new ScreenManager(this);
 
         // Setzt den MainMenuScreen als ersten aktiven Bildschirm
-        this.setScreen(new MainMenuScreen(this));
+        this.screenManager.showScreen(ScreenType.MAIN_MENU);
+
+        this.mapManager = new MapManager(this);
     }
 
     /**
@@ -347,6 +358,7 @@ public class StudentsQuest extends Game implements KeyInputListener {
         this.assetManager.dispose();
         this.tiledMapRenderer.dispose();
         this.tiledMapRenderer.dispose();
+        mapManager.dispose();
     }
 
     /**
@@ -400,38 +412,6 @@ public class StudentsQuest extends Game implements KeyInputListener {
      */
     public ECSEngine getEngine() {
         return engine;
-    }
-
-    /**
-     * Wird aufgerufen, wenn eine Taste gedrückt wird.
-     *
-     * <p>
-     * Diese Methode ist Teil des KeyInputListener-Interface und wird automatisch
-     * vom InputManager aufgerufen, wenn eine Taste gedrückt wird.
-     * </p>
-     *
-     * @param manager Der InputManager, der das Ereignis ausgelöst hat
-     * @param key     Die GameKey-Konstante, die der gedrückten Taste entspricht
-     */
-    @Override
-    public void keyDown(InputManager manager, GameKey key) {
-        // TODO implement or find better place, maybe GameScreen?
-    }
-
-    /**
-     * Wird aufgerufen, wenn eine Taste losgelassen wird.
-     *
-     * <p>
-     * Diese Methode ist Teil des KeyInputListener-Interface und wird automatisch
-     * vom InputManager aufgerufen, wenn eine Taste losgelassen wird.
-     * </p>
-     *
-     * @param manager Der InputManager, der das Ereignis ausgelöst hat
-     * @param key     Die GameKey-Konstante, die der losgelassenen Taste entspricht
-     */
-    @Override
-    public void keyUp(InputManager manager, GameKey key) {
-        // TODO implement or find better place, maybe GameScreen?
     }
 
     /**
@@ -518,6 +498,20 @@ public class StudentsQuest extends Game implements KeyInputListener {
      */
     public void setMap(GameMap map) {
         this.map = map;
+    }
+
+    /**
+     * Gibt den ScreenManager zurück, der für die Verwaltung der verschiedenen
+     * Spielbildschirme zuständig ist.
+     *
+     * @return Die ScreenManager-Instanz dieses Spiels
+     */
+    public ScreenManager getScreenManager() {
+        return this.screenManager;
+    }
+
+    public MapManager getMapManager() {
+        return mapManager;
     }
 
     /*

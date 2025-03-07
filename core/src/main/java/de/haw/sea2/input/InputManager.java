@@ -1,6 +1,7 @@
 package de.haw.sea2.input;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -124,6 +125,10 @@ public class InputManager implements InputProcessor {
      */
     public void removeKeyInputListener(final KeyInputListener listener) {
         listeners.removeValue(listener, true);
+    }
+
+    public Array<KeyInputListener> getKeyInputListeners() {
+        return listeners;
     }
 
     /**
