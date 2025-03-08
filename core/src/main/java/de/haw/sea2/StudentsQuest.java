@@ -1,31 +1,25 @@
 package de.haw.sea2;
 
-import java.util.List;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
-import de.haw.sea2.map.GameMap;
 import de.haw.sea2.map.MapManager;
-import de.haw.sea2.screen.MainMenuScreen;
 import de.haw.sea2.screen.ScreenManager;
 import de.haw.sea2.screen.ScreenType;
+import de.haw.sea2.view.GameRenderer;
 
 /**
  * Die Hauptklasse des Spiels, die alle grundlegenden Komponenten initialisiert
@@ -51,8 +45,10 @@ import de.haw.sea2.screen.ScreenType;
  * </ul>
  * </p>
  */
-// TODO wirklich implements?
 public class StudentsQuest extends Game {
+
+    // debug renderer to be used?
+    public static final boolean DEBUG = true;
 
     /**
      * Der Skalierungsfaktor für die Umrechnung von Pixeln zu Physik-Welteinheiten.
@@ -66,7 +62,9 @@ public class StudentsQuest extends Game {
      * </p>
      */
     public static final float UNIT_SCALE = 1 / 64f; // TODO ich denke dass muss dann 1/32f sein, wenn wir 32x32 Grafiken
-                                                    // haben
+
+    // scalierung fuer Physics Engine
+    public static final float FIXED_TIME_STEP = 1 / 60f;
 
     /**
      * Wiederverwendbare Definitionen für physikalische Körper und ihre
@@ -100,6 +98,21 @@ public class StudentsQuest extends Game {
     public static final FixtureDef FIXTURE_DEF = new FixtureDef();
 
     /**
+     * Bestimmt, wie die Spielwelt auf dem Bildschirm angezeigt wird.
+     *
+     * <p>
+     * Der FitViewport passt die Spielwelt so an den Bildschirm an, dass das
+     * Seitenverhältnis erhalten bleibt und schwarze Balken hinzugefügt werden, wenn
+     * nötig.
+     * Dies stellt sicher, dass das Spiel auf verschiedenen Bildschirmgrößen gleich
+     * aussieht.
+     * </p>
+     */
+    // TODO use in resize in Screen impl
+    // evt ExtendViewPort?
+    public FitViewport viewport;
+
+    /**
      * Manager für das Laden und Verwalten von Spiel-Assets wie Texturen, Sounds und
      * Karten.
      *
@@ -110,7 +123,6 @@ public class StudentsQuest extends Game {
      * freigibt.
      * </p>
      */
-    // should not be static
     private AssetManager assetManager;
 
     /**
@@ -124,28 +136,6 @@ public class StudentsQuest extends Game {
      * </p>
      */
     private InputManager inputManager;
-
-    /**
-     * Spezifischer Renderer für Tiled-Karten, der die Spielwelt darstellt.
-     *
-     * <p>
-     * Dieser Renderer zeichnet die Kartenkacheln und -objekte mit der richtigen
-     * Skalierung
-     * und Position auf dem Bildschirm.
-     * </p>
-     */
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
-
-    /**
-     * Hilfsklasse zum Visualisieren der Box2D-Physik für Debugging-Zwecke.
-     *
-     * <p>
-     * Dieser Renderer zeichnet die Umrisse der Kollisionskörper, was bei der
-     * Entwicklung
-     * hilft, Probleme mit der Physik zu erkennen.
-     * </p>
-     */
-    private Box2DDebugRenderer debugRenderer;
 
     /**
      * Die physikalische Welt, in der alle Kollisionen und Bewegungen simuliert
@@ -189,21 +179,6 @@ public class StudentsQuest extends Game {
     private WorldContactListener worldContactListener;
 
     /**
-     * Bestimmt, wie die Spielwelt auf dem Bildschirm angezeigt wird.
-     *
-     * <p>
-     * Der FitViewport passt die Spielwelt so an den Bildschirm an, dass das
-     * Seitenverhältnis erhalten bleibt und schwarze Balken hinzugefügt werden, wenn
-     * nötig.
-     * Dies stellt sicher, dass das Spiel auf verschiedenen Bildschirmgrößen gleich
-     * aussieht.
-     * </p>
-     */
-    // TODO use in resize in Screen impl
-    // evt ExtendViewPort?
-    public FitViewport viewport;
-
-    /**
      * Die virtuelle Kamera, die den sichtbaren Bereich der Spielwelt bestimmt.
      *
      * <p>
@@ -222,16 +197,6 @@ public class StudentsQuest extends Game {
      * </p>
      */
     private Stage stage;
-
-    /**
-     * Repräsentation der Spielkarte mit ihren Kollisionsbereichen.
-     *
-     * <p>
-     * Die GameMap enthält die aus einer Tiled-Karte geladenen Ebenen und
-     * Kollisionsobjekte, die für die Navigation und Physik verwendet werden.
-     * </p>
-     */
-    private GameMap map;
 
     /**
      * Hauptwerkzeug zum Zeichnen von 2D-Grafiken auf dem Bildschirm.
@@ -263,120 +228,7 @@ public class StudentsQuest extends Game {
 
     private MapManager mapManager;
 
-    /**
-     * Wird einmalig beim Start des Spiels aufgerufen und initialisiert alle
-     * notwendigen Komponenten.
-     *
-     * <p>
-     * Diese Methode richtet die grundlegende Spielinfrastruktur ein:
-     * <ul>
-     * <li>Erstellt den SpriteBatch zum Zeichnen von Grafiken</li>
-     * <li>Initialisiert den AssetManager zum Laden von Ressourcen</li>
-     * <li>Richtet den TiledMapRenderer für die Spielkarten ein</li>
-     * <li>Erstellt die Box2D-Physikwelt und den ContactListener</li>
-     * <li>Konfiguriert Kamera und Viewport für die Bildschirmdarstellung</li>
-     * <li>Initialisiert den InputManager für Benutzereingaben</li>
-     * <li>Erstellt die ECS-Engine für die Spiellogik</li>
-     * <li>Setzt den MainMenuScreen als ersten aktiven Bildschirm</li>
-     * </ul>
-     * </p>
-     */
-    @Override
-    public void create() {
-        // Erstellt den SpriteBatch zum Zeichnen von Grafiken
-        this.spriteBatch = new SpriteBatch();
-
-        // Initialisiert den AssetManager zum Laden von Ressourcen
-        this.assetManager = new AssetManager();
-
-        // Richtet den TiledMapRenderer für die Spielkarten ein
-        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(null, UNIT_SCALE, this.spriteBatch);
-
-        // Erstellt die Box2D-Physikwelt mit Schwerkraft (0,0) und aktiviertem Sleep für
-        // Objekte
-        this.world = new World(new Vector2(0f, 0f), true);
-        // Erstellt und registriert den ContactListener für Kollisionsereignisse
-        this.worldContactListener = new WorldContactListener();
-        this.world.setContactListener(worldContactListener);
-
-        // Erstellt den Debug-Renderer für die Box2D-Physik
-        this.debugRenderer = new Box2DDebugRenderer();
-
-        // Konfiguriert Kamera und Viewport für die Bildschirmdarstellung
-        this.gameCamera = new OrthographicCamera();
-        // 16f 9f aspect ratio plus window size in logical units
-        this.viewport = new FitViewport(16f, 9f, gameCamera);
-        this.stage = new Stage(this.viewport);
-
-        // Initialisiert den InputManager für Benutzereingaben
-        this.inputManager = new InputManager();
-        // Erstellt die ECS-Engine für die Spiellogik
-        this.engine = new ECSEngine(this);
-
-        // Konfiguriert den InputProcessor mit einem Multiplexer für mehrere Quellen
-        Gdx.input.setInputProcessor(new InputMultiplexer(this.inputManager, this.stage));
-
-        // Initialisiert den ScreenManager
-        this.screenManager = new ScreenManager(this);
-
-        // Setzt den MainMenuScreen als ersten aktiven Bildschirm
-        this.screenManager.showScreen(ScreenType.MAIN_MENU);
-
-        this.mapManager = new MapManager(this);
-    }
-
-    /**
-     * Wird in jedem Frame aufgerufen, um das Spiel zu aktualisieren und zu rendern.
-     *
-     * <p>
-     * Diese Methode delegiert die Render-Aufgabe an den aktuell aktiven Screen
-     * (wie MainMenuScreen oder GameScreen), der dann seine eigene render-Methode
-     * ausführt.
-     * </p>
-     */
-    @Override
-    public void render() {
-        // Ruft die render-Methode der Elternklasse auf, was wiederum die
-        // render-Methode des aktuell aktiven Screens aufruft
-        super.render();
-    }
-
-    /**
-     * Wird aufgerufen, wenn das Spiel beendet wird, um alle Ressourcen freizugeben.
-     *
-     * <p>
-     * Diese Methode sorgt dafür, dass alle von diesem Spiel verwendeten Ressourcen
-     * ordnungsgemäß freigegeben werden, um Speicherlecks zu vermeiden.
-     * </p>
-     */
-    @Override
-    public void dispose() {
-        // TODO check all fields in class if there is more to dispose
-        spriteBatch.dispose();
-        world.dispose();
-        debugRenderer.dispose();
-        this.assetManager.dispose();
-        this.tiledMapRenderer.dispose();
-        this.tiledMapRenderer.dispose();
-        mapManager.dispose();
-    }
-
-    /**
-     * Wird aufgerufen, wenn die Fenstergröße geändert wird, um den Viewport
-     * anzupassen.
-     *
-     * <p>
-     * Diese Methode stellt sicher, dass das Spiel bei Änderungen der Fenstergröße
-     * korrekt dargestellt wird, indem der Viewport entsprechend aktualisiert wird.
-     * </p>
-     *
-     * @param width  Die neue Breite des Fensters in Pixeln
-     * @param height Die neue Höhe des Fensters in Pixeln
-     */
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-    }
+    private GameRenderer gameRenderer;
 
     /**
      * Setzt die Standardwerte für BodyDef und FixtureDef zurück.
@@ -405,107 +257,145 @@ public class StudentsQuest extends Game {
     }
 
     /**
-     * Gibt die ECS-Engine zurück, die für die Verwaltung von Spielentitäten und
-     * -systemen zuständig ist.
+     * Wird einmalig beim Start des Spiels aufgerufen und initialisiert alle
+     * notwendigen Komponenten.
      *
-     * @return Die ECSEngine-Instanz dieses Spiels
+     * <p>
+     * Diese Methode richtet die grundlegende Spielinfrastruktur ein:
+     * <ul>
+     * <li>Erstellt den SpriteBatch zum Zeichnen von Grafiken</li>
+     * <li>Initialisiert den AssetManager zum Laden von Ressourcen</li>
+     * <li>Richtet den TiledMapRenderer für die Spielkarten ein</li>
+     * <li>Erstellt die Box2D-Physikwelt und den ContactListener</li>
+     * <li>Konfiguriert Kamera und Viewport für die Bildschirmdarstellung</li>
+     * <li>Initialisiert den InputManager für Benutzereingaben</li>
+     * <li>Erstellt die ECS-Engine für die Spiellogik</li>
+     * <li>Setzt den MainMenuScreen als ersten aktiven Bildschirm</li>
+     * </ul>
+     * </p>
      */
+    @Override
+    public void create() {
+        // Erstellt den SpriteBatch zum Zeichnen von Grafiken
+        this.spriteBatch = new SpriteBatch();
+
+        // Initialisiert den AssetManager zum Laden von Ressourcen
+        this.assetManager = new AssetManager();
+
+        // Erstellt die Box2D-Physikwelt mit Schwerkraft (0,0) und aktiviertem Sleep für
+        // Objekte
+        this.world = new World(new Vector2(0f, 0f), true);
+        // Erstellt und registriert den ContactListener für Kollisionsereignisse
+        this.worldContactListener = new WorldContactListener();
+        this.world.setContactListener(worldContactListener);
+
+        // Konfiguriert Kamera und Viewport für die Bildschirmdarstellung
+        this.gameCamera = new OrthographicCamera();
+        // 16f 9f aspect ratio plus window size in logical units
+        this.viewport = new FitViewport(16f, 9f, gameCamera);
+        this.stage = new Stage(this.viewport);
+
+        // Initialisiert den InputManager für Benutzereingaben
+        this.inputManager = new InputManager();
+        // Erstellt die ECS-Engine für die Spiellogik
+        this.engine = new ECSEngine(this);
+
+        // Konfiguriert den InputProcessor mit einem Multiplexer für mehrere Quellen
+        Gdx.input.setInputProcessor(new InputMultiplexer(this.inputManager, this.stage));
+
+        // Initialisiert den ScreenManager
+        this.screenManager = new ScreenManager(this);
+
+        // Setzt den MainMenuScreen als ersten aktiven Bildschirm
+        this.screenManager.showScreen(ScreenType.MAIN_MENU);
+
+        this.gameRenderer = new GameRenderer(this);
+
+        this.mapManager = new MapManager(this);
+
+        // Box2D Physik-Engine initialisieren
+        Box2D.init();
+    }
+
+    /**
+     * Wird in jedem Frame aufgerufen, um das Spiel zu aktualisieren und zu rendern.
+     *
+     * <p>
+     * Diese Methode delegiert die Render-Aufgabe an den aktuell aktiven Screen
+     * (wie MainMenuScreen oder GameScreen), der dann seine eigene render-Methode
+     * ausführt.
+     * </p>
+     */
+    //TODO deltaTime, Accumulator, alphaValue und Stage world und engine hier vielleicht
+    @Override
+    public void render() {
+        // Ruft die render-Methode der Elternklasse auf, was wiederum die
+        // render-Methode des aktuell aktiven Screens aufruft
+        super.render();
+    }
+
+    /**
+     * Wird aufgerufen, wenn das Spiel beendet wird, um alle Ressourcen freizugeben.
+     *
+     * <p>
+     * Diese Methode sorgt dafür, dass alle von diesem Spiel verwendeten Ressourcen
+     * ordnungsgemäß freigegeben werden, um Speicherlecks zu vermeiden.
+     * </p>
+     */
+    //TODO recherche wann und wie dispose aufgerufen wird. Uebrlegungen anstellen ueber dispose in allen unseren Disposbles
+    @Override
+    public void dispose() {
+        this.spriteBatch.dispose();
+        this.world.dispose();
+        this.assetManager.dispose();
+        this.mapManager.dispose();
+        this.gameRenderer.dispose();
+        this.screenManager.dispose();
+        this.stage.dispose();
+        this.screen.dispose();
+    }
+
+    /**
+     * Wird aufgerufen, wenn die Fenstergröße geändert wird, um den Viewport
+     * anzupassen.
+     *
+     * <p>
+     * Diese Methode stellt sicher, dass das Spiel bei Änderungen der Fenstergröße
+     * korrekt dargestellt wird, indem der Viewport entsprechend aktualisiert wird.
+     * </p>
+     *
+     * @param width  Die neue Breite des Fensters in Pixeln
+     * @param height Die neue Höhe des Fensters in Pixeln
+     */
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
+
     public ECSEngine getEngine() {
         return engine;
     }
 
-    /**
-     * Gibt die Box2D-Physikwelt zurück, in der alle Kollisionen und Bewegungen
-     * simuliert werden.
-     *
-     * @return Die World-Instanz dieses Spiels
-     */
     public World getWorld() {
         return this.world;
     }
 
-    /**
-     * Gibt den AssetManager zurück, der für das Laden und Verwalten von
-     * Spiel-Assets zuständig ist.
-     *
-     * @return Die AssetManager-Instanz dieses Spiels
-     */
     public AssetManager getAssetManager() {
         return this.assetManager;
     }
 
-    /**
-     * Gibt den Debug-Renderer für die Box2D-Physik zurück.
-     *
-     * @return Die Box2DDebugRenderer-Instanz dieses Spiels
-     */
-    public Box2DDebugRenderer getDebugRenderer() {
-        return this.debugRenderer;
-    }
-
-    /**
-     * Gibt die Spielkamera zurück, die den sichtbaren Bereich der Spielwelt
-     * bestimmt.
-     *
-     * @return Die OrthographicCamera-Instanz dieses Spiels
-     */
     public OrthographicCamera getGameCamera() {
         return this.gameCamera;
     }
 
-    /**
-     * Gibt den InputManager zurück, der für die Verarbeitung von Benutzereingaben
-     * zuständig ist.
-     *
-     * @return Die InputManager-Instanz dieses Spiels
-     */
     public InputManager getInputManager() {
         return this.inputManager;
     }
 
-    /**
-     * Gibt den SpriteBatch zurück, der zum Zeichnen von 2D-Grafiken verwendet wird.
-     *
-     * @return Die SpriteBatch-Instanz dieses Spiels
-     */
     public SpriteBatch getSpriteBatch() {
         return this.spriteBatch;
     }
 
-    /**
-     * Gibt den Renderer für Tiled-Karten zurück, der die Spielwelt darstellt.
-     *
-     * @return Die OrthogonalTiledMapRenderer-Instanz dieses Spiels
-     */
-    public OrthogonalTiledMapRenderer getTiledMapRenderer() {
-        return tiledMapRenderer;
-    }
-
-    /**
-     * Gibt die aktuelle Spielkarte zurück, die die Spielwelt repräsentiert.
-     *
-     * @return Die GameMap-Instanz dieses Spiels
-     */
-    public GameMap getMap() {
-        return this.map;
-    }
-
-    /**
-     * Setzt eine neue Spielkarte als die aktuelle Karte.
-     *
-     * @param map Die neue GameMap-Instanz, die als aktuelle Karte gesetzt werden
-     *            soll
-     */
-    public void setMap(GameMap map) {
-        this.map = map;
-    }
-
-    /**
-     * Gibt den ScreenManager zurück, der für die Verwaltung der verschiedenen
-     * Spielbildschirme zuständig ist.
-     *
-     * @return Die ScreenManager-Instanz dieses Spiels
-     */
     public ScreenManager getScreenManager() {
         return this.screenManager;
     }
@@ -514,11 +404,9 @@ public class StudentsQuest extends Game {
         return mapManager;
     }
 
-    /*
-     * public static final short BIT_CIRCLE = 1 << 0;
-     * public static final short BIT_BOX = 1 << 1;
-     * public static final short BIT_GROUND = 1 << 2;
-     */
+    public GameRenderer getGameRenderer() {
+        return this.gameRenderer;
+    }
 
     /**
      * physics example for circle falling onto a plattform

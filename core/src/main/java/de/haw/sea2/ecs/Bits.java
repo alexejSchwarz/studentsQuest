@@ -2,7 +2,7 @@ package de.haw.sea2.ecs;
 
 /**
  * Definiert Bit-Masken für die Box2D-Kollisionsfilterung.
- * 
+ *
  * <p>
  * In der Box2D-Physik-Engine werden Bit-Masken verwendet, um zu bestimmen,
  * welche
@@ -12,7 +12,7 @@ package de.haw.sea2.ecs;
  * Kategorien
  * interagieren (definiert durch maskBits).
  * </p>
- * 
+ *
  * <p>
  * Die Bit-Masken werden durch Bitoperationen erstellt, wobei jede Kategorie ein
  * eigenes
@@ -20,10 +20,10 @@ package de.haw.sea2.ecs;
  * können
  * bis zu 16 verschiedene Kollisionskategorien definiert werden.
  * </p>
- * 
+ *
  * <p>
  * Beispiel für die Verwendung:
- * 
+ *
  * <pre>
  * // Definiere ein Spielerobjekt
  * fixtureDef.filter.categoryBits = Bits.BIT_PLAYER.value;
@@ -44,7 +44,10 @@ public enum Bits {
      * Bit-Maske für Wand-Objekte.
      * Entspricht binär 0010 (dezimal 2).
      */
-    BIT_WALL(1 << 1);
+    BIT_WALL(1 << 1),
+
+    //TODO tmp
+    BIT_BALL(1 << 2);
 
     /**
      * Der numerische Wert dieser Bit-Maske als short.

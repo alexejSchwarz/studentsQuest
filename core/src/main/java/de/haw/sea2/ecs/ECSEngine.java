@@ -5,21 +5,23 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
+import de.haw.sea2.ecs.systems.AnimationSystem;
+import de.haw.sea2.ecs.systems.PlayerAnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerCameraSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
-import de.haw.sea2.map.CollisionArea;
+import de.haw.sea2.view.AnimationType;
 
 /**
  * Die zentrale Engine des Entity-Component-Systems (ECS) für das Spiel.
- * 
+ *
  * <p>
  * Diese Klasse verwaltet alle Spielentitäten (wie Spieler und Wände) und ihre
  * Komponenten.
@@ -27,7 +29,7 @@ import de.haw.sea2.map.CollisionArea;
  * Speicher
  * zu sparen und die Leistung zu verbessern.
  * </p>
- * 
+ *
  * <p>
  * Ein Entity-Component-System ist ein Architekturmuster, das Spielobjekte
  * (Entities)
@@ -37,7 +39,7 @@ import de.haw.sea2.map.CollisionArea;
  * die
  * die Komponenten verarbeiten.
  * </p>
- * 
+ *
  * <p>
  * Diese Engine ist verantwortlich für:
  * <ul>
@@ -51,7 +53,7 @@ public class ECSEngine extends PooledEngine {
 
     /**
      * ComponentMapper für schnellen Zugriff auf PlayerComponent-Objekte.
-     * 
+     *
      * <p>
      * Ein ComponentMapper ist wie ein Schlüssel, der sehr schnell eine bestimmte
      * Komponente aus einer Entity holen kann - viel schneller als die normale
@@ -59,23 +61,24 @@ public class ECSEngine extends PooledEngine {
      * Das ist wichtig für Spiele, die flüssig laufen sollen.
      * </p>
      */
-    public static final ComponentMapper<PlayerComponent> PLAYER_COMP_MAPPER = ComponentMapper
-            .getFor(PlayerComponent.class);
+    public static final ComponentMapper<PlayerComponent> PLAYER_COMP_MAPPER = ComponentMapper.getFor(PlayerComponent.class);
 
     /**
      * ComponentMapper für schnellen Zugriff auf Box2DComponent-Objekte.
-     * 
+     *
      * <p>
      * Diese Komponenten enthalten alle physikalischen Eigenschaften einer Entity,
      * wie Position, Körperform und Kollisionsinformationen.
      * </p>
      */
-    public static final ComponentMapper<Box2DComponent> BOX2D_COMP_MAPPER = ComponentMapper
-            .getFor(Box2DComponent.class);
+    public static final ComponentMapper<Box2DComponent> BOX2D_COMP_MAPPER = ComponentMapper.getFor(Box2DComponent.class);
+
+
+    public static final ComponentMapper<AnimationComponent> ANIMATION_COMP_MAPPER = ComponentMapper.getFor(AnimationComponent.class);
 
     /**
      * Die Box2D-Welt, in der die Physik-Simulation stattfindet.
-     * 
+     *
      * <p>
      * Box2D ist eine Physik-Engine, die Bewegungen, Kollisionen und andere
      * physikalische Effekte simuliert. Alle beweglichen oder kollidierenden Objekte
@@ -86,7 +89,7 @@ public class ECSEngine extends PooledEngine {
 
     /**
      * Erstellt eine neue ECS-Engine für das Spiel.
-     * 
+     *
      * <p>
      * Der Konstruktor richtet die Engine ein und fügt die benötigten Systeme hinzu,
      * die für die Spiellogik verantwortlich sind.
@@ -101,11 +104,13 @@ public class ECSEngine extends PooledEngine {
         this.world = context.getWorld();
         this.addSystem(new PlayerMovementSystem(context));
         this.addSystem(new PlayerCameraSystem(context));
+        this.addSystem(new AnimationSystem(context));
+        this.addSystem(new PlayerAnimationSystem());
     }
 
     /**
      * Erstellt einen Spielercharakter in der Spielwelt.
-     * 
+     *
      * <p>
      * Diese Methode:
      * <ul>
@@ -148,10 +153,12 @@ public class ECSEngine extends PooledEngine {
         b2dComp.body.setUserData("PLAYER"); // Markiert den Körper als Spieler
         b2dComp.width = width;
         b2dComp.height = height;
+        b2dComp.interpolatedRenderPosition.set(b2dComp.body.getPosition());
 
         // Setze die Kollisionsfilter (Spieler kollidiert nur mit Wänden)
         StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_PLAYER.value;
-        StudentsQuest.FIXTURE_DEF.filter.maskBits = Bits.BIT_WALL.value;
+        //TODO tmp remove later
+        StudentsQuest.FIXTURE_DEF.filter.maskBits = (short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value);
 
         // Erstelle eine rechteckige Form für den Spieler
         final PolygonShape pShape = new PolygonShape();
@@ -164,61 +171,54 @@ public class ECSEngine extends PooledEngine {
 
         // Füge die Box2D-Komponente zur Entität hinzu und registriere sie in der Engine
         player.add(b2dComp);
+
+        //animation
+        final AnimationComponent animationComp = this.createComponent(AnimationComponent.class);
+        animationComp.animationType = AnimationType.HERO_MOVE_DOWN;
+        //TODO im moment 64*64 dummy texture. spaeter 32 * UnitScale und letztere anpassen
+        animationComp.width = 64 * StudentsQuest.UNIT_SCALE;
+        animationComp.height = 64 * StudentsQuest.UNIT_SCALE;
+        player.add(animationComp);
+
         this.addEntity(player);
     }
 
-    /**
-     * Erstellt Kollisionswände in der Spielwelt basierend auf den übergebenen
-     * Kollisionsbereichen.
-     * 
-     * <p>
-     * Diese Methode verarbeitet eine Liste von Kollisionsbereichen und erstellt für
-     * jeden
-     * eine statische Wand in der Physik-Welt. Diese Wände sind unbewegliche
-     * Objekte, mit
-     * denen der Spieler und andere Entitäten kollidieren können.
-     * </p>
-     *
-     * @param collisionAreas Eine Liste von Kollisionsbereichen, die die Form und
-     *                       Position der Wände definieren
-     */
+    //TODO tmp remove later
+    public void createBall() {
+        Entity ball = this.createEntity();
 
-    // TODO check if done here
-    public void createCollisionWalls(Array<CollisionArea> collisionAreas) {
-        // Für jeden Kollisionsbereich in der Liste
-        collisionAreas.forEach(collisionArea -> {
-            // Erstelle eine neue Wand-Entität
-            Entity wall = this.createEntity();
+        StudentsQuest.resetBodieAndFixtureDefinition();
+        final Box2DComponent b2dComp = this.createComponent(Box2DComponent.class);
 
-            // Setze die physikalischen Eigenschaften zurück und erstelle eine
-            // Box2D-Komponente
-            StudentsQuest.resetBodieAndFixtureDefinition();
-            final Box2DComponent b2dComp = this.createComponent(Box2DComponent.class);
+        // Konfiguriere die Position und Art des physikalischen Körpers
+        StudentsQuest.BODY_DEF.position.set(2f, 2f);
+        StudentsQuest.BODY_DEF.fixedRotation = true; // Verhindert Rotation des Spielers
+        StudentsQuest.BODY_DEF.type = BodyDef.BodyType.DynamicBody; // Beweglicher Körper
 
-            // Setze die Position der Wand
-            StudentsQuest.BODY_DEF.position.set(collisionArea.getX(), collisionArea.getY());
-            StudentsQuest.BODY_DEF.type = BodyDef.BodyType.StaticBody; // Unbeweglicher Körper
+        // Erstelle den physikalischen Körper in der Welt
+        b2dComp.body = this.world.createBody(StudentsQuest.BODY_DEF);
+        b2dComp.body.setUserData("BALL"); // Markiert den Körper als Spieler
+        b2dComp.width = 1f;
+        b2dComp.height = 1f;
+        b2dComp.interpolatedRenderPosition.set(b2dComp.body.getPosition());
 
-            // Erstelle den physikalischen Körper in der Welt
-            b2dComp.body = this.world.createBody(StudentsQuest.BODY_DEF);
-            b2dComp.body.setUserData("WALL"); // Markiert den Körper als Wand
+        StudentsQuest.FIXTURE_DEF.restitution = 0.5f;
+        StudentsQuest.FIXTURE_DEF.friction = 0.2f;
 
-            // Setze die Kollisionsfilter (Wände kollidieren mit allem)
-            StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_WALL.value;
-            StudentsQuest.FIXTURE_DEF.filter.maskBits = -1; // TODO "collides with everything" put into the enum
+        StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_BALL.value;
+        StudentsQuest.FIXTURE_DEF.filter.maskBits = (short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value);
 
-            // Erstelle eine Kettenform für die Wand aus den Punkten im Kollisionsbereich
-            final ChainShape cShape = new ChainShape();
-            cShape.createChain(collisionArea.getVertices());
+        // Erstelle eine rechteckige Form für den Spieler
+        final CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(0.5f);
+        StudentsQuest.FIXTURE_DEF.shape = circleShape;
 
-            // Füge die Form dem Körper hinzu
-            StudentsQuest.FIXTURE_DEF.shape = cShape;
-            b2dComp.body.createFixture(StudentsQuest.FIXTURE_DEF);
-            cShape.dispose(); // Wichtig: Ressourcen freigeben
+        // Füge die Form dem Körper hinzu
+        b2dComp.body.createFixture(StudentsQuest.FIXTURE_DEF);
+        circleShape.dispose(); // Wichtig: Ressourcen freigeben
 
-            // Füge die Box2D-Komponente zur Entität hinzu und registriere sie in der Engine
-            wall.add(b2dComp);
-            this.addEntity(wall);
-        });
+        // Füge die Box2D-Komponente zur Entität hinzu und registriere sie in der Engine
+        ball.add(b2dComp);
+        this.addEntity(ball);
     }
 }
