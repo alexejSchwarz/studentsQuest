@@ -130,6 +130,7 @@ public class GameScreen implements Screen, KeyInputListener {
         this.accumulator += deltaTime;
         while (this.accumulator >= StudentsQuest.FIXED_TIME_STEP) {
 
+            // remembers the previous position for later interpolation
             for (Entity entity : this.engine.getEntitiesFor(Family.all(Box2DComponent.class).get())) {
                 Box2DComponent b2dComp = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
                 b2dComp.previousX = b2dComp.body.getPosition().x;

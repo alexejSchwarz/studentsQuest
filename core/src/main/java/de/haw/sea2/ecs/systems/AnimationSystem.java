@@ -18,6 +18,7 @@ public class AnimationSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         final AnimationComponent animationComp = ECSEngine.ANIMATION_COMP_MAPPER.get(entity);
         if (animationComp != null) {
+            // used to proceed to next frame of the animation
             animationComp.animationTime += deltaTime;
         }
     }

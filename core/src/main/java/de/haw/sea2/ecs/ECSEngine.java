@@ -13,11 +13,12 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
+import de.haw.sea2.ecs.components.SimpleRenderComponent;
 import de.haw.sea2.ecs.systems.AnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerAnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerCameraSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
-import de.haw.sea2.view.AnimationType;
+import de.haw.sea2.view.animations.PlayerAnimation;
 
 /**
  * Die zentrale Engine des Entity-Component-Systems (ECS) für das Spiel.
@@ -75,6 +76,8 @@ public class ECSEngine extends PooledEngine {
 
 
     public static final ComponentMapper<AnimationComponent> ANIMATION_COMP_MAPPER = ComponentMapper.getFor(AnimationComponent.class);
+
+    public static final ComponentMapper<SimpleRenderComponent> SIMPLE_RENDER_COMPONENT_COMPONENT_MAPPER = ComponentMapper.getFor(SimpleRenderComponent.class);
 
     /**
      * Die Box2D-Welt, in der die Physik-Simulation stattfindet.
@@ -174,7 +177,7 @@ public class ECSEngine extends PooledEngine {
 
         //animation
         final AnimationComponent animationComp = this.createComponent(AnimationComponent.class);
-        animationComp.animationType = AnimationType.HERO_MOVE_DOWN;
+        animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
         //TODO im moment 64*64 dummy texture. spaeter 32 * UnitScale und letztere anpassen
         animationComp.width = 64 * StudentsQuest.UNIT_SCALE;
         animationComp.height = 64 * StudentsQuest.UNIT_SCALE;
@@ -219,6 +222,14 @@ public class ECSEngine extends PooledEngine {
 
         // Füge die Box2D-Komponente zur Entität hinzu und registriere sie in der Engine
         ball.add(b2dComp);
+
+        SimpleRenderComponent simpleRenderComp = this.createComponent(SimpleRenderComponent.class);
+        simpleRenderComp.textureFilePath = "assetsFromTut/Ball.png";
+        simpleRenderComp.width = 1f;
+        simpleRenderComp.height = 1f;
+
+        ball.add(simpleRenderComp);
+
         this.addEntity(ball);
     }
 }

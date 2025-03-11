@@ -73,7 +73,6 @@ public class LoadingScreen implements Screen {
 
         // Optional: Weitere Assets hier laden
         // z.B. Sound-Effekte, Musik, UI-Elemente
-        //TODO tmp remove later
         //TODO use atlas for entities, items etc
         context.getAssetManager().load("assetsFromTut/Ball.png", Texture.class);
     }

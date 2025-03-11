@@ -5,12 +5,11 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 
-import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
-import de.haw.sea2.view.AnimationType;
+import de.haw.sea2.view.animations.PlayerAnimation;
 
 public class PlayerAnimationSystem extends IteratingSystem {
 
@@ -27,16 +26,16 @@ public class PlayerAnimationSystem extends IteratingSystem {
             animationComp.animationTime = 0;
         } else if (box2DComponent.body.getLinearVelocity().x > 0) {
             // player moves to the right
-            animationComp.animationType = AnimationType.HERO_MOVE_RIGHT;
+            animationComp.animationType = PlayerAnimation.HERO_MOVE_RIGHT.animationType;
         } else if (box2DComponent.body.getLinearVelocity().x < 0) {
             // player moves to the left
-            animationComp.animationType = AnimationType.HERO_MOVE_LEFT;
+            animationComp.animationType = PlayerAnimation.HERO_MOVE_LEFT.animationType;
         } else if (box2DComponent.body.getLinearVelocity().y > 0) {
             // player moves up
-            animationComp.animationType = AnimationType.HERO_MOVE_UP;
+            animationComp.animationType = PlayerAnimation.HERO_MOVE_UP.animationType;
         } else if (box2DComponent.body.getLinearVelocity().y < 0) {
             // player moves down
-            animationComp.animationType = AnimationType.HERO_MOVE_DOWN;
+            animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
         }
     }
 }
