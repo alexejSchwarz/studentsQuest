@@ -1,6 +1,7 @@
 package de.haw.sea2.ecs.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Pool;
 
@@ -12,13 +13,13 @@ import com.badlogic.gdx.utils.Pool;
  * physikalische Simulationen wie Kollisionen, Bewegungen mit Trägheit und
  * physikbasierte
  * Interaktionen zwischen Entitäten.
- * 
+ *
  * <p>
  * Die Komponente enthält einen Box2D-Body, der die physikalischen Eigenschaften
  * repräsentiert,
  * sowie Informationen über die Breite und Höhe der physikalischen Form.
  * </p>
- * 
+ *
  * <p>
  * Als {@link Pool.Poolable} implementiert diese Komponente Object-Pooling,
  * was die Speicherverwaltung effizienter gestaltet, indem Objekte
@@ -48,8 +49,16 @@ public class Box2DComponent implements Component, Pool.Poolable {
     public float height;
 
     /**
+     * incorporates the alpha value for smoother rendering
+     */
+    public Vector2 interpolatedRenderPosition = new Vector2();
+
+    public float previousX;
+    public float previousY;
+
+    /**
      * Setzt die Komponente auf ihren Standardzustand zurück.
-     * 
+     *
      * <p>
      * Diese Methode wird aufgerufen, wenn die Komponente in den Pool zurückgegeben
      * wird.
@@ -58,7 +67,7 @@ public class Box2DComponent implements Component, Pool.Poolable {
      * und Memory-Management-Probleme zu verhindern. Außerdem werden die Dimensionen
      * zurückgesetzt.
      * </p>
-     * 
+     *
      * <p>
      * Es ist wichtig, dass diese Methode aufgerufen wird, bevor eine Komponente
      * wiederverwendet wird,
@@ -72,6 +81,9 @@ public class Box2DComponent implements Component, Pool.Poolable {
             // removes body from Box2DWorld
             this.body.getWorld().destroyBody(this.body);
             this.body = null;
+            this.interpolatedRenderPosition.set(0f, 0f);
+            this.previousX = 0f;
+            this.previousY = 0f;
         }
 
         this.width = 0f;

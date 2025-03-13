@@ -1,11 +1,14 @@
 package de.haw.sea2.screen;
 
+import java.util.Objects;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -48,14 +51,8 @@ public class LoadingScreen implements Screen {
     }
 
     private void initializeAssetLoading() {
-        switch (targetScreenType) {
-            case GAME:
-                loadGameScreenAssets();
-                break;
-            case MAIN_MENU:
-                break;
-            default:
-                break;
+        if (Objects.requireNonNull(targetScreenType) == ScreenType.GAME) {
+            loadGameScreenAssets();
         }
     }
 
@@ -65,21 +62,19 @@ public class LoadingScreen implements Screen {
     private void loadGameScreenAssets() {
         //TODO Konstanten für Asset-Pfade  in eine AssetPaths-Klasse aulagern
         final String MAP_PATH = "mapMitObj.tmx";
-        final String PLAYER_TEXTURE_PATH = "tmpGuy.png";
-
-        // Box2D Physik-Engine initialisieren
-        Box2D.init();
 
         // Karte über den MapManager laden
         context.getMapManager().loadMap(MAP_PATH);
 
-        // Spielertextur laden
+        // SpielerAtlas laden
         context.getAssetManager().setLoader(Texture.class,
                 new TextureLoader(context.getAssetManager().getFileHandleResolver()));
-        context.getAssetManager().load(PLAYER_TEXTURE_PATH, Texture.class);
+        context.getAssetManager().load("assetsFromTut/character_and_effect.atlas", TextureAtlas.class);
 
         // Optional: Weitere Assets hier laden
         // z.B. Sound-Effekte, Musik, UI-Elemente
+        //TODO use atlas for entities, items etc
+        context.getAssetManager().load("assetsFromTut/Ball.png", Texture.class);
     }
 
     /**

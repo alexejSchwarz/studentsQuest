@@ -26,10 +26,6 @@ import de.haw.sea2.input.KeyInputListener;
 public class PlayerMovementSystem extends IteratingSystem implements KeyInputListener {
 
     /**
-     * Flag, das anzeigt, ob eine Richtungsänderung erfolgt ist.
-     */
-    private boolean directionChange;
-    /**
      * Horizontaler Richtungsfaktor (-1 für links, 1 für rechts, 0 für keine
      * Bewegung).
      */
@@ -50,7 +46,6 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
     public PlayerMovementSystem(final StudentsQuest context) {
         super(Family.all(PlayerComponent.class, Box2DComponent.class).get());
         context.getInputManager().addKeyInputListener(this);
-        this.directionChange = false;
         this.xFactor = this.yFactor = 0;
     }
 
@@ -69,25 +64,20 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
      */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if (this.directionChange) {
-            // Zugriff auf die Komponenten einer Entität mittels schneller Mappers.
-            final PlayerComponent playerComp = ECSEngine.PLAYER_COMP_MAPPER.get(entity);
-            final Box2DComponent box2DComp = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
+        // Zugriff auf die Komponenten einer Entität mittels schneller Mappers.
+        final PlayerComponent playerComp = ECSEngine.PLAYER_COMP_MAPPER.get(entity);
+        final Box2DComponent box2DComp = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
 
-            // Zurücksetzen des Richtungsänderungs-Flags
-            this.directionChange = false;
-
-            // Anwenden eines linearen Impulses, um die Bewegung entsprechend zu
-            // aktualisieren.
-            box2DComp.body.applyLinearImpulse(
-                    (this.xFactor * playerComp.speed.x - box2DComp.body.getLinearVelocity().x)
-                            * box2DComp.body.getMass(),
-                    (this.yFactor * playerComp.speed.y - box2DComp.body.getLinearVelocity().y)
-                            * box2DComp.body.getMass(),
-                    box2DComp.body.getWorldCenter().x,
-                    box2DComp.body.getWorldCenter().y,
-                    true);
-        }
+        // Anwenden eines linearen Impulses, um die Bewegung entsprechend zu
+        // aktualisieren.
+        box2DComp.body.applyLinearImpulse(
+            (this.xFactor * playerComp.speed.x - box2DComp.body.getLinearVelocity().x)
+                * box2DComp.body.getMass(),
+            (this.yFactor * playerComp.speed.y - box2DComp.body.getLinearVelocity().y)
+                * box2DComp.body.getMass(),
+            box2DComp.body.getWorldCenter().x,
+            box2DComp.body.getWorldCenter().y,
+            true);
     }
 
     /**
@@ -102,22 +92,18 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
     public void keyDown(InputManager manager, GameKey key) {
         switch (key) {
             case LEFT: {
-                this.directionChange = true;
                 this.xFactor = -1;
                 break;
             }
             case RIGHT: {
-                this.directionChange = true;
                 this.xFactor = 1;
                 break;
             }
             case UP: {
-                this.directionChange = true;
                 this.yFactor = 1;
                 break;
             }
             case DOWN: {
-                this.directionChange = true;
                 this.yFactor = -1;
                 break;
             }
@@ -141,22 +127,18 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
     public void keyUp(InputManager manager, GameKey key) {
         switch (key) {
             case LEFT: {
-                this.directionChange = true;
                 this.xFactor = manager.isKeyDown(GameKey.RIGHT) ? 1 : 0;
                 break;
             }
             case RIGHT: {
-                this.directionChange = true;
                 this.xFactor = manager.isKeyDown(GameKey.LEFT) ? -1 : 0;
                 break;
             }
             case UP: {
-                this.directionChange = true;
                 this.yFactor = manager.isKeyDown(GameKey.DOWN) ? -1 : 0;
                 break;
             }
             case DOWN: {
-                this.directionChange = true;
                 this.yFactor = manager.isKeyDown(GameKey.UP) ? 1 : 0;
                 break;
             }
