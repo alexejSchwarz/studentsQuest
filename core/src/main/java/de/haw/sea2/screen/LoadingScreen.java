@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.paths.MapPaths;
 
 /**
  * Screen zum Anzeigen eines Ladebildschirms während Asset-Ladevorgängen.
@@ -60,11 +61,9 @@ public class LoadingScreen implements Screen {
      * Lädt die spezifischen Assets für den GameScreen.
      */
     private void loadGameScreenAssets() {
-        //TODO Konstanten für Asset-Pfade  in eine AssetPaths-Klasse aulagern
-        final String MAP_PATH = "mapMitObj.tmx";
 
         // Karte über den MapManager laden
-        context.getMapManager().loadMap(MAP_PATH);
+        context.getMapManager().loadMap(MapPaths.MAINMAP.getPath());
 
         // SpielerAtlas laden
         context.getAssetManager().setLoader(Texture.class,

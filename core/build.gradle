@@ -21,4 +21,10 @@ dependencies {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
   }
+
+  compileJava {
+    options.compilerArgs += ["-Xlint:-deprecation"]
+  }
+
+
 }
