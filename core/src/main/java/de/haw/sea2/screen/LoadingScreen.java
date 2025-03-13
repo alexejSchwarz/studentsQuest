@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.physics.box2d.Box2D;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.paths.MapPaths;
 

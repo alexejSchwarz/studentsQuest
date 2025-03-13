@@ -10,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.debug.DebugConfig;
+import de.haw.sea2.debug.GameScreenDebugRenderer;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
@@ -57,18 +59,15 @@ public class GameScreen implements Screen, KeyInputListener {
      */
     private final StudentsQuest context;
 
-    /**
-     * Erstellt einen neuen GameScreen mit dem angegebenen Spiel-Kontext.
-     *
-     */
-
     private final ECSEngine engine;
 
     private float accumulator;
 
     private final GameRenderer gameRenderer;
 
-    private World world;
+    private final World world;
+
+    private GameScreenDebugRenderer debugRenderer;
 
     public GameScreen(StudentsQuest context) {
         this.context = context;
@@ -93,6 +92,12 @@ public class GameScreen implements Screen, KeyInputListener {
         PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
         if (!this.context.getInputManager().getKeyInputListeners().contains(playerMovementSystem, true)) {
             this.context.getInputManager().addKeyInputListener(playerMovementSystem);
+        }
+
+        // Debug-Renderer erstellen und registrieren
+        if (DebugConfig.DEBUG_ENABLED) {
+            debugRenderer = new GameScreenDebugRenderer(context);
+            context.getDebugSystem().addRenderer(debugRenderer);
         }
 
     }
@@ -219,6 +224,10 @@ public class GameScreen implements Screen, KeyInputListener {
         // Stelle sicher, dass das der KeyInputListener vom PlayerMovementSystem nicht
         // mehr aktiv ist
         this.context.getInputManager().removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
+        // Debug-Renderer entfernen
+        if (DebugConfig.DEBUG_ENABLED && debugRenderer != null) {
+            context.getDebugSystem().removeRenderer(debugRenderer);
+        }
     }
 
     @Override

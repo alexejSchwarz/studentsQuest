@@ -119,7 +119,8 @@ public class ScreenManager {
             case PAUSE:
                 return new PauseGameScreen(game);
 
-                //TODO hier mal schauen, ob das nicht spaeter createScreenWithLoading gepackt werden kann
+            // TODO hier mal schauen, ob das nicht spaeter createScreenWithLoading gepackt
+            // werden kann
             case LOADING:
                 return new LoadingScreen(game, ScreenType.MAIN_MENU);
             default:

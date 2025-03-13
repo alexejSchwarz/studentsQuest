@@ -1,7 +1,5 @@
 package de.haw.sea2.map;
 
-import java.rmi.dgc.DGC;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;

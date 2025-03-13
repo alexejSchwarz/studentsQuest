@@ -17,6 +17,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
+import de.haw.sea2.debug.DebugConfig;
+import de.haw.sea2.debug.DebugSystem;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;
@@ -49,9 +51,6 @@ import de.haw.sea2.view.GameRenderer;
  * </p>
  */
 public class StudentsQuest extends Game {
-
-    // debug renderer to be used?
-    public static final boolean DEBUG = true;
 
     /**
      * Der Skalierungsfaktor für die Umrechnung von Pixeln zu Physik-Welteinheiten.
@@ -233,6 +232,8 @@ public class StudentsQuest extends Game {
 
     private GameRenderer gameRenderer;
 
+    private DebugSystem debugSystem;
+
     /**
      * Setzt die Standardwerte für BodyDef und FixtureDef zurück.
      *
@@ -316,14 +317,17 @@ public class StudentsQuest extends Game {
 
         this.mapManager = new MapManager(this);
 
+        // Debug-System initialisieren
+        this.debugSystem = new DebugSystem();
+
         // Box2D Physik-Engine initialisieren
         Box2D.init();
 
-        //Loglevel setzen -> Es werden Debuggingnachrichten angezeigt
+        // Loglevel setzen -> Es werden Debuggingnachrichten angezeigt
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
-        //Log: Erfolgreich geladen
-        LoggerUtil.log(LogCategory.DEBUG,this,"Alle Ressourcen erfolgreich geladen");
+        // Log: Erfolgreich geladen
+        LoggerUtil.log(LogCategory.DEBUG, this, "Alle Ressourcen erfolgreich geladen");
     }
 
     /**
@@ -335,12 +339,25 @@ public class StudentsQuest extends Game {
      * ausführt.
      * </p>
      */
-    //TODO deltaTime, Accumulator, alphaValue und Stage world und engine hier vielleicht
+    // TODO deltaTime, Accumulator, alphaValue und Stage world und engine hier
+    // vielleicht
     @Override
     public void render() {
+        // Debugausgabe hinzufügen um zu sehen, ob diese Methode aufgerufen wird
+        LoggerUtil.log(LogCategory.DEBUG, this, "render() wird aufgerufen");
+
         // Ruft die render-Methode der Elternklasse auf, was wiederum die
         // render-Methode des aktuell aktiven Screens aufruft
         super.render();
+
+        // Explizit einen eigenen SpriteBatch für Debug-Rendering verwenden
+        // In render()
+        if (debugSystem != null && DebugConfig.DEBUG_ENABLED) {
+            debugSystem.update(Gdx.graphics.getDeltaTime());
+            spriteBatch.begin();
+            debugSystem.render(spriteBatch);
+            spriteBatch.end();
+        }
     }
 
     /**
@@ -351,9 +368,11 @@ public class StudentsQuest extends Game {
      * ordnungsgemäß freigegeben werden, um Speicherlecks zu vermeiden.
      * </p>
      */
-    //TODO recherche wann und wie dispose aufgerufen wird. Uebrlegungen anstellen ueber dispose in allen unseren Disposbles
+    // TODO recherche wann und wie dispose aufgerufen wird. Uebrlegungen anstellen
+    // ueber dispose in allen unseren Disposbles
     @Override
     public void dispose() {
+        this.stage.dispose();
         this.spriteBatch.dispose();
         this.world.dispose();
         this.assetManager.dispose();
@@ -362,6 +381,11 @@ public class StudentsQuest extends Game {
         this.screenManager.dispose();
         this.stage.dispose();
         this.screen.dispose();
+
+        // Debug-System freigeben
+        if (debugSystem != null) {
+            debugSystem.dispose();
+        }
     }
 
     /**
@@ -415,6 +439,10 @@ public class StudentsQuest extends Game {
 
     public GameRenderer getGameRenderer() {
         return this.gameRenderer;
+    }
+
+    public DebugSystem getDebugSystem() {
+        return debugSystem;
     }
 
     /**

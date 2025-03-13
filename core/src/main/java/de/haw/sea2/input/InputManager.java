@@ -1,13 +1,12 @@
 package de.haw.sea2.input;
 
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Array;
 
 /**
  * Verwaltet die Spieleingaben und leitet sie an die entsprechenden Zuhörer
  * (Listeners) weiter.
- * 
+ *
  * <p>
  * Diese Klasse bildet die Brücke zwischen den tatsächlichen Tastaturereignissen
  * des
@@ -16,7 +15,7 @@ import com.badlogic.gdx.utils.Array;
  * Interface, um direkt Tastatureingaben zu empfangen und wandelt diese in
  * GameKey-Ereignisse um.
  * </p>
- * 
+ *
  * <p>
  * Sie verwendet das Observer-Pattern: Klassen, die auf Tasteneingaben reagieren
  * möchten,
@@ -28,7 +27,7 @@ public class InputManager implements InputProcessor {
     /**
      * Eine Zuordnungstabelle (Mapping), die jedem Tastencode eine GameKey-Aktion
      * zuweist.
-     * 
+     *
      * <p>
      * Der Index des Arrays entspricht dem Tastencode (z.B. 51 für 'W'),
      * der Wert an dieser Stelle ist die zugehörige GameKey-Enum-Konstante (z.B.
@@ -40,7 +39,7 @@ public class InputManager implements InputProcessor {
     /**
      * Speichert den aktuellen Zustand jeder GameKey-Aktion (gedrückt oder nicht
      * gedrückt).
-     * 
+     *
      * <p>
      * Der Index entspricht der Position der GameKey-Konstante in der
      * Enum-Definition
@@ -58,14 +57,14 @@ public class InputManager implements InputProcessor {
 
     /**
      * Erstellt einen neuen InputManager.
-     * 
+     *
      * <p>
      * Der Konstruktor initialisiert die Zuordnungstabelle für Tastencodes zu
      * GameKey-Aktionen.
      * Für jede GameKey-Konstante werden alle zugehörigen Tastencodes in der
      * keyMapping-Tabelle eingetragen.
      * </p>
-     * 
+     *
      * <p>
      * Beispiel: Wenn UP sowohl der W-Taste (Code 51) als auch der
      * Pfeil-nach-oben-Taste (Code 19)
@@ -97,7 +96,7 @@ public class InputManager implements InputProcessor {
     /**
      * Registriert einen neuen KeyInputListener, der über Tastenereignisse
      * informiert werden soll.
-     * 
+     *
      * <p>
      * Objekte, die das KeyInputListener-Interface implementieren, können sich
      * hiermit anmelden,
@@ -114,7 +113,7 @@ public class InputManager implements InputProcessor {
     /**
      * Entfernt einen registrierten KeyInputListener aus der Liste der zu
      * benachrichtigenden Objekte.
-     * 
+     *
      * <p>
      * Dies ist wichtig, um Speicherlecks zu vermeiden, wenn ein Objekt nicht mehr
      * verwendet wird.
@@ -133,7 +132,7 @@ public class InputManager implements InputProcessor {
 
     /**
      * Benachrichtigt alle registrierten Zuhörer, dass eine Taste gedrückt wurde.
-     * 
+     *
      * <p>
      * Diese Methode aktualisiert den Zustand der Taste auf "gedrückt" und
      * informiert dann alle registrierten KeyInputListener über das Ereignis.
@@ -153,7 +152,7 @@ public class InputManager implements InputProcessor {
 
     /**
      * Benachrichtigt alle registrierten Zuhörer, dass eine Taste losgelassen wurde.
-     * 
+     *
      * <p>
      * Diese Methode aktualisiert den Zustand der Taste auf "nicht gedrückt" und
      * informiert dann alle registrierten KeyInputListener über das Ereignis.
@@ -173,7 +172,7 @@ public class InputManager implements InputProcessor {
 
     /**
      * Prüft, ob eine bestimmte GameKey-Taste aktuell gedrückt ist.
-     * 
+     *
      * <p>
      * Diese Methode wird beispielsweise im PlayerMovementSystem verwendet,
      * um zu prüfen, ob beim Loslassen einer Taste eine andere Richtungstaste noch
@@ -189,7 +188,7 @@ public class InputManager implements InputProcessor {
 
     /**
      * Wird aufgerufen, wenn eine physische Taste gedrückt wird.
-     * 
+     *
      * <p>
      * Diese Methode ist Teil des InputProcessor-Interfaces und wird automatisch
      * aufgerufen, wenn der Benutzer eine Taste drückt. Sie wandelt den Tastencode
@@ -217,7 +216,7 @@ public class InputManager implements InputProcessor {
 
     /**
      * Wird aufgerufen, wenn eine physische Taste losgelassen wird.
-     * 
+     *
      * <p>
      * Diese Methode ist Teil des InputProcessor-Interfaces und wird automatisch
      * aufgerufen, wenn der Benutzer eine Taste loslässt. Sie wandelt den Tastencode
