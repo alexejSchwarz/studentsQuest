@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import de.haw.sea2.Debug.LogCategory;
-import de.haw.sea2.Debug.LoggerUtil;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 
 /**

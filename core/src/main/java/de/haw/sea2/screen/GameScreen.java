@@ -7,8 +7,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
-import de.haw.sea2.Debug.LogCategory;
-import de.haw.sea2.Debug.LoggerUtil;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
@@ -60,8 +60,6 @@ public class GameScreen implements Screen, KeyInputListener {
     /**
      * Erstellt einen neuen GameScreen mit dem angegebenen Spiel-Kontext.
      *
-     * @param context Der StudentsQuest-Kontext, der Zugriff auf zentrale
-     *                Ressourcen und Systeme bietet
      */
 
     private final ECSEngine engine;

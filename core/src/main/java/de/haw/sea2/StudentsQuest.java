@@ -13,11 +13,10 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import de.haw.sea2.Debug.LogCategory;
-import de.haw.sea2.Debug.LoggerUtil;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;

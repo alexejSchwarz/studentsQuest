@@ -5,7 +5,7 @@ public enum MapPaths {
     MAINMAP("mainMap.tmx"),
     MAP2("map2.tmx");
 
-    public final String path;
+    private final String path;
 
     MapPaths(String path) {
         this.path = path;
