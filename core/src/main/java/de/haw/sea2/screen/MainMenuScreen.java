@@ -7,11 +7,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 
 /**
  * Der Startbildschirm des Spiels mit dem Hauptmenü.
- * 
+ *
  * <p>
  * Diese Klasse implementiert das libGDX Screen-Interface und stellt einen
  * einfachen
@@ -19,7 +21,7 @@ import de.haw.sea2.StudentsQuest;
  * wartet,
  * um das eigentliche Spiel zu starten.
  * </p>
- * 
+ *
  * <p>
  * Das Hauptmenü ist absichtlich einfach gehalten und zeigt nur den Titel
  * "StudentQuest" und eine Aufforderung, eine beliebige Taste zu drücken.
@@ -32,7 +34,7 @@ public class MainMenuScreen implements Screen {
     /**
      * Der Hauptkontext des Spiels, der Zugriff auf zentrale Ressourcen und Systeme
      * bietet.
-     * 
+     *
      * <p>
      * Über dieses Objekt hat der MainMenuScreen Zugriff auf wichtige Komponenten
      * wie:
@@ -48,7 +50,7 @@ public class MainMenuScreen implements Screen {
     // TODO placeholder apply custom font at some point
     /**
      * Die Schriftart für die Anzeige von Text im Hauptmenü.
-     * 
+     *
      * <p>
      * Aktuell wird die Standardschrift von libGDX verwendet. In Zukunft soll
      * hier eine benutzerdefinierte Schriftart verwendet werden, wie im TODO
@@ -70,7 +72,7 @@ public class MainMenuScreen implements Screen {
 
     /**
      * Wird aufgerufen, wenn dieser Screen der aktive Screen wird.
-     * 
+     *
      * <p>
      * Diese Methode konfiguriert die Schriftart für die Anzeige:
      * <ul>
@@ -93,7 +95,7 @@ public class MainMenuScreen implements Screen {
     /**
      * Wird in jedem Frame aufgerufen, um das Hauptmenü zu aktualisieren und
      * darzustellen.
-     * 
+     *
      * <p>
      * Diese Methode:
      * <ul>
@@ -131,7 +133,7 @@ public class MainMenuScreen implements Screen {
 
     /**
      * Wird aufgerufen, wenn die Größe des Fensters geändert wird.
-     * 
+     *
      * <p>
      * Aktualisiert den Viewport, damit die Grafiken korrekt skaliert werden.
      * Der Parameter true bewirkt, dass die Kamera an der Position zentriert wird.
@@ -148,7 +150,7 @@ public class MainMenuScreen implements Screen {
     /**
      * Wird aufgerufen, wenn das Spiel pausiert wird (z.B. wenn die App in den
      * Hintergrund wechselt).
-     * 
+     *
      * <p>
      * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
      * um Ressourcen freizugeben oder den Menüzustand zu speichern.
@@ -161,7 +163,7 @@ public class MainMenuScreen implements Screen {
 
     /**
      * Wird aufgerufen, wenn das Spiel fortgesetzt wird (z.B. nach einer Pause).
-     * 
+     *
      * <p>
      * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
      * um Ressourcen neu zu laden oder den Menüzustand wiederherzustellen.
@@ -174,7 +176,7 @@ public class MainMenuScreen implements Screen {
 
     /**
      * Wird aufgerufen, wenn dieser Screen nicht mehr der aktive Screen ist.
-     * 
+     *
      * <p>
      * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
      * um temporäre Ressourcen freizugeben.
@@ -182,13 +184,12 @@ public class MainMenuScreen implements Screen {
      */
     @Override
     public void hide() {
-        // Nur Logging, KEINE Ressourcenfreigabe
-        System.out.println("MainMenuScreen hidden");
+        LoggerUtil.log(LogCategory.DEBUG,this,"MainMenuScreen hidden");
     }
 
     /**
      * Wird aufgerufen, wenn dieser Screen zerstört wird.
-     * 
+     *
      * <p>
      * Gibt alle Ressourcen frei, die explizit für diesen Screen geladen wurden.
      * In diesem Fall die BitmapFont, um Speicherlecks zu vermeiden.

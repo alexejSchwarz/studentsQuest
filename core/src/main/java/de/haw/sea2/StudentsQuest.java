@@ -1,5 +1,6 @@
 package de.haw.sea2;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -14,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;
@@ -315,6 +318,12 @@ public class StudentsQuest extends Game {
 
         // Box2D Physik-Engine initialisieren
         Box2D.init();
+
+        //Loglevel setzen -> Es werden Debuggingnachrichten angezeigt
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
+
+        //Log: Erfolgreich geladen
+        LoggerUtil.log(LogCategory.DEBUG,this,"Alle Ressourcen erfolgreich geladen");
     }
 
     /**

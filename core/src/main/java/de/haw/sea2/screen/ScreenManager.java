@@ -56,7 +56,6 @@ public class ScreenManager {
      * Zeigt einen Screen des angegebenen Typs an.
      *
      * @param screenType Der Typ des anzuzeigenden Screens
-     * @param params     Optionale Parameter für die Screen-Erstellung
      */
     public void showScreen(ScreenType screenType) {
         // Speichert den aktuellen Screen als vorherigen Screen
@@ -109,7 +108,6 @@ public class ScreenManager {
      * Erstellt einen neuen Screen des angegebenen Typs.
      *
      * @param screenType Der Typ des zu erstellenden Screens
-     * @param params     Optionale Parameter für die Screen-Erstellung
      * @return Der erstellte Screen
      */
     private Screen createScreen(ScreenType screenType) {
@@ -146,7 +144,6 @@ public class ScreenManager {
      * nicht existiert.
      *
      * @param screenType Der Typ des Screens
-     * @param params     Optionale Parameter für die Screen-Erstellung
      * @return Der vorhandene oder neu erstellte Screen
      */
     private Screen getOrCreateScreen(ScreenType screenType) {

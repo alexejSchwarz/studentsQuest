@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
@@ -22,9 +24,6 @@ import de.haw.sea2.input.KeyInputListener;
  * Pause-Screen, der angezeigt wird, wenn das Spiel pausiert wird.
  */
 public class PauseGameScreen implements Screen, KeyInputListener {
-
-    // Nur für Entwicklung - auf false setzen für Release
-    private static final boolean DEBUG_UI = false;
 
     private final StudentsQuest context;
     private final Stage stage;
@@ -86,8 +85,6 @@ public class PauseGameScreen implements Screen, KeyInputListener {
             }
         });
 
-        // Debug-Modus für UI-Entwicklung
-        table.setDebug(DEBUG_UI);
 
         // Layout aufbauen mit besser zentrierten Elementen
         table.center();
@@ -113,10 +110,8 @@ public class PauseGameScreen implements Screen, KeyInputListener {
         context.viewport.apply();
         stage.getBatch().setProjectionMatrix(context.viewport.getCamera().combined);
 
-        // Nur im Debug-Modus loggen
-        if (DEBUG_UI) {
-            System.out.println("PauseGameScreen rendering: " + stage.getActors().size + " actors on stage");
-        }
+        LoggerUtil.log(LogCategory.DEBUG,this,"PauseGameScreen rendering: " + stage.getActors().size + " actors on stage");
+
 
         stage.act(delta);
         stage.draw();

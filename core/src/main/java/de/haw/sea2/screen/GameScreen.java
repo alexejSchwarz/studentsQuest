@@ -7,6 +7,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
@@ -14,6 +16,7 @@ import de.haw.sea2.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.paths.MapPaths;
 import de.haw.sea2.view.GameRenderer;
 
 /**
@@ -57,8 +60,6 @@ public class GameScreen implements Screen, KeyInputListener {
     /**
      * Erstellt einen neuen GameScreen mit dem angegebenen Spiel-Kontext.
      *
-     * @param context Der StudentsQuest-Kontext, der Zugriff auf zentrale
-     *                Ressourcen und Systeme bietet
      */
 
     private final ECSEngine engine;
@@ -99,16 +100,15 @@ public class GameScreen implements Screen, KeyInputListener {
     private void initialize() {
         //Erstellung von Spieler soll hier passieren und nicht im show(), da sonst Duplikate entstehen
 
-        //TODO Refactor me
-        final String MAP_PATH = "mapMitObj.tmx";
 
         // Map aktivieren (nicht mehr laden!)
-        this.context.getMapManager().activateMap(MAP_PATH);
+        this.context.getMapManager().activateMap(MapPaths.MAINMAP.getPath());
 
         //TODO auslagern?
         // Erstellt den Spielercharakter an Position (3.5, 3.5) mit Größe 0.5x0.5 Einheiten
         // Die Position ist relativ zur Box2D-Welt und nicht zu Pixeln auf dem
         // Bildschirm
+
         this.engine.createPlayer(new Vector2(3.5f, 3.5f), 0.5f, 0.5f);
         this.engine.createBall();
 
@@ -180,7 +180,7 @@ public class GameScreen implements Screen, KeyInputListener {
      */
     @Override
     public void pause() {
-        System.out.println("GameScreen.pause() wurde aufgerufen!");
+        LoggerUtil.log(LogCategory.DEBUG,this,"GameScreen.pause() wurde aufgerufen!");
     }
 
     /**
@@ -193,7 +193,8 @@ public class GameScreen implements Screen, KeyInputListener {
      */
     @Override
     public void resume() {
-        System.out.println("GameScreen.resume() wurde aufgerufen!");
+        LoggerUtil.log(LogCategory.DEBUG,this,"GameScreen.resume() wurde aufgerufen!");
+
 
         // Stelle sicher, dass das PlayerMovementSystem ein KeyInputListener ist
         PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
