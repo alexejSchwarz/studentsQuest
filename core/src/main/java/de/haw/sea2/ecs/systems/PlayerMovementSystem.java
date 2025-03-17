@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
+import com.badlogic.gdx.math.Vector2;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
@@ -64,21 +65,35 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
      */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        // Zugriff auf die Komponenten einer Entität mittels schneller Mappers.
-        final PlayerComponent playerComp = ECSEngine.PLAYER_COMP_MAPPER.get(entity);
-        final Box2DComponent box2DComp = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
+        // Zugriff auf die Komponenten der Entität mittels schneller Mappers
+        final PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(entity);
+        final Box2DComponent physicsBox2dComponent = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
 
-        // Anwenden eines linearen Impulses, um die Bewegung entsprechend zu
-        // aktualisieren.
-        box2DComp.body.applyLinearImpulse(
-            (this.xFactor * playerComp.speed.x - box2DComp.body.getLinearVelocity().x)
-                * box2DComp.body.getMass(),
-            (this.yFactor * playerComp.speed.y - box2DComp.body.getLinearVelocity().y)
-                * box2DComp.body.getMass(),
-            box2DComp.body.getWorldCenter().x,
-            box2DComp.body.getWorldCenter().y,
-            true);
+        // Erstellen eines Richtungsvektors basierend auf den Eingabefaktoren
+        Vector2 movementDirection = new Vector2(this.xFactor, this.yFactor);
+
+        // Falls sich das Objekt diagonal bewegt, wird die Richtung normalisiert
+        if (movementDirection.x != 0 && movementDirection.y != 0) {
+            movementDirection.nor();  // Normalisiert den Vektor auf Länge 1
+        }
+
+        // Berechnung des Impulses unter Berücksichtigung der aktuellen Geschwindigkeit
+        float impulseX = movementDirection.x * playerComponent.speed.x
+            - physicsBox2dComponent.body.getLinearVelocity().x * physicsBox2dComponent.body.getMass();
+
+        float impulseY = movementDirection.y * playerComponent.speed.y
+            - physicsBox2dComponent.body.getLinearVelocity().y * physicsBox2dComponent.body.getMass();
+
+        // Anwenden des Impulses auf den Körper für physikalische Bewegung
+        physicsBox2dComponent.body.applyLinearImpulse(
+            impulseX,
+            impulseY,
+            physicsBox2dComponent.body.getWorldCenter().x,
+            physicsBox2dComponent.body.getWorldCenter().y,
+            true
+        );
     }
+
 
     /**
      * Verarbeitet Tastendruck-Ereignisse.
