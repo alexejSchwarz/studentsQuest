@@ -80,17 +80,6 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<SimpleRenderComponent> SIMPLE_RENDER_COMPONENT_COMPONENT_MAPPER = ComponentMapper.getFor(SimpleRenderComponent.class);
 
     /**
-     * Die Box2D-Welt, in der die Physik-Simulation stattfindet.
-     *
-     * <p>
-     * Box2D ist eine Physik-Engine, die Bewegungen, Kollisionen und andere
-     * physikalische Effekte simuliert. Alle beweglichen oder kollidierenden Objekte
-     * müssen Teil dieser Welt sein.
-     * </p>
-     */
-    private final World world;
-
-    /**
      * Erstellt eine neue ECS-Engine für das Spiel.
      *
      * <p>
@@ -104,132 +93,9 @@ public class ECSEngine extends PooledEngine {
      */
     public ECSEngine(final StudentsQuest context) {
         super();
-        this.world = context.getWorld();
         this.addSystem(new PlayerMovementSystem(context));
         this.addSystem(new PlayerCameraSystem(context));
         this.addSystem(new AnimationSystem(context));
         this.addSystem(new PlayerAnimationSystem());
-    }
-
-    /**
-     * Erstellt einen Spielercharakter in der Spielwelt.
-     *
-     * <p>
-     * Diese Methode:
-     * <ul>
-     * <li>Erstellt eine neue Entität für den Spieler</li>
-     * <li>Fügt eine PlayerComponent hinzu, die spielerspezifische Daten
-     * enthält</li>
-     * <li>Fügt eine Box2DComponent hinzu, die den physikalischen Körper des
-     * Spielers definiert</li>
-     * <li>Konfiguriert die Kollisionsfilter, damit der Spieler nur mit Wänden
-     * kollidiert</li>
-     * <li>Definiert die Form des Spielers als Rechteck</li>
-     * </ul>
-     * </p>
-     *
-     * @param playerSpawnLocation Die Startposition des Spielers in der Welt
-     * @param width               Die Breite des Spielers in Spieleinheiten
-     * @param height              Die Höhe des Spielers in Spieleinheiten
-     */
-    public void createPlayer(final Vector2 playerSpawnLocation, final float width, final float height) {
-        // Erstelle eine neue Spieler-Entität
-        final Entity player = this.createEntity();
-
-        // Erstelle und konfiguriere die Spieler-Komponente mit Geschwindigkeit
-        final PlayerComponent playerComp = this.createComponent(PlayerComponent.class);
-        playerComp.speed.set(3f, 3f);
-        player.add(playerComp);
-
-        // Setze die physikalischen Eigenschaften zurück und erstelle eine
-        // Box2D-Komponente
-        StudentsQuest.resetBodieAndFixtureDefinition();
-        final Box2DComponent b2dComp = this.createComponent(Box2DComponent.class);
-
-        // Konfiguriere die Position und Art des physikalischen Körpers
-        StudentsQuest.BODY_DEF.position.set(playerSpawnLocation.x, playerSpawnLocation.y);
-        StudentsQuest.BODY_DEF.fixedRotation = true; // Verhindert Rotation des Spielers
-        StudentsQuest.BODY_DEF.type = BodyDef.BodyType.DynamicBody; // Beweglicher Körper
-
-        // Erstelle den physikalischen Körper in der Welt
-        b2dComp.body = this.world.createBody(StudentsQuest.BODY_DEF);
-        b2dComp.body.setUserData("PLAYER"); // Markiert den Körper als Spieler
-        b2dComp.width = width;
-        b2dComp.height = height;
-        b2dComp.interpolatedRenderPosition.set(b2dComp.body.getPosition());
-
-        // Setze die Kollisionsfilter (Spieler kollidiert nur mit Wänden)
-        StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_PLAYER.value;
-        //TODO tmp remove later
-        StudentsQuest.FIXTURE_DEF.filter.maskBits = (short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value);
-
-        // Erstelle eine rechteckige Form für den Spieler
-        final PolygonShape pShape = new PolygonShape();
-        pShape.setAsBox(width * 0.5f, height * 0.5f); // Hälfte der Breite/Höhe, da vom Zentrum gemessen
-        StudentsQuest.FIXTURE_DEF.shape = pShape;
-
-        // Füge die Form dem Körper hinzu
-        b2dComp.body.createFixture(StudentsQuest.FIXTURE_DEF);
-        pShape.dispose(); // Wichtig: Ressourcen freigeben
-
-        // Füge die Box2D-Komponente zur Entität hinzu und registriere sie in der Engine
-        player.add(b2dComp);
-
-        //animation
-        final AnimationComponent animationComp = this.createComponent(AnimationComponent.class);
-        animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
-        //TODO im moment 64*64 dummy texture. spaeter 32 * UnitScale und letztere anpassen
-        animationComp.width = 64 * StudentsQuest.UNIT_SCALE;
-        animationComp.height = 64 * StudentsQuest.UNIT_SCALE;
-        player.add(animationComp);
-
-        this.addEntity(player);
-    }
-
-    //TODO tmp remove later
-    public void createBall() {
-        Entity ball = this.createEntity();
-
-        StudentsQuest.resetBodieAndFixtureDefinition();
-        final Box2DComponent b2dComp = this.createComponent(Box2DComponent.class);
-
-        // Konfiguriere die Position und Art des physikalischen Körpers
-        StudentsQuest.BODY_DEF.position.set(2f, 2f);
-        StudentsQuest.BODY_DEF.fixedRotation = true; // Verhindert Rotation des Spielers
-        StudentsQuest.BODY_DEF.type = BodyDef.BodyType.DynamicBody; // Beweglicher Körper
-
-        // Erstelle den physikalischen Körper in der Welt
-        b2dComp.body = this.world.createBody(StudentsQuest.BODY_DEF);
-        b2dComp.body.setUserData("BALL"); // Markiert den Körper als Spieler
-        b2dComp.width = 1f;
-        b2dComp.height = 1f;
-        b2dComp.interpolatedRenderPosition.set(b2dComp.body.getPosition());
-
-        StudentsQuest.FIXTURE_DEF.restitution = 0.5f;
-        StudentsQuest.FIXTURE_DEF.friction = 0.2f;
-
-        StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_BALL.value;
-        StudentsQuest.FIXTURE_DEF.filter.maskBits = (short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value);
-
-        // Erstelle eine rechteckige Form für den Spieler
-        final CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(0.5f);
-        StudentsQuest.FIXTURE_DEF.shape = circleShape;
-
-        // Füge die Form dem Körper hinzu
-        b2dComp.body.createFixture(StudentsQuest.FIXTURE_DEF);
-        circleShape.dispose(); // Wichtig: Ressourcen freigeben
-
-        // Füge die Box2D-Komponente zur Entität hinzu und registriere sie in der Engine
-        ball.add(b2dComp);
-
-        SimpleRenderComponent simpleRenderComp = this.createComponent(SimpleRenderComponent.class);
-        simpleRenderComp.textureFilePath = "assetsFromTut/Ball.png";
-        simpleRenderComp.width = 1f;
-        simpleRenderComp.height = 1f;
-
-        ball.add(simpleRenderComp);
-
-        this.addEntity(ball);
     }
 }

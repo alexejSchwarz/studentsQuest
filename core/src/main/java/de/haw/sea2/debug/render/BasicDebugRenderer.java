@@ -1,9 +1,11 @@
-package de.haw.sea2.debug;
+package de.haw.sea2.debug.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import de.haw.sea2.debug.DebugConfig;
 
 /**
  * Standard-Renderer für grundlegende Debug-Informationen.

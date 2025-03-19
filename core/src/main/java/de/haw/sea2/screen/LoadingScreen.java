@@ -36,7 +36,7 @@ public class LoadingScreen implements Screen {
      * @param context          Der StudentsQuest-Kontext
      * @param targetScreenType Der Typ des Ziel-Screens
      */
-    public LoadingScreen(StudentsQuest context, ScreenType targetScreenType, Object targetScreenParams) {
+    public LoadingScreen(StudentsQuest context, ScreenType targetScreenType) {
         this.context = context;
         this.targetScreenType = targetScreenType;
         this.font = new BitmapFont();
@@ -73,16 +73,6 @@ public class LoadingScreen implements Screen {
         // z.B. Sound-Effekte, Musik, UI-Elemente
         //TODO use atlas for entities, items etc
         context.getAssetManager().load("assetsFromTut/Ball.png", Texture.class);
-    }
-
-    /**
-     * Erstellt einen neuen LoadingScreen mit dem angegebenen Ziel-Screen.
-     *
-     * @param context          Der StudentsQuest-Kontext
-     * @param targetScreenType Der Typ des Ziel-Screens
-     */
-    public LoadingScreen(StudentsQuest context, ScreenType targetScreenType) {
-        this(context, targetScreenType, null);
     }
 
     @Override

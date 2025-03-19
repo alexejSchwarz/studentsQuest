@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="13">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="16">
  <tileset firstgid="1" source="tileset.tsx"/>
  <layer id="1" name="Kachelebene 1" width="32" height="32">
   <data encoding="base64" compression="zlib">
@@ -11,5 +11,18 @@
   <object id="10" x="30.6667" y="992" width="992" height="29.3333"/>
   <object id="11" x="30.6667" y="0" width="993.333" height="32"/>
   <object id="12" x="990.667" y="30.6667" width="32" height="960"/>
+ </objectgroup>
+ <objectgroup id="5" name="entitySpawnPoints">
+  <object id="13" type="EntitySpawnPoint" x="47.9068" y="53.894">
+   <properties>
+    <property name="entityType" value="player"/>
+    <property name="hasSpawnProtection" type="bool" value="false"/>
+    <property name="id" type="int" value="0"/>
+    <property name="type" value="entitySpawnPoint"/>
+    <property name="x" type="float" value="47.91"/>
+    <property name="y" type="float" value="53.89"/>
+   </properties>
+   <point/>
+  </object>
  </objectgroup>
 </map>

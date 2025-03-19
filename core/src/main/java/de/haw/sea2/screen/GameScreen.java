@@ -11,7 +11,7 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
-import de.haw.sea2.debug.GameScreenDebugRenderer;
+import de.haw.sea2.debug.render.GameScreenDebugRenderer;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
@@ -110,12 +110,13 @@ public class GameScreen implements Screen, KeyInputListener {
         this.context.getMapManager().activateMap(MapPaths.MAINMAP.getPath());
 
         //TODO auslagern?
-        // Erstellt den Spielercharakter an Position (3.5, 3.5) mit Größe 0.5x0.5 Einheiten
         // Die Position ist relativ zur Box2D-Welt und nicht zu Pixeln auf dem
         // Bildschirm
 
-        this.engine.createPlayer(new Vector2(3.5f, 3.5f), 0.5f, 0.5f);
-        this.engine.createBall();
+        Vector2 playerSpawnPosition = this.context.getMapManager().getCurrentMap().getPlayerSpawnPoint();
+        LoggerUtil.log(LogCategory.DEBUG, this, "player to be created at: " + playerSpawnPosition);
+        this.context.getEntityFactory().createPlayer(playerSpawnPosition, 1f, 1f);
+        this.context.getEntityFactory().createBall();
 
         // Registriere diesen Screen als KeyInputListener
         this.context.getInputManager().addKeyInputListener(this);

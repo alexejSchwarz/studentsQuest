@@ -1,18 +1,30 @@
 package de.haw.sea2.map;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
+
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
+import de.haw.sea2.exceptions.CoordinatesOutOfBoundsException;
+import de.haw.sea2.map.mapObjectEnums.CustomMapObjectTypes;
+import de.haw.sea2.map.mapObjectEnums.MapEntityTypes;
+import de.haw.sea2.map.mapObjectEnums.MapLayers;
 
 /**
  * Verarbeitet und verwaltet die Spielkarte mit ihren Kollisionsbereichen.
@@ -37,11 +49,24 @@ import de.haw.sea2.debug.LoggerUtil;
  * <li>Polylinien (PolylineMapObject): Werden direkt als Linien übernommen</li>
  * </ul>
  */
+//TODO hier haben wir endlich einen geeigneten Kandidaten fuer Junit tests also Testklasse erstellen und zusammen mit Mockito testen!!! Evt auch mit extra TestMaps
 public class GameMap implements Disposable {
+
+    public static final Vector2 DEFAULT_PLAYERSPAWN_POINT = new Vector2(3.5f, 3.5f);
+
     /**
      * Die geladene Tiled-Karte, die alle Ebenen und Objekte enthält.
      */
     private final TiledMap tiledMap;
+
+    //fuers erste landen Item und Enemy locations hier
+    private final Array<EntitySpawnPoint> entitySpawnPoints;
+
+    private final Array<EntitySpawnPoint> entitySpawnPointsWithProtection;
+
+    private record EntitySpawnPoint(String type, String entityType, boolean hasSpawnProtection, Vector2 spawnPoint, int id) {}
+
+    private Vector2 playerSpawnPoint;
 
     /**
      * Liste aller aus der Karte extrahierten Kollisionsbereiche.
@@ -53,7 +78,84 @@ public class GameMap implements Disposable {
     public GameMap(final TiledMap tiledMap) {
         this.tiledMap = tiledMap;
         this.collisionAreas = new Array<>();
+        this.entitySpawnPoints = new Array<>();
+
+        //TODO wird in Zukunft gebraucht, um zu verhindern, dass Entitaeten direkt vor dem Spieler spawnen
+        // solange das noch nicht
+        this.entitySpawnPointsWithProtection = new Array<>();
         parseCollisionLayer();
+        parseEntitiySpawnPoints();
+    }
+
+    /**
+     * liest Spawnpunkte aus dem entitySpawnPoints layer herraus. wird benutzt fuer Items, Spieler und Enemies
+     */
+    private void parseEntitiySpawnPoints() {
+        MapLayer spawnLayer = getValidLayer(MapLayers.ENTITY_SPAWN_POINTS.value);
+        MapObjects mapObjects = getValidObjects(spawnLayer, MapLayers.ENTITY_SPAWN_POINTS.value);
+
+        if (mapObjects == null) {
+            //TODO do some Logging
+            return;
+        }
+
+        for (MapObject mapObject : mapObjects) {
+            MapProperties properties = mapObject.getProperties();
+
+            // properties des MapObjects laden, wenn nicht vorhanden wird geloggt und ein "standard Wert" gesetzt
+            String type = Optional.ofNullable(properties.get("type", String.class))
+                .orElseGet(() -> {
+                    LoggerUtil.log(LogCategory.DEBUG, this, "property: <type> not set");
+                    return "undefined";
+                });
+
+            String entityType = Optional.ofNullable(properties.get("entityType", String.class))
+                .orElseGet(() -> {
+                    LoggerUtil.log(LogCategory.DEBUG, this, "property: <entityType> not set");
+                    return "undefined";
+                });
+
+            boolean hasSpawnProtection = Optional.ofNullable(properties.get("hasSpawnProtection", Boolean.class))
+                .orElseGet(() -> {
+                    LoggerUtil.log(LogCategory.DEBUG, this, "property: <hasSpawnProtection> not set, will use <false> as default");
+                    return false;
+                });
+
+            int id = Optional.ofNullable(properties.get("id", Integer.class))
+                .orElseGet(() -> {
+                    LoggerUtil.log(LogCategory.DEBUG, this, "property: <id> not set, will use <-1> as default");
+                    return -1;
+                });
+
+            // ist kein entityPawnPoint oder hat keine definierte entityType -> gehe zum naechsten mapObject
+            if (!type.equals(CustomMapObjectTypes.ENTITY_SPAWN_POINT.value)
+                || Arrays.stream(MapEntityTypes.values())
+                    .map(elem -> elem.value)
+                    .noneMatch(val -> val.equals(entityType)))
+            {
+                LoggerUtil.log(LogCategory.DEBUG, this, "property <type> is: " + type
+                    + "\n" + "property <entityType> is: " + entityType
+                    + "\n" + "expected <type> is: " + CustomMapObjectTypes.ENTITY_SPAWN_POINT.value
+                    + "\n" + "allowed <entityType> is: "  + MapEntityTypes.PLAYER.value + " or " + MapEntityTypes.ITEM + " or " + MapEntityTypes.ENEMY
+                );
+                continue;
+            }
+
+            try {
+                Vector2 spawnCoordinates = parseEntitySpawnCoordinates(properties);
+                EntitySpawnPoint entitySpawnPoint = new EntitySpawnPoint(type, entityType, hasSpawnProtection, spawnCoordinates, id);
+                if (entitySpawnPoint.entityType.equals(MapEntityTypes.PLAYER.value)) {
+                    this.playerSpawnPoint = entitySpawnPoint.spawnPoint();
+                } else if (entitySpawnPoint.hasSpawnProtection) {
+                    this.entitySpawnPointsWithProtection.add(entitySpawnPoint);
+                } else{
+                    this.entitySpawnPoints.add(entitySpawnPoint);
+                }
+            } catch (CoordinatesOutOfBoundsException e) {
+                LoggerUtil.log(LogCategory.DEBUG, this, e.getMessage());
+            }
+        }
+
     }
 
     /**
@@ -163,6 +265,58 @@ public class GameMap implements Disposable {
     }
 
     /**
+     * Hilfsmethode, um eine Layer aus der TiledMap zu extrahieren und auf
+     * Gültigkeit zu prüfen
+     *
+     * @param layerName Name der Ebene
+     * @return Die MapLayer oder null, wenn nicht vorhanden
+     */
+    private MapLayer getValidLayer(String layerName) {
+        final MapLayer layer = this.tiledMap.getLayers().get(layerName);
+        if (layer == null) {
+            LoggerUtil.log(LogCategory.DEBUG, this, "Es gibt keine " + layerName + "-Ebene!");
+        }
+        return layer;
+    }
+
+    /**
+     * Prüft, ob eine Ebene gültige Objekte enthält
+     *
+     * @param layer     Die zu prüfende Ebene
+     * @param layerName Name der Ebene für Fehlermeldungen
+     * @return Die MapObjects oder null, wenn keine vorhanden
+     */
+    private MapObjects getValidObjects(MapLayer layer, String layerName) {
+        if (layer == null)
+            return null;
+
+        final MapObjects mapObjects = layer.getObjects();
+        if (mapObjects == null || mapObjects.getCount() == 0) {
+            LoggerUtil.log(LogCategory.DEBUG, this, "Es gibt keine Objekte in der " + layerName + "-Ebene!");
+            return null;
+        }
+        return mapObjects;
+    }
+
+    /**
+     * Liesst Property Werte zu x und y aus Tiled-editor und gibt korrekten Vector fuer SpawnPosition wirft CoordinatesOutOfBoundsException
+     * wenn koordinaten nicht gesetzt sind oder die Werte ausserhalb der jeweiligen Karte ligen.
+     * @param properties aus Tiled MapObjekt
+     * @return Vector mit skalierten und angepassten (x, y)
+     * @throws CoordinatesOutOfBoundsException //TODO out of bounds check und aussagekraeftige Nachricht
+     */
+    private Vector2 parseEntitySpawnCoordinates(MapProperties properties) throws CoordinatesOutOfBoundsException{
+        Float xInPixel = properties.get("x", Float.class);
+        Float yInPixel = properties.get("y", Float.class);
+        if (xInPixel == null || yInPixel == null) {
+            throw new CoordinatesOutOfBoundsException();
+        }
+        // im editor ist der (0,0) Punkt oben Links
+        float heightInTiles = this.tiledMap.getProperties().get("height", Integer.class);
+        return ConversionUtils.converFromPixilToLogicPointWithTransformedY(xInPixel, yInPixel, heightInTiles);
+    }
+
+    /**
      * Gibt die Liste aller extrahierten Kollisionsbereiche zurück.
      *
      * <p>
@@ -174,7 +328,7 @@ public class GameMap implements Disposable {
      * </p>
      *
      * @return Eine Liste von CollisionArea-Objekten mit den Kollisionsbereichen der
-     *         Karte
+     * Karte
      */
     public Array<CollisionArea> getCollisionAreas() {
         return this.collisionAreas;
@@ -187,6 +341,10 @@ public class GameMap implements Disposable {
      */
     public TiledMap getTiledMap() {
         return this.tiledMap;
+    }
+
+    public Vector2 getPlayerSpawnPoint() {
+        return this.playerSpawnPoint;
     }
 
     @Override

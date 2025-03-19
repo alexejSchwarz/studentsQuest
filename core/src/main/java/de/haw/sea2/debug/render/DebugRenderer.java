@@ -1,4 +1,4 @@
-package de.haw.sea2.debug;
+package de.haw.sea2.debug.render;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public interface DebugRenderer {
     /**
      * Rendert Debug-Informationen.
-     * 
+     *
      * @param batch Der SpriteBatch zum Zeichnen
      * @param font  Die Font zum Zeichnen von Text
      * @param x     Die X-Position, an der gezeichnet werden soll

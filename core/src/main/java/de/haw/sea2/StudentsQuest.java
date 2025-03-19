@@ -1,5 +1,6 @@
 package de.haw.sea2;
 
+import com.artemis.EntityManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -20,6 +21,7 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
 import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.ecs.EntityFactory;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
@@ -63,7 +65,8 @@ public class StudentsQuest extends Game {
      * dargestellt.
      * </p>
      */
-    public static final float UNIT_SCALE = 1 / 64f; // TODO ich denke dass muss dann 1/32f sein, wenn wir 32x32 Grafiken
+    public static final float UNIT_SCALE = 1 / 32f;
+    public static final float UNIT_SIZE_IN_PIXELS = 32f;
 
     // scalierung fuer Physics Engine
     public static final float FIXED_TIME_STEP = 1 / 60f;
@@ -149,7 +152,6 @@ public class StudentsQuest extends Game {
      * simuliert deren Interaktionen nach den Gesetzen der Physik.
      * </p>
      */
-    // TODO pass instance to all screens
     private World world;
 
     /**
@@ -222,6 +224,8 @@ public class StudentsQuest extends Game {
      * </p>
      */
     private ECSEngine engine;
+
+    private EntityFactory entityFactory;
 
     /**
      * Verwaltet alle Screens des Spiels und den Übergang zwischen ihnen.
@@ -303,6 +307,7 @@ public class StudentsQuest extends Game {
         this.inputManager = new InputManager();
         // Erstellt die ECS-Engine für die Spiellogik
         this.engine = new ECSEngine(this);
+        this.entityFactory = new EntityFactory(this);
 
         // Konfiguriert den InputProcessor mit einem Multiplexer für mehrere Quellen
         Gdx.input.setInputProcessor(new InputMultiplexer(this.inputManager, this.stage));
@@ -343,9 +348,6 @@ public class StudentsQuest extends Game {
     // vielleicht
     @Override
     public void render() {
-        // Debugausgabe hinzufügen um zu sehen, ob diese Methode aufgerufen wird
-        LoggerUtil.log(LogCategory.DEBUG, this, "render() wird aufgerufen");
-
         // Ruft die render-Methode der Elternklasse auf, was wiederum die
         // render-Methode des aktuell aktiven Screens aufruft
         super.render();
@@ -443,6 +445,10 @@ public class StudentsQuest extends Game {
 
     public DebugSystem getDebugSystem() {
         return debugSystem;
+    }
+
+    public EntityFactory getEntityFactory() {
+        return entityFactory;
     }
 
     /**
