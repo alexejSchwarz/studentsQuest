@@ -25,7 +25,7 @@ public class DebugSystem implements Disposable {
         if (!DebugConfig.DEBUG_ENABLED)
             return;
 
-        Gdx.app.log("DebugSystem", "Debug-System wird initialisiert");
+        LoggerUtil.log(LogCategory.DEBUG,this,"Debug-System wird initialisiert");
 
         this.font = new BitmapFont();
         this.font.setColor(DebugConfig.DEFAULT_COLOR);
@@ -35,7 +35,7 @@ public class DebugSystem implements Disposable {
 
         // Standardrenderer für allgemeine Debug-Infos hinzufügen
         this.renderers.add(new BasicDebugRenderer());
-        Gdx.app.log("DebugSystem", "Basic Debug Renderer hinzugefügt");
+        LoggerUtil.log(LogCategory.DEBUG,this,"Basic Debug Renderer hinzugefügt");
     }
 
     /**
@@ -87,7 +87,7 @@ public class DebugSystem implements Disposable {
         if (!DebugConfig.DEBUG_ENABLED)
             return;
 
-        Gdx.app.log("DebugSystem", "Debug-System rendering wird ausgeführt");
+        LoggerUtil.log(LogCategory.DEBUG,this,"Debug-System rendering wird ausgeführt");
 
         // Überprüfen ob der Batch bereits zeichnet
         boolean batchWasDrawing = batch.isDrawing();
@@ -138,7 +138,7 @@ public class DebugSystem implements Disposable {
             batch.begin();
         }
 
-        Gdx.app.log("DebugSystem", "Debug-Rendering abgeschlossen");
+        LoggerUtil.log(LogCategory.DEBUG,this,"Debug-Rendering abgeschlossen");
     }
 
     @Override

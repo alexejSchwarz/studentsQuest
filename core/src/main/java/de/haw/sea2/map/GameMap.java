@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 
 /**
  * Verarbeitet und verwaltet die Spielkarte mit ihren Kollisionsbereichen.
@@ -89,7 +91,7 @@ public class GameMap implements Disposable {
 
         // Überprüft, ob die Kollisionsebene existiert
         if (collisionLayer == null) {
-            Gdx.app.debug("TAG", "There is no collision layer!");
+            LoggerUtil.error(LogCategory.ERROR,this,"There is no collision layer!");
             return; // Methode wird abgebrochen, wenn keine Kollisionsebene vorhanden ist
         }
 
@@ -97,7 +99,7 @@ public class GameMap implements Disposable {
 
         // Überprüft, ob Objekte in der Kollisionsebene definiert sind
         if (mapObjects == null) {
-            Gdx.app.debug("TAG", "There are no collision MapObjects defined!");
+            LoggerUtil.error(LogCategory.ERROR,this,"There are no collision MapObjects defined!");
             return; // Methode wird abgebrochen, wenn keine Objekte vorhanden sind
         }
 
@@ -155,7 +157,7 @@ public class GameMap implements Disposable {
                 // Die Skalierung mit UNIT_SCALE findet im Konstruktor der CollisionArea statt
                 this.collisionAreas.add(new CollisionArea(polyline.getX(), polyline.getY(), polyline.getVertices()));
             } else {
-                Gdx.app.debug("TAG", "MoapObject of Type: " + mapObject + "is not supported!");
+                LoggerUtil.error(LogCategory.ERROR,this,"MoapObject of Type: " + mapObject + "is not supported!");
             }
         }
     }

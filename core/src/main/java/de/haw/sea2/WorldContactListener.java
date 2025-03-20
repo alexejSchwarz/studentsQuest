@@ -6,11 +6,13 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 
 /**
  * Überwacht und verarbeitet Kollisionsereignisse zwischen physikalischen
  * Objekten in der Spielwelt.
- * 
+ *
  * <p>
  * Diese Klasse implementiert das ContactListener-Interface von Box2D und wird
  * automatisch
@@ -18,7 +20,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
  * Kontakt kommen
  * oder sich wieder voneinander trennen.
  * </p>
- * 
+ *
  * <p>
  * Der WorldContactListener spielt eine entscheidende Rolle im Spiel, da er:
  * <ul>
@@ -38,7 +40,7 @@ public class WorldContactListener implements ContactListener {
     /**
      * Wird aufgerufen, wenn zwei Fixtures anfangen, miteinander in Kontakt zu
      * stehen.
-     * 
+     *
      * <p>
      * Diese Methode wird beim ersten Auftreten einer Kollision zwischen zwei
      * Objekten aufgerufen.
@@ -46,7 +48,7 @@ public class WorldContactListener implements ContactListener {
      * Gegenständen,
      * Auslösen von Schaltern oder Betreten von Zonen.
      * </p>
-     * 
+     *
      * <p>
      * In der aktuellen Implementierung werden die Informationen der kollidierenden
      * Fixtures
@@ -67,16 +69,16 @@ public class WorldContactListener implements ContactListener {
         // speichern
         // isSensor() gibt an, ob die Fixture nur als Sensor fungiert (keine
         // physikalische Reaktion)
-        Gdx.app.debug("CONTACT", fixtureA.getUserData() + " " + fixtureA.isSensor());
+        LoggerUtil.debug(LogCategory.DEBUG,this,fixtureA.getUserData() + " " + fixtureA.isSensor());
 
         // Gib Debug-Informationen über die zweite Fixture aus
-        Gdx.app.debug("CONTACT", fixtureB.getUserData() + " " + fixtureB.isSensor());
+        LoggerUtil.debug(LogCategory.DEBUG,this,fixtureB.getUserData() + " " + fixtureB.isSensor());
     }
 
     /**
      * Wird aufgerufen, wenn zwei Fixtures aufhören, miteinander in Kontakt zu
      * stehen.
-     * 
+     *
      * <p>
      * Diese Methode wird aufgerufen, wenn eine Kollision zwischen zwei Objekten
      * endet.
@@ -84,7 +86,7 @@ public class WorldContactListener implements ContactListener {
      * Bereichen oder
      * beim Loslassen von Objekten.
      * </p>
-     * 
+     *
      * <p>
      * In der aktuellen Implementierung werden die Informationen der kollidierenden
      * Fixtures
@@ -101,20 +103,20 @@ public class WorldContactListener implements ContactListener {
         Fixture fixtureB = contact.getFixtureB();
 
         // Gib Debug-Informationen über die Fixtures aus
-        Gdx.app.debug("CONTACT", fixtureA.getUserData() + " " + fixtureA.isSensor());
-        Gdx.app.debug("CONTACT", fixtureB.getUserData() + " " + fixtureB.isSensor());
+        LoggerUtil.debug(LogCategory.DEBUG,this,fixtureA.getUserData() + " " + fixtureA.isSensor());
+        LoggerUtil.debug(LogCategory.DEBUG,this,fixtureB.getUserData() + " " + fixtureB.isSensor());
     }
 
     /**
      * Wird aufgerufen, bevor die Kollision zwischen zwei Fixtures gelöst wird.
-     * 
+     *
      * <p>
      * Diese Methode ermöglicht es, die Art der Kollision zu modifizieren, bevor die
      * physikalische Reaktion berechnet wird. Hier könnten beispielsweise bestimmte
      * Kollisionen deaktiviert werden oder spezielle Physikeffekte implementiert
      * werden.
      * </p>
-     * 
+     *
      * <p>
      * In der aktuellen Implementierung wird keine spezielle Aktion ausgeführt.
      * </p>
@@ -134,7 +136,7 @@ public class WorldContactListener implements ContactListener {
 
     /**
      * Wird aufgerufen, nachdem die Kollision zwischen zwei Fixtures gelöst wurde.
-     * 
+     *
      * <p>
      * Diese Methode gibt Zugriff auf die Impulse, die durch die Kollision
      * entstanden sind.
@@ -144,7 +146,7 @@ public class WorldContactListener implements ContactListener {
      * unterschiedlicher
      * Lautstärke je nach Kollisionsstärke abzuspielen.
      * </p>
-     * 
+     *
      * <p>
      * In der aktuellen Implementierung wird keine spezielle Aktion ausgeführt.
      * </p>
