@@ -27,6 +27,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
@@ -175,7 +177,7 @@ public class GameRenderer implements Disposable, MapChangeListener {
             // if animationType
 
             // create Animation
-            Gdx.app.debug("TAG", "Creating new animation of type: " + animationType);
+            LoggerUtil.log(LogCategory.DEBUG,this, "Creating new animation of type: " + animationType);
             TextureAtlas.AtlasRegion atlasRegion = this.assetManager.get(animationType.atlasPath(), TextureAtlas.class)
                     .findRegion(animationType.atlasKey());
 

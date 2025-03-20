@@ -5,6 +5,8 @@ import java.util.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 
 /**
  * Zentrale Verwaltungskomponente für alle Screens im Spiel.
@@ -87,8 +89,7 @@ public class ScreenManager {
     public void returnToPreviousScreen() {
         if (previousScreen != null) {
             // Debug-Ausgabe
-            Gdx.app.debug("ScreenManager",
-                    "Kehre zurück zum vorherigen Screen: " + previousScreen.getClass().getSimpleName());
+            LoggerUtil.debug(LogCategory.DEBUG,this,"Kehre zurück zum vorherigen Screen: " + previousScreen.getClass().getSimpleName());
 
             // Setze den vorherigen Screen als aktuellen Screen
             game.setScreen(previousScreen);
@@ -100,7 +101,7 @@ public class ScreenManager {
                 currentScreen.resume();
             }
         } else {
-            Gdx.app.log("ScreenManager", "Kein vorheriger Screen vorhanden");
+            LoggerUtil.error(LogCategory.ERROR, this, "Kein vorheriger Screen vorhanden");
         }
     }
 
@@ -124,7 +125,7 @@ public class ScreenManager {
             case LOADING:
                 return new LoadingScreen(game, ScreenType.MAIN_MENU);
             default:
-                Gdx.app.error("ScreenManager", "Unbekannter ScreenType: " + screenType);
+                LoggerUtil.error(LogCategory.ERROR,this,"Unbekannter ScreenType: " + screenType);
                 return new MainMenuScreen(game); // Fallback
         }
     }

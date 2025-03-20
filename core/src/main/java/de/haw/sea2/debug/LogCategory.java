@@ -11,7 +11,9 @@ public enum LogCategory {
     GAME("Game"),
     PHYSICS("Physics"),
     UI("UI"),
-    DEBUG("Debug");
+    DEBUG("Debug"),
+    LOG("Log"),
+    ERROR("Error");
 
     private final String logCategory;
 
