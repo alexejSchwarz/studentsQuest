@@ -7,6 +7,9 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
+import de.haw.sea2.debug.render.BasicDebugRenderer;
+import de.haw.sea2.debug.render.DebugRenderer;
+
 /**
  * Zentrales System für das Rendern von Debug-Informationen.
  */
@@ -87,8 +90,6 @@ public class DebugSystem implements Disposable {
         if (!DebugConfig.DEBUG_ENABLED)
             return;
 
-        LoggerUtil.log(LogCategory.DEBUG,this,"Debug-System rendering wird ausgeführt");
-
         // Überprüfen ob der Batch bereits zeichnet
         boolean batchWasDrawing = batch.isDrawing();
 
@@ -138,7 +139,6 @@ public class DebugSystem implements Disposable {
             batch.begin();
         }
 
-        LoggerUtil.log(LogCategory.DEBUG,this,"Debug-Rendering abgeschlossen");
     }
 
     @Override

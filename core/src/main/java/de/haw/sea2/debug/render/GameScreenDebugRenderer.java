@@ -1,10 +1,11 @@
-package de.haw.sea2.debug;
+package de.haw.sea2.debug.render;
 
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import com.badlogic.gdx.graphics.Color;

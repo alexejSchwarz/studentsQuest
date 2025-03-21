@@ -182,6 +182,10 @@ public class MapManager implements Disposable {
         }
     }
 
+    public GameMap getCurrentMap() {
+        return this.currentMap;
+    }
+
     @Override
     public void dispose() {
         // Alle gecachten Maps freigeben
