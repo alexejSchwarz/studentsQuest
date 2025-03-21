@@ -10,7 +10,7 @@ public class ConversionUtils {
      * in logische Einheiten skaliert werden. Der Y-Wert wird auch angepasst, da bei uns in der Physik der Ursprung unten links ist
      * @return transformierten Vektor
      */
-    public static Vector2 converFromPixilToLogicPointWithTransformedY(float xInPixel, float yInPixel, float heightInTiles) {
+    public static Vector2 convertFromPixelToLogicPointWithTransformedY(float xInPixel, float yInPixel, float heightInTiles) {
         float x = xInPixel * StudentsQuest.UNIT_SCALE;
         float y = heightInTiles - yInPixel * StudentsQuest.UNIT_SCALE;
         return new Vector2(x, y);

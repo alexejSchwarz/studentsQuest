@@ -1,5 +1,8 @@
 package de.haw.sea2.map.mapObjectEnums;
 
+/**
+ * Enum fuer property "entityType" Werte. Wird im Moment fuer "type": "entitySpawnPoint" verwendet
+ */
 public enum MapEntityTypes {
 
     PLAYER("player"),

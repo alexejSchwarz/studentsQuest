@@ -3,7 +3,6 @@ package de.haw.sea2.map;
 import java.util.Arrays;
 import java.util.Optional;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -19,9 +18,7 @@ import com.badlogic.gdx.utils.Disposable;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 
-import de.haw.sea2.debug.LogCategory;
-import de.haw.sea2.debug.LoggerUtil;
-import de.haw.sea2.exceptions.CoordinatesOutOfBoundsException;
+import de.haw.sea2.exceptions.IllegalSpawnCoordinatesException;
 import de.haw.sea2.map.mapObjectEnums.CustomMapObjectTypes;
 import de.haw.sea2.map.mapObjectEnums.MapEntityTypes;
 import de.haw.sea2.map.mapObjectEnums.MapLayers;
@@ -52,8 +49,6 @@ import de.haw.sea2.map.mapObjectEnums.MapLayers;
 //TODO hier haben wir endlich einen geeigneten Kandidaten fuer Junit tests also Testklasse erstellen und zusammen mit Mockito testen!!! Evt auch mit extra TestMaps
 public class GameMap implements Disposable {
 
-    public static final Vector2 DEFAULT_PLAYERSPAWN_POINT = new Vector2(3.5f, 3.5f);
-
     /**
      * Die geladene Tiled-Karte, die alle Ebenen und Objekte enthält.
      */
@@ -81,21 +76,20 @@ public class GameMap implements Disposable {
         this.entitySpawnPoints = new Array<>();
 
         //TODO wird in Zukunft gebraucht, um zu verhindern, dass Entitaeten direkt vor dem Spieler spawnen
-        // solange das noch nicht
+        // solange das noch nicht implementiert ist, sollte das Array leer bleiben
         this.entitySpawnPointsWithProtection = new Array<>();
         parseCollisionLayer();
-        parseEntitiySpawnPoints();
+        parseEntitySpawnPoints();
     }
 
     /**
      * liest Spawnpunkte aus dem entitySpawnPoints layer herraus. wird benutzt fuer Items, Spieler und Enemies
      */
-    private void parseEntitiySpawnPoints() {
+    private void parseEntitySpawnPoints() {
         MapLayer spawnLayer = getValidLayer(MapLayers.ENTITY_SPAWN_POINTS.value);
         MapObjects mapObjects = getValidObjects(spawnLayer, MapLayers.ENTITY_SPAWN_POINTS.value);
 
         if (mapObjects == null) {
-            //TODO do some Logging
             return;
         }
 
@@ -127,16 +121,17 @@ public class GameMap implements Disposable {
                     return -1;
                 });
 
-            // ist kein entityPawnPoint oder hat keine definierte entityType -> gehe zum naechsten mapObject
+            // ist kein entitySpawnPoint oder hat keine definierte entityType -> gehe zum naechsten mapObject
             if (!type.equals(CustomMapObjectTypes.ENTITY_SPAWN_POINT.value)
                 || Arrays.stream(MapEntityTypes.values())
                     .map(elem -> elem.value)
                     .noneMatch(val -> val.equals(entityType)))
             {
-                LoggerUtil.log(LogCategory.DEBUG, this, "property <type> is: " + type
-                    + "\n" + "property <entityType> is: " + entityType
+                LoggerUtil.log(LogCategory.DEBUG, this,
+                    "property <type> is: " + type
                     + "\n" + "expected <type> is: " + CustomMapObjectTypes.ENTITY_SPAWN_POINT.value
-                    + "\n" + "allowed <entityType> is: "  + MapEntityTypes.PLAYER.value + " or " + MapEntityTypes.ITEM + " or " + MapEntityTypes.ENEMY
+                    + "\n" + "property <entityType> is: " + entityType
+                    + "\n" + "allowed <entityType> are: "  + Arrays.toString(MapEntityTypes.values())
                 );
                 continue;
             }
@@ -151,7 +146,7 @@ public class GameMap implements Disposable {
                 } else{
                     this.entitySpawnPoints.add(entitySpawnPoint);
                 }
-            } catch (CoordinatesOutOfBoundsException e) {
+            } catch (IllegalSpawnCoordinatesException e) {
                 LoggerUtil.log(LogCategory.DEBUG, this, e.getMessage());
             }
         }
@@ -299,21 +294,21 @@ public class GameMap implements Disposable {
     }
 
     /**
-     * Liesst Property Werte zu x und y aus Tiled-editor und gibt korrekten Vector fuer SpawnPosition wirft CoordinatesOutOfBoundsException
+     * Liesst Property Werte zu x und y aus Tiled-editor und gibt korrekten Vector fuer SpawnPosition wirft IllegalSpawnCoordinatesException
      * wenn koordinaten nicht gesetzt sind oder die Werte ausserhalb der jeweiligen Karte ligen.
      * @param properties aus Tiled MapObjekt
      * @return Vector mit skalierten und angepassten (x, y)
-     * @throws CoordinatesOutOfBoundsException //TODO out of bounds check und aussagekraeftige Nachricht
+     * @throws IllegalSpawnCoordinatesException //TODO out of bounds check und aussagekraeftige Nachricht
      */
-    private Vector2 parseEntitySpawnCoordinates(MapProperties properties) throws CoordinatesOutOfBoundsException{
+    private Vector2 parseEntitySpawnCoordinates(MapProperties properties) throws IllegalSpawnCoordinatesException {
         Float xInPixel = properties.get("x", Float.class);
         Float yInPixel = properties.get("y", Float.class);
         if (xInPixel == null || yInPixel == null) {
-            throw new CoordinatesOutOfBoundsException();
+            throw new IllegalSpawnCoordinatesException();
         }
         // im editor ist der (0,0) Punkt oben Links
         float heightInTiles = this.tiledMap.getProperties().get("height", Integer.class);
-        return ConversionUtils.converFromPixilToLogicPointWithTransformedY(xInPixel, yInPixel, heightInTiles);
+        return ConversionUtils.convertFromPixelToLogicPointWithTransformedY(xInPixel, yInPixel, heightInTiles);
     }
 
     /**
