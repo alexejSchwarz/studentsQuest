@@ -11,8 +11,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.ecs.components.Box2DComponent;
+import de.haw.sea2.ecs.Bits;
 
 /**
  * Verwaltet das Laden, Aktivieren und Verwalten von Spielkarten.
@@ -31,7 +31,7 @@ public class MapManager implements Disposable {
         this.mapCache = new ObjectMap<>();
         this.bodies = new Array<>();
 
-        //for now like this. add/remove listener methods later, if needed
+        // for now like this. add/remove listener methods later, if needed
         this.mapChangeListeners = new Array<>();
         this.mapChangeListeners.add(this.context.getGameRenderer());
     }
@@ -114,7 +114,7 @@ public class MapManager implements Disposable {
      * </p>
      *
      * @param map Enthaelt eine Liste von Kollisionsbereichen, die die Form und
-     *                       Position der Wände definieren
+     *            Position der Wände definieren
      */
     private void createCollisionWalls(GameMap map) {
 
@@ -157,12 +157,16 @@ public class MapManager implements Disposable {
         });
     }
 
+    // TODO: Refactor collision wall creation to use EntityFactory/Creator for consistency.
+    // This should be done in a separate feature branch.
+
     /**
      * Soll bei jeder Mapchaneg aufgerufen werden
      */
     private void destroyCollisionWalls() {
         this.context.getWorld().getBodies(this.bodies);
-        //TODO nachschauen was mit den Enitities in der Engine passiert muessen die auch entfernt werden???
+        // TODO nachschauen was mit den Enitities in der Engine passiert muessen die
+        // auch entfernt werden???
         for (Body body : this.bodies) {
             if (body.getUserData().equals("WALL")) {
                 this.context.getWorld().destroyBody(body);

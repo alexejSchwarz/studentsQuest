@@ -12,8 +12,8 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
-import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
+import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
@@ -115,8 +115,12 @@ public class GameScreen implements Screen, KeyInputListener {
 
         Vector2 playerSpawnPosition = this.context.getMapManager().getCurrentMap().getPlayerSpawnPoint();
         LoggerUtil.log(LogCategory.DEBUG, this, "player to be created at: " + playerSpawnPosition);
-        this.context.getEntityFactory().createPlayer(playerSpawnPosition, 1f, 1f);
-        this.context.getEntityFactory().createBall();
+        this.context.getEntityCreator().createPlayer(playerSpawnPosition, 1f, 1f);
+        
+        // Example position and size for the ball
+        Vector2 ballPosition = new Vector2(5f, 5f); // Adjust as needed
+        float ballSize = 1f; // Adjust as needed
+        this.context.getEntityCreator().createBall(ballPosition, ballSize);
 
         // Registriere diesen Screen als KeyInputListener
         this.context.getInputManager().addKeyInputListener(this);
