@@ -44,10 +44,10 @@ public class DebugConfig {
     public static final int DECIMAL_PLACES = 2;
 
     /** Format-String für Positionsangaben */
-    public static final String POSITION_FORMAT = "Pos: %." + DECIMAL_PLACES + "f, %." + DECIMAL_PLACES + "f";
+    public static final String POSITION_FORMAT = "Player Pos: %." + DECIMAL_PLACES + "f, %." + DECIMAL_PLACES + "f";
 
     /** Format-String für Geschwindigkeitsangaben */
-    public static final String VELOCITY_FORMAT = "Vel: %." + DECIMAL_PLACES + "f, %." + DECIMAL_PLACES + "f";
+    public static final String VELOCITY_FORMAT = "Player Vel: %." + DECIMAL_PLACES + "f, %." + DECIMAL_PLACES + "f";
 
     /** Format-String für Zeit */
     public static final String TIME_FORMAT = "Zeit: %02d:%02d:%02d";

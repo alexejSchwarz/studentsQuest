@@ -103,13 +103,13 @@ public class GameScreen implements Screen, KeyInputListener {
     }
 
     private void initialize() {
-        //Erstellung von Spieler soll hier passieren und nicht im show(), da sonst Duplikate entstehen
-
+        // Erstellung von Spieler soll hier passieren und nicht im show(), da sonst
+        // Duplikate entstehen
 
         // Map aktivieren (nicht mehr laden!)
         this.context.getMapManager().activateMap(MapPaths.MAINMAP.getPath());
 
-        //TODO auslagern?
+        // TODO auslagern?
         // Die Position ist relativ zur Box2D-Welt und nicht zu Pixeln auf dem
         // Bildschirm
 
@@ -134,7 +134,7 @@ public class GameScreen implements Screen, KeyInputListener {
 
         // Fixierung fuer die Physics berechnung
         this.accumulator += deltaTime;
-        while (this.accumulator >= StudentsQuest.FIXED_TIME_STEP) {
+        while (this.accumulator >= StudentsQuest.PHYSICS_TIME_STEP) {
 
             // remembers the previous position for later interpolation
             for (Entity entity : this.engine.getEntitiesFor(Family.all(Box2DComponent.class).get())) {
@@ -143,12 +143,12 @@ public class GameScreen implements Screen, KeyInputListener {
                 b2dComp.previousY = b2dComp.body.getPosition().y;
             }
 
-            this.world.step(StudentsQuest.FIXED_TIME_STEP, 6, 2);
-            this.accumulator -= StudentsQuest.FIXED_TIME_STEP;
+            this.world.step(StudentsQuest.PHYSICS_TIME_STEP, 6, 2);
+            this.accumulator -= StudentsQuest.PHYSICS_TIME_STEP;
         }
 
         // interpolation rendering. reduces stuttering between frames
-        this.gameRenderer.render(this.accumulator / StudentsQuest.FIXED_TIME_STEP); //alpha value
+        this.gameRenderer.render(this.accumulator / StudentsQuest.PHYSICS_TIME_STEP); // alpha value
 
         // TODO look this up
         /*
@@ -186,7 +186,7 @@ public class GameScreen implements Screen, KeyInputListener {
      */
     @Override
     public void pause() {
-        LoggerUtil.log(LogCategory.DEBUG,this,"GameScreen.pause() wurde aufgerufen!");
+        LoggerUtil.log(LogCategory.DEBUG, this, "GameScreen.pause() wurde aufgerufen!");
     }
 
     /**
@@ -199,14 +199,14 @@ public class GameScreen implements Screen, KeyInputListener {
      */
     @Override
     public void resume() {
-        LoggerUtil.log(LogCategory.DEBUG,this,"GameScreen.resume() wurde aufgerufen!");
-
+        LoggerUtil.log(LogCategory.DEBUG, this, "GameScreen.resume() wurde aufgerufen!");
 
         // Stelle sicher, dass das PlayerMovementSystem ein KeyInputListener ist
         PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
         this.context.getInputManager()
                 .addKeyInputListener(playerMovementSystem);
-        // wir müssen die Kamera hier nicht aktualisieren, da sie im render() aufgerufen wird
+        // wir müssen die Kamera hier nicht aktualisieren, da sie im render() aufgerufen
+        // wird
     }
 
     /**
@@ -224,7 +224,8 @@ public class GameScreen implements Screen, KeyInputListener {
 
         // Stelle sicher, dass das der KeyInputListener vom PlayerMovementSystem nicht
         // mehr aktiv ist
-        this.context.getInputManager().removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
+        this.context.getInputManager()
+                .removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
         // Debug-Renderer entfernen
         if (DebugConfig.DEBUG_ENABLED && debugRenderer != null) {
             context.getDebugSystem().removeRenderer(debugRenderer);
