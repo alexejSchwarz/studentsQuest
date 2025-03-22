@@ -11,6 +11,8 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.Bits;
+import de.haw.sea2.contact.InteractionType;
+import de.haw.sea2.ecs.components.InteractionComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.SimpleRenderComponent;
@@ -81,6 +83,10 @@ public class EntityCreator {
                     renderComp.width = size;
                     renderComp.height = size;
                     entity.add(renderComp);
+
+                    InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
+                    interCopm.type = InteractionType.OBJECT_SHRINK;
+                    entity.add(interCopm);
                 })
                 .build();
     }

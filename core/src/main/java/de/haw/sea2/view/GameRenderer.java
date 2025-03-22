@@ -124,7 +124,7 @@ public class GameRenderer implements Disposable, MapChangeListener {
 
     private void renderNonAnimatedEntities(Entity entity, final float alpha) {
         Box2DComponent b2dComp = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
-        SimpleRenderComponent simpleRenderComponent = ECSEngine.SIMPLE_RENDER_COMPONENT_COMPONENT_MAPPER.get(entity);
+        SimpleRenderComponent simpleRenderComponent = ECSEngine.SIMPLE_RENDER_COMPONENT_MAPPER.get(entity);
         Sprite sprite = new Sprite(this.assetManager.get(simpleRenderComponent.textureFilePath, Texture.class));
         sprite.setOriginCenter();
         drawInterpolatedEntity(sprite, b2dComp, alpha, simpleRenderComponent.width, simpleRenderComponent.height);

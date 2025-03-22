@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 
@@ -124,14 +125,16 @@ public class GameMap implements Disposable {
             // ist kein entitySpawnPoint oder hat keine definierte entityType -> gehe zum naechsten mapObject
             if (!type.equals(CustomMapObjectTypes.ENTITY_SPAWN_POINT.value)
                 || Arrays.stream(MapEntityTypes.values())
-                    .map(elem -> elem.value)
-                    .noneMatch(val -> val.equals(entityType)))
-            {
+                .map(elem -> elem.value)
+                .noneMatch(val -> val.equals(entityType))) {
                 LoggerUtil.log(LogCategory.DEBUG, this,
                     "property <type> is: " + type
-                    + "\n" + "expected <type> is: " + CustomMapObjectTypes.ENTITY_SPAWN_POINT.value
-                    + "\n" + "property <entityType> is: " + entityType
-                    + "\n" + "allowed <entityType> are: "  + Arrays.toString(MapEntityTypes.values())
+                        + "\n" + "expected <type> is: " + CustomMapObjectTypes.ENTITY_SPAWN_POINT.value
+                        + "\n" + "property <entityType> is: " + entityType
+                        + "\n" + "allowed <entityType> are: "
+                        + Arrays.stream(MapEntityTypes.values())
+                            .map(elem -> elem.value)
+                            .reduce("", (a, b) -> a + " " + b)
                 );
                 continue;
             }
@@ -143,7 +146,7 @@ public class GameMap implements Disposable {
                     this.playerSpawnPoint = entitySpawnPoint.spawnPoint();
                 } else if (entitySpawnPoint.hasSpawnProtection) {
                     this.entitySpawnPointsWithProtection.add(entitySpawnPoint);
-                } else{
+                } else {
                     this.entitySpawnPoints.add(entitySpawnPoint);
                 }
             } catch (IllegalSpawnCoordinatesException e) {
@@ -188,7 +191,7 @@ public class GameMap implements Disposable {
 
         // Überprüft, ob die Kollisionsebene existiert
         if (collisionLayer == null) {
-            LoggerUtil.error(LogCategory.ERROR,this,"There is no collision layer!");
+            LoggerUtil.error(LogCategory.ERROR, this, "There is no collision layer!");
             return; // Methode wird abgebrochen, wenn keine Kollisionsebene vorhanden ist
         }
 
@@ -196,7 +199,7 @@ public class GameMap implements Disposable {
 
         // Überprüft, ob Objekte in der Kollisionsebene definiert sind
         if (mapObjects == null) {
-            LoggerUtil.error(LogCategory.ERROR,this,"There are no collision MapObjects defined!");
+            LoggerUtil.error(LogCategory.ERROR, this, "There are no collision MapObjects defined!");
             return; // Methode wird abgebrochen, wenn keine Objekte vorhanden sind
         }
 
@@ -254,7 +257,7 @@ public class GameMap implements Disposable {
                 // Die Skalierung mit UNIT_SCALE findet im Konstruktor der CollisionArea statt
                 this.collisionAreas.add(new CollisionArea(polyline.getX(), polyline.getY(), polyline.getVertices()));
             } else {
-                LoggerUtil.error(LogCategory.ERROR,this,"MoapObject of Type: " + mapObject + "is not supported!");
+                LoggerUtil.error(LogCategory.ERROR, this, "MoapObject of Type: " + mapObject + "is not supported!");
             }
         }
     }
@@ -296,6 +299,7 @@ public class GameMap implements Disposable {
     /**
      * Liesst Property Werte zu x und y aus Tiled-editor und gibt korrekten Vector fuer SpawnPosition wirft IllegalSpawnCoordinatesException
      * wenn koordinaten nicht gesetzt sind oder die Werte ausserhalb der jeweiligen Karte ligen.
+     *
      * @param properties aus Tiled MapObjekt
      * @return Vector mit skalierten und angepassten (x, y)
      * @throws IllegalSpawnCoordinatesException //TODO out of bounds check und aussagekraeftige Nachricht
