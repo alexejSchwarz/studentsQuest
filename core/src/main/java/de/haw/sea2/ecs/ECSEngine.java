@@ -1,13 +1,7 @@
 package de.haw.sea2.ecs;
 
 import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.components.AnimationComponent;
@@ -18,7 +12,6 @@ import de.haw.sea2.ecs.systems.AnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerAnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerCameraSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
-import de.haw.sea2.view.animations.PlayerAnimation;
 
 /**
  * Die zentrale Engine des Entity-Component-Systems (ECS) für das Spiel.
@@ -52,50 +45,53 @@ import de.haw.sea2.view.animations.PlayerAnimation;
  */
 public class ECSEngine extends PooledEngine {
 
-    /**
-     * ComponentMapper für schnellen Zugriff auf PlayerComponent-Objekte.
-     *
-     * <p>
-     * Ein ComponentMapper ist wie ein Schlüssel, der sehr schnell eine bestimmte
-     * Komponente aus einer Entity holen kann - viel schneller als die normale
-     * Methode.
-     * Das ist wichtig für Spiele, die flüssig laufen sollen.
-     * </p>
-     */
-    public static final ComponentMapper<PlayerComponent> PLAYER_COMP_MAPPER = ComponentMapper.getFor(PlayerComponent.class);
+        /**
+         * ComponentMapper für schnellen Zugriff auf PlayerComponent-Objekte.
+         *
+         * <p>
+         * Ein ComponentMapper ist wie ein Schlüssel, der sehr schnell eine bestimmte
+         * Komponente aus einer Entity holen kann - viel schneller als die normale
+         * Methode.
+         * Das ist wichtig für Spiele, die flüssig laufen sollen.
+         * </p>
+         */
+        public static final ComponentMapper<PlayerComponent> PLAYER_COMP_MAPPER = ComponentMapper
+                        .getFor(PlayerComponent.class);
 
-    /**
-     * ComponentMapper für schnellen Zugriff auf Box2DComponent-Objekte.
-     *
-     * <p>
-     * Diese Komponenten enthalten alle physikalischen Eigenschaften einer Entity,
-     * wie Position, Körperform und Kollisionsinformationen.
-     * </p>
-     */
-    public static final ComponentMapper<Box2DComponent> BOX2D_COMP_MAPPER = ComponentMapper.getFor(Box2DComponent.class);
+        /**
+         * ComponentMapper für schnellen Zugriff auf Box2DComponent-Objekte.
+         *
+         * <p>
+         * Diese Komponenten enthalten alle physikalischen Eigenschaften einer Entity,
+         * wie Position, Körperform und Kollisionsinformationen.
+         * </p>
+         */
+        public static final ComponentMapper<Box2DComponent> BOX2D_COMP_MAPPER = ComponentMapper
+                        .getFor(Box2DComponent.class);
 
+        public static final ComponentMapper<AnimationComponent> ANIMATION_COMP_MAPPER = ComponentMapper
+                        .getFor(AnimationComponent.class);
 
-    public static final ComponentMapper<AnimationComponent> ANIMATION_COMP_MAPPER = ComponentMapper.getFor(AnimationComponent.class);
+        public static final ComponentMapper<SimpleRenderComponent> SIMPLE_RENDER_COMPONENT_COMPONENT_MAPPER = ComponentMapper
+                        .getFor(SimpleRenderComponent.class);
 
-    public static final ComponentMapper<SimpleRenderComponent> SIMPLE_RENDER_COMPONENT_COMPONENT_MAPPER = ComponentMapper.getFor(SimpleRenderComponent.class);
-
-    /**
-     * Erstellt eine neue ECS-Engine für das Spiel.
-     *
-     * <p>
-     * Der Konstruktor richtet die Engine ein und fügt die benötigten Systeme hinzu,
-     * die für die Spiellogik verantwortlich sind.
-     * </p>
-     *
-     * @param context Der Hauptkontext des Spiels (StudentsQuest), der wichtige
-     *                Ressourcen enthält, wie die physikalische Welt und den
-     *                InputManager
-     */
-    public ECSEngine(final StudentsQuest context) {
-        super();
-        this.addSystem(new PlayerMovementSystem(context));
-        this.addSystem(new PlayerCameraSystem(context));
-        this.addSystem(new AnimationSystem(context));
-        this.addSystem(new PlayerAnimationSystem());
-    }
+        /**
+         * Erstellt eine neue ECS-Engine für das Spiel.
+         *
+         * <p>
+         * Der Konstruktor richtet die Engine ein und fügt die benötigten Systeme hinzu,
+         * die für die Spiellogik verantwortlich sind.
+         * </p>
+         *
+         * @param context Der Hauptkontext des Spiels (StudentsQuest), der wichtige
+         *                Ressourcen enthält, wie die physikalische Welt und den
+         *                InputManager
+         */
+        public ECSEngine(final StudentsQuest context) {
+                super();
+                this.addSystem(new PlayerMovementSystem(context));
+                this.addSystem(new PlayerCameraSystem(context));
+                this.addSystem(new AnimationSystem(context));
+                this.addSystem(new PlayerAnimationSystem());
+        }
 }
