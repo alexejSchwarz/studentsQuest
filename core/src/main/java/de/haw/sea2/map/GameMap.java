@@ -60,8 +60,6 @@ public class GameMap implements Disposable {
 
     private final Array<EntitySpawnPoint> entitySpawnPointsWithProtection;
 
-    private record EntitySpawnPoint(String type, String entityType, boolean hasSpawnProtection, Vector2 spawnPoint, int id) {}
-
     private Vector2 playerSpawnPoint;
 
     /**
@@ -142,9 +140,9 @@ public class GameMap implements Disposable {
             try {
                 Vector2 spawnCoordinates = parseEntitySpawnCoordinates(properties);
                 EntitySpawnPoint entitySpawnPoint = new EntitySpawnPoint(type, entityType, hasSpawnProtection, spawnCoordinates, id);
-                if (entitySpawnPoint.entityType.equals(MapEntityTypes.PLAYER.value)) {
+                if (entitySpawnPoint.entityType().equals(MapEntityTypes.PLAYER.value)) {
                     this.playerSpawnPoint = entitySpawnPoint.spawnPoint();
-                } else if (entitySpawnPoint.hasSpawnProtection) {
+                } else if (entitySpawnPoint.hasSpawnProtection()) {
                     this.entitySpawnPointsWithProtection.add(entitySpawnPoint);
                 } else {
                     this.entitySpawnPoints.add(entitySpawnPoint);
@@ -349,5 +347,9 @@ public class GameMap implements Disposable {
     @Override
     public void dispose() {
         this.tiledMap.dispose();
+    }
+
+    public Array<EntitySpawnPoint> getEntitySpawnPoints() {
+        return this.entitySpawnPoints;
     }
 }

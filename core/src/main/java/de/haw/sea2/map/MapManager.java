@@ -6,13 +6,15 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.Bits;
+import de.haw.sea2.ecs.components.Box2DComponent;
+import de.haw.sea2.ecs.components.RemoveComponent;
 
 /**
  * Verwaltet das Laden, Aktivieren und Verwalten von Spielkarten.
@@ -101,6 +103,8 @@ public class MapManager implements Disposable {
         notifyMapChange();
     }
 
+
+    // TODO: Refactor collision wall creation to use EntityFactory/Creator for consistency.
     /**
      * Erstellt Kollisionswände in der Spielwelt basierend auf den übergebenen
      * Kollisionsbereichen.
@@ -136,11 +140,11 @@ public class MapManager implements Disposable {
 
             // Erstelle den physikalischen Körper in der Welt
             b2dComp.body = this.context.getWorld().createBody(StudentsQuest.BODY_DEF);
-            b2dComp.body.setUserData("WALL"); // Markiert den Körper als Wand
+            b2dComp.body.setUserData(wall); // Markiert den Körper als Wand
 
             // Setze die Kollisionsfilter (Wände kollidieren mit allem)
             StudentsQuest.FIXTURE_DEF.filter.categoryBits = Bits.BIT_WALL.value;
-            StudentsQuest.FIXTURE_DEF.filter.maskBits = -1; // TODO "collides with everything" put into the enum
+            StudentsQuest.FIXTURE_DEF.filter.maskBits = Bits.BIT_COLLIDES_WITH_EVERYTHING.value;
 
             // Erstelle eine Kettenform für die Wand aus den Punkten im Kollisionsbereich
             final ChainShape cShape = new ChainShape();
@@ -157,19 +161,17 @@ public class MapManager implements Disposable {
         });
     }
 
-    // TODO: Refactor collision wall creation to use EntityFactory/Creator for consistency.
-    // This should be done in a separate feature branch.
-
     /**
      * Soll bei jeder Mapchaneg aufgerufen werden
      */
     private void destroyCollisionWalls() {
         this.context.getWorld().getBodies(this.bodies);
-        // TODO nachschauen was mit den Enitities in der Engine passiert muessen die
-        // auch entfernt werden???
         for (Body body : this.bodies) {
-            if (body.getUserData().equals("WALL")) {
-                this.context.getWorld().destroyBody(body);
+            for (Fixture fixture : body.getFixtureList()) {
+                if (fixture.getFilterData().categoryBits == Bits.BIT_WALL.value) {
+                    Entity wallEntity = (Entity) body.getUserData();
+                    wallEntity.add(new RemoveComponent());
+                }
             }
         }
     }

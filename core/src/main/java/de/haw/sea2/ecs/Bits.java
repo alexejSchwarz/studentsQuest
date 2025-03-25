@@ -47,7 +47,13 @@ public enum Bits {
     BIT_WALL(1 << 1),
 
     // TODO tmp
-    BIT_BALL(1 << 2);
+    BIT_BALL(1 << 2),
+
+    // dazu gehoeren Enemies und Items
+    BIT_GAME_ENTITY(1 << 3),
+
+    // use only for maskBits
+    BIT_COLLIDES_WITH_EVERYTHING(-1);
 
     /**
      * Der numerische Wert dieser Bit-Maske als short.

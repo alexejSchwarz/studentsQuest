@@ -22,7 +22,7 @@ public class WorldContactListener implements ContactListener {
 
     // Category Bits, that should trigger an Interaction event with the player
     // for test purposes Ball is here. Wall is not included, as no further interactions besides the predefined physics should apply
-    private static final Set<Short> INTERACTABLE_CATEGORIES = new HashSet<>(Set.of(Bits.BIT_BALL.value));
+    private static final Set<Short> INTERACTABLE_CATEGORIES = new HashSet<>(Set.of(Bits.BIT_BALL.value, Bits.BIT_GAME_ENTITY.value));
 
     private Array<PlayerContactListener> listeners;
 

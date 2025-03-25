@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="25">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="30">
  <tileset firstgid="1" source="tileset.tsx"/>
  <layer id="1" name="Kachelebene 1" width="32" height="32">
   <data encoding="base64" compression="zlib">
@@ -21,6 +21,39 @@
     <property name="type" value="entitySpawnPoint"/>
     <property name="x" type="float" value="126.95"/>
     <property name="y" type="float" value="809.62"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="25" type="EntitySpawnPoint" x="126.952" y="643.144">
+   <properties>
+    <property name="entityType" value="item"/>
+    <property name="hasSpawnProtection" type="bool" value="false"/>
+    <property name="id" type="int" value="1"/>
+    <property name="type" value="entitySpawnPoint"/>
+    <property name="x" type="float" value="126.95"/>
+    <property name="y" type="float" value="643.14"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="28" type="EntitySpawnPoint" x="320.973" y="774.887">
+   <properties>
+    <property name="entityType" value="item"/>
+    <property name="hasSpawnProtection" type="bool" value="false"/>
+    <property name="id" type="int" value="2"/>
+    <property name="type" value="entitySpawnPoint"/>
+    <property name="x" type="float" value="320.97"/>
+    <property name="y" type="float" value="774.89"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="29" type="EntitySpawnPoint" x="249.113" y="912.618">
+   <properties>
+    <property name="entityType" value="item"/>
+    <property name="hasSpawnProtection" type="bool" value="false"/>
+    <property name="id" type="int" value="3"/>
+    <property name="type" value="entitySpawnPoint"/>
+    <property name="x" type="float" value="249.11"/>
+    <property name="y" type="float" value="912.62"/>
    </properties>
    <point/>
   </object>
