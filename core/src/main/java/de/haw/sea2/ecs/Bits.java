@@ -46,7 +46,7 @@ public enum Bits {
      */
     BIT_WALL(1 << 1),
 
-    //TODO tmp
+    // TODO tmp
     BIT_BALL(1 << 2);
 
     /**

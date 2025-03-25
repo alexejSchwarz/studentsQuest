@@ -5,10 +5,10 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 
-import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
+import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.view.animations.PlayerAnimation;
 
 public class PlayerAnimationSystem extends IteratingSystem {

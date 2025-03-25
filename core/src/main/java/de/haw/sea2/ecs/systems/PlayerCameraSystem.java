@@ -6,9 +6,9 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
+import de.haw.sea2.ecs.ECSEngine;
 
 /**
  * Ein System, das die Kamera auf den Spieler zentriert.

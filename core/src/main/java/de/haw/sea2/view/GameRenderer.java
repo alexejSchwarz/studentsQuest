@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,10 +28,10 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
-import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.SimpleRenderComponent;
+import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.map.MapChangeListener;
 import de.haw.sea2.view.animations.AnimationType;
@@ -177,7 +176,7 @@ public class GameRenderer implements Disposable, MapChangeListener {
             // if animationType
 
             // create Animation
-            LoggerUtil.log(LogCategory.DEBUG,this, "Creating new animation of type: " + animationType);
+            LoggerUtil.log(LogCategory.DEBUG, this, "Creating new animation of type: " + animationType);
             TextureAtlas.AtlasRegion atlasRegion = this.assetManager.get(animationType.atlasPath(), TextureAtlas.class)
                     .findRegion(animationType.atlasKey());
 

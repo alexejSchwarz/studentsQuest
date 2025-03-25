@@ -6,9 +6,9 @@ import com.badlogic.ashley.systems.IteratingSystem;
 
 import com.badlogic.gdx.math.Vector2;
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
+import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
@@ -74,26 +74,24 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
 
         // Falls sich das Objekt diagonal bewegt, wird die Richtung normalisiert
         if (movementDirection.x != 0 && movementDirection.y != 0) {
-            movementDirection.nor();  // Normalisiert den Vektor auf Länge 1
+            movementDirection.nor(); // Normalisiert den Vektor auf Länge 1
         }
 
         // Berechnung des Impulses unter Berücksichtigung der aktuellen Geschwindigkeit
         float impulseX = movementDirection.x * playerComponent.speed.x
-            - physicsBox2dComponent.body.getLinearVelocity().x * physicsBox2dComponent.body.getMass();
+                - physicsBox2dComponent.body.getLinearVelocity().x * physicsBox2dComponent.body.getMass();
 
         float impulseY = movementDirection.y * playerComponent.speed.y
-            - physicsBox2dComponent.body.getLinearVelocity().y * physicsBox2dComponent.body.getMass();
+                - physicsBox2dComponent.body.getLinearVelocity().y * physicsBox2dComponent.body.getMass();
 
         // Anwenden des Impulses auf den Körper für physikalische Bewegung
         physicsBox2dComponent.body.applyLinearImpulse(
-            impulseX,
-            impulseY,
-            physicsBox2dComponent.body.getWorldCenter().x,
-            physicsBox2dComponent.body.getWorldCenter().y,
-            true
-        );
+                impulseX,
+                impulseY,
+                physicsBox2dComponent.body.getWorldCenter().x,
+                physicsBox2dComponent.body.getWorldCenter().y,
+                true);
     }
-
 
     /**
      * Verarbeitet Tastendruck-Ereignisse.

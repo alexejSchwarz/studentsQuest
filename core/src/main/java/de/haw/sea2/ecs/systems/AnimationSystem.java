@@ -5,8 +5,8 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.AnimationComponent;
+import de.haw.sea2.ecs.ECSEngine;
 
 public class AnimationSystem extends IteratingSystem {
 

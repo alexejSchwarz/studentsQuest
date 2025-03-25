@@ -1,6 +1,5 @@
 package de.haw.sea2;
 
-import com.artemis.EntityManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -20,8 +19,8 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
+import de.haw.sea2.ecs.builders.EntityCreator;
 import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.ecs.EntityFactory;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
@@ -225,7 +224,7 @@ public class StudentsQuest extends Game {
      */
     private ECSEngine engine;
 
-    private EntityFactory entityFactory;
+    private EntityCreator entityCreator;
 
     /**
      * Verwaltet alle Screens des Spiels und den Übergang zwischen ihnen.
@@ -307,7 +306,7 @@ public class StudentsQuest extends Game {
         this.inputManager = new InputManager();
         // Erstellt die ECS-Engine für die Spiellogik
         this.engine = new ECSEngine(this);
-        this.entityFactory = new EntityFactory(this);
+        this.entityCreator = new EntityCreator(this);
 
         // Konfiguriert den InputProcessor mit einem Multiplexer für mehrere Quellen
         Gdx.input.setInputProcessor(new InputMultiplexer(this.inputManager, this.stage));
@@ -447,8 +446,8 @@ public class StudentsQuest extends Game {
         return debugSystem;
     }
 
-    public EntityFactory getEntityFactory() {
-        return entityFactory;
+    public EntityCreator getEntityCreator() {
+        return entityCreator;
     }
 
     /**
