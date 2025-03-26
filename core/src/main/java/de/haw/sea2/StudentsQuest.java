@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import de.haw.sea2.contact.WorldContactListener;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.debug.DebugConfig;
@@ -153,32 +154,6 @@ public class StudentsQuest extends Game {
      */
     private World world;
 
-    /**
-     * Überwacht Kollisionsereignisse in der physikalischen Welt und reagiert
-     * darauf.
-     *
-     * <p>
-     * Dieser Listener wird bei jedem Kontakt zwischen physikalischen Objekten
-     * benachrichtigt
-     * und kann dann entsprechende Aktionen auslösen (z.B. Schaden verursachen,
-     * Gegenstände aufsammeln).
-     * </p>
-     *
-     * <p>
-     * Die Klasse implementiert das ContactListener-Interface von Box2D und hat vier
-     * Hauptmethoden:
-     * <ul>
-     * <li>beginContact: Wird aufgerufen, wenn zwei Objekte anfangen zu
-     * kollidieren</li>
-     * <li>endContact: Wird aufgerufen, wenn zwei Objekte aufhören zu
-     * kollidieren</li>
-     * <li>preSolve: Wird vor der Kollisionslösung aufgerufen und kann diese
-     * modifizieren</li>
-     * <li>postSolve: Wird nach der Kollisionslösung aufgerufen mit den
-     * resultierenden Kräften</li>
-     * </ul>
-     * </p>
-     */
     private WorldContactListener worldContactListener;
 
     /**
@@ -448,6 +423,10 @@ public class StudentsQuest extends Game {
 
     public EntityCreator getEntityCreator() {
         return entityCreator;
+    }
+
+    public WorldContactListener getWorldContactListener() {
+        return worldContactListener;
     }
 
     /**

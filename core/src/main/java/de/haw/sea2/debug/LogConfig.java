@@ -16,7 +16,7 @@ public class LogConfig {
         logSettings = new EnumMap<>(LogCategory.class);
 
         //false = es wird nicht geloggt, true = es wird geloggt
-        logSettings.put(LogCategory.GAME, false);
+        logSettings.put(LogCategory.GAME, true);
         logSettings.put(LogCategory.PHYSICS, false);
         logSettings.put(LogCategory.UI, false);
         logSettings.put(LogCategory.DEBUG, true);

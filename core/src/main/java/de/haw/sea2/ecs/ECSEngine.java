@@ -6,11 +6,13 @@ import com.badlogic.ashley.core.PooledEngine;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
+import de.haw.sea2.ecs.components.InteractionComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.components.SimpleRenderComponent;
 import de.haw.sea2.ecs.systems.AnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerAnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerCameraSystem;
+import de.haw.sea2.ecs.systems.PlayerContactSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
 
 /**
@@ -66,14 +68,10 @@ public class ECSEngine extends PooledEngine {
      * wie Position, Körperform und Kollisionsinformationen.
      * </p>
      */
-    public static final ComponentMapper<Box2DComponent> BOX2D_COMP_MAPPER = ComponentMapper
-            .getFor(Box2DComponent.class);
-
-    public static final ComponentMapper<AnimationComponent> ANIMATION_COMP_MAPPER = ComponentMapper
-            .getFor(AnimationComponent.class);
-
-    public static final ComponentMapper<SimpleRenderComponent> SIMPLE_RENDER_COMPONENT_COMPONENT_MAPPER = ComponentMapper
-            .getFor(SimpleRenderComponent.class);
+    public static final ComponentMapper<Box2DComponent> BOX2D_COMP_MAPPER = ComponentMapper.getFor(Box2DComponent.class);
+    public static final ComponentMapper<AnimationComponent> ANIMATION_COMP_MAPPER = ComponentMapper.getFor(AnimationComponent.class);
+    public static final ComponentMapper<SimpleRenderComponent> SIMPLE_RENDER_COMPONENT_MAPPER = ComponentMapper.getFor(SimpleRenderComponent.class);
+    public static final ComponentMapper<InteractionComponent> INTERACTION_COMPONENT_MAPPER = ComponentMapper.getFor(InteractionComponent.class);
 
     /**
      * Erstellt eine neue ECS-Engine für das Spiel.
@@ -93,5 +91,6 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(new PlayerCameraSystem(context));
         this.addSystem(new AnimationSystem(context));
         this.addSystem(new PlayerAnimationSystem());
+        this.addSystem(new PlayerContactSystem(context));
     }
 }
