@@ -47,7 +47,7 @@ public class EntityCreator {
                 .position(playerSpawnLocation.x, playerSpawnLocation.y)
                 .size(width, height)
                 .categoryBits(Bits.BIT_PLAYER.value)
-                .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value))
+                .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value | Bits.BIT_GAME_ENTITY.value))
                 .addComponents(entity -> {
                     PlayerComponent playerComp = engine.createComponent(PlayerComponent.class);
                     playerComp.speed.set(3f, 3f);
@@ -70,7 +70,7 @@ public class EntityCreator {
      */
     public void createBall(Vector2 position, float size) {
         LoggerUtil.log(LogCategory.GAME, this, "Creating ball at position: " + position + ", size: " + size);
-        new EntityBuilder(engine, world, createCircleShape(size / 2))
+        new EntityBuilder(engine, world, createCircleShape(size / 2f))
                 .position(position.x, position.y)
                 .size(size, size)
                 .categoryBits(Bits.BIT_BALL.value)
@@ -89,6 +89,27 @@ public class EntityCreator {
                     entity.add(interCopm);
                 })
                 .build();
+    }
+
+    public void createCoin(Vector2 position, float size) {
+        LoggerUtil.log(LogCategory.GAME, this, "Creating Coin at position: " + position + ", size: " + size);
+        new EntityBuilder(engine, world, createCircleShape(size / 2f))
+            .position(position.x, position.y)
+            .size(size, size)
+            .categoryBits(Bits.BIT_GAME_ENTITY.value)
+            .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value))
+            .addComponents(entity -> {
+                SimpleRenderComponent renderComp = engine.createComponent(SimpleRenderComponent.class);
+                renderComp.textureFilePath = "assetsFromTut/coin.png";
+                renderComp.width = size;
+                renderComp.height = size;
+                entity.add(renderComp);
+
+                InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
+                interCopm.type = InteractionType.OBJECT_COLLECT;
+                entity.add(interCopm);
+            })
+            .build();
     }
 
     private Shape createBoxShape(float width, float height) {

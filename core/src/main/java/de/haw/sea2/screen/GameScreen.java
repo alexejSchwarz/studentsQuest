@@ -15,6 +15,7 @@ import de.haw.sea2.debug.render.GameScreenDebugRenderer;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
+import de.haw.sea2.gameLevel.SpawnLogic;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
@@ -67,6 +68,8 @@ public class GameScreen implements Screen, KeyInputListener {
 
     private final World world;
 
+    private final SpawnLogic spawnLogic;
+
     private GameScreenDebugRenderer debugRenderer;
 
     public GameScreen(StudentsQuest context) {
@@ -74,6 +77,7 @@ public class GameScreen implements Screen, KeyInputListener {
         this.engine = this.context.getEngine();
         this.gameRenderer = this.context.getGameRenderer();
         this.world = this.context.getWorld();
+        this.spawnLogic = new SpawnLogic(context);
         initialize();
     }
 
@@ -116,11 +120,13 @@ public class GameScreen implements Screen, KeyInputListener {
         Vector2 playerSpawnPosition = this.context.getMapManager().getCurrentMap().getPlayerSpawnPoint();
         LoggerUtil.log(LogCategory.DEBUG, this, "player to be created at: " + playerSpawnPosition);
         this.context.getEntityCreator().createPlayer(playerSpawnPosition, 1f, 1f);
-        
+
         // Example position and size for the ball
         Vector2 ballPosition = new Vector2(5f, 5f); // Adjust as needed
         float ballSize = 1f; // Adjust as needed
         this.context.getEntityCreator().createBall(ballPosition, ballSize);
+
+        this.spawnLogic.prepareLevelStart(this.context.getMapManager().getCurrentMap().getEntitySpawnPoints());
 
         // Registriere diesen Screen als KeyInputListener
         this.context.getInputManager().addKeyInputListener(this);
@@ -135,6 +141,9 @@ public class GameScreen implements Screen, KeyInputListener {
 
         final float deltaTime = Math.min(0.25f, Gdx.graphics.getRawDeltaTime());
         this.engine.update(deltaTime);
+
+        // naehcstes Tick fuer SpawnLogik
+        this.spawnLogic.update(deltaTime);
 
         // Fixierung fuer die Physics berechnung
         this.accumulator += deltaTime;

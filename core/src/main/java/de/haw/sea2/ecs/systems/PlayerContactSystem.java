@@ -8,21 +8,28 @@ import de.haw.sea2.contact.PlayerContactListener;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.contact.InteractionType;
+import de.haw.sea2.ecs.components.RemoveComponent;
 import de.haw.sea2.ecs.components.SimpleRenderComponent;
 
 /**
- * Lauscht auf Interactions aus WorldContactListener
+ * Lauscht auf Interactions aus WorldContactListener. Iteriert uber Entities, die ein RemoveComponent besitzen
  */
 public class PlayerContactSystem extends IteratingSystem implements PlayerContactListener {
 
+    private final StudentsQuest context;
+
     public PlayerContactSystem(StudentsQuest context) {
-        super(Family.all().get());
+        super(Family.one(RemoveComponent.class).get());
         context.getWorldContactListener().addListener(this);
+        this.context = context;
     }
 
+    /**
+     * Entfernt Entity via engine. Dies entfernt auch die bodies aus der world.
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-
+        this.context.getEngine().removeEntity(entity);
     }
 
     /**
@@ -35,6 +42,10 @@ public class PlayerContactSystem extends IteratingSystem implements PlayerContac
             SimpleRenderComponent simpleRenderComponent = ECSEngine.SIMPLE_RENDER_COMPONENT_MAPPER.get(interactable);
             simpleRenderComponent.width = simpleRenderComponent.width * 0.9f;
             simpleRenderComponent.height = simpleRenderComponent.height * 0.9f;
+        } else if (interactionType == InteractionType.OBJECT_COLLECT) {
+            RemoveComponent removeComponent = this.context.getEngine().createComponent(RemoveComponent.class);
+            interactable.add(removeComponent);
+            //TODO hier event an UI coinCounter++ oder so
         }
     }
 }
