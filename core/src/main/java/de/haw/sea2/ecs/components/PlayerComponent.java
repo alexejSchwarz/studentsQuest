@@ -8,6 +8,10 @@ public class PlayerComponent implements Component, Pool.Poolable {
 
     public Vector2 speed = new Vector2();
 
+    public int neededCoins = 10;
+
+    public int collectedCoins = 0;
+
     /**
      * Components not longer in use are freed up. Then reset is called.
      * Resets any vlas to default
@@ -15,5 +19,6 @@ public class PlayerComponent implements Component, Pool.Poolable {
     @Override
     public void reset() {
         this.speed.set(0f,0f);
+        this.collectedCoins = 0;
     }
 }
