@@ -2,6 +2,7 @@ package de.haw.sea2.screen;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,6 +18,8 @@ import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.ecs.components.HearthComponent;
+import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.systems.EnemyMovementSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.gameLevel.SpawnLogic;
@@ -84,6 +87,10 @@ public class GameScreen implements Screen, KeyInputListener {
 
     private final GameUI gameUI;
 
+    ImmutableArray<Entity> players;
+
+    PlayerComponent playerComponent;
+
     public GameScreen(StudentsQuest context) {
         this.context = context;
         this.engine = this.context.getEngine();
@@ -126,6 +133,11 @@ public class GameScreen implements Screen, KeyInputListener {
             }
         }
 
+        players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+        if (players.get(0) == null) {
+            LoggerUtil.error(LogCategory.ERROR,this,"Fehler. Kein Spieler im players array.");
+        }
+        playerComponent = players.get(0).getComponent(PlayerComponent.class);
     }
 
     private void initialize() {
@@ -171,6 +183,11 @@ public class GameScreen implements Screen, KeyInputListener {
 
         // Fixierung fuer die Physics berechnung
         this.accumulator += deltaTime;
+
+        if (playerComponent.collectedCoins == playerComponent.neededCoins) {
+            context.getScreenManager().showScreen(ScreenType.SUCCESS);
+        }
+
         while (this.accumulator >= StudentsQuest.PHYSICS_TIME_STEP) {
 
             // remembers the previous position for later interpolation
@@ -247,7 +264,7 @@ public class GameScreen implements Screen, KeyInputListener {
         // Stelle sicher, dass das PlayerMovementSystem ein KeyInputListener ist
         PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
         this.context.getInputManager()
-                .addKeyInputListener(playerMovementSystem);
+            .addKeyInputListener(playerMovementSystem);
         // wir müssen die Kamera hier nicht aktualisieren, da sie im render() aufgerufen
         // wird
     }
@@ -268,7 +285,7 @@ public class GameScreen implements Screen, KeyInputListener {
         // Stelle sicher, dass das der KeyInputListener vom PlayerMovementSystem nicht
         // mehr aktiv ist
         this.context.getInputManager()
-                .removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
+            .removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
         // Debug-Renderer entfernen
         if (DebugConfig.DEBUG_ENABLED) {
             if (debugRenderer != null) {
