@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.paths.MapPaths;
 
 /**
@@ -67,13 +68,16 @@ public class LoadingScreen implements Screen {
         // SpielerAtlas laden
         context.getAssetManager().setLoader(Texture.class,
                 new TextureLoader(context.getAssetManager().getFileHandleResolver()));
-        context.getAssetManager().load("assetsFromTut/character_and_effect.atlas", TextureAtlas.class);
+        context.getAssetManager().load(AssetPaths.CHARANDEFFEKTATLAS.getPath(), TextureAtlas.class);
 
         // Optional: Weitere Assets hier laden
         // z.B. Sound-Effekte, Musik, UI-Elemente
         //TODO use atlas for entities, items etc
-        context.getAssetManager().load("assetsFromTut/Ball.png", Texture.class);
-        context.getAssetManager().load("assetsFromTut/coin.png", Texture.class);
+        context.getAssetManager().load(AssetPaths.BALL.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.COIN.getPath(), Texture.class);
+
+        //Herzen laden
+        context.getAssetManager().load(AssetPaths.HEARTH.getPath(), Texture.class);
     }
 
     @Override

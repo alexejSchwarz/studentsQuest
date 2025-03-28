@@ -428,6 +428,9 @@ public class StudentsQuest extends Game {
     public WorldContactListener getWorldContactListener() {
         return worldContactListener;
     }
+    public Stage getStage() {
+        return this.stage;
+    }
 
     /**
      * physics example for circle falling onto a plattform

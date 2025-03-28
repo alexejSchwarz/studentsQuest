@@ -4,9 +4,11 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
@@ -20,6 +22,7 @@ import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.paths.MapPaths;
+import de.haw.sea2.ui.GameUI;
 import de.haw.sea2.view.GameRenderer;
 
 /**
@@ -72,12 +75,18 @@ public class GameScreen implements Screen, KeyInputListener {
 
     private GameScreenDebugRenderer debugRenderer;
 
+    private final Stage stage;
+
+    private final GameUI gameUI;
+
     public GameScreen(StudentsQuest context) {
         this.context = context;
         this.engine = this.context.getEngine();
         this.gameRenderer = this.context.getGameRenderer();
         this.world = this.context.getWorld();
         this.spawnLogic = new SpawnLogic(context);
+        this.stage = context.getStage();
+        this.gameUI = new GameUI(context);
         initialize();
     }
 
@@ -162,6 +171,13 @@ public class GameScreen implements Screen, KeyInputListener {
 
         // interpolation rendering. reduces stuttering between frames
         this.gameRenderer.render(this.accumulator / StudentsQuest.PHYSICS_TIME_STEP); // alpha value
+
+        context.viewport.apply();
+        stage.getBatch().setProjectionMatrix(context.viewport.getCamera().combined);
+        stage.getBatch().begin();
+        gameUI.render((SpriteBatch) stage.getBatch());
+        stage.getBatch().end();
+
 
         // TODO look this up
         /*
