@@ -12,10 +12,7 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.contact.InteractionType;
-import de.haw.sea2.ecs.components.InteractionComponent;
-import de.haw.sea2.ecs.components.PlayerComponent;
-import de.haw.sea2.ecs.components.AnimationComponent;
-import de.haw.sea2.ecs.components.SimpleRenderComponent;
+import de.haw.sea2.ecs.components.*;
 import de.haw.sea2.view.animations.PlayerAnimation;
 
 /**
@@ -52,6 +49,11 @@ public class EntityCreator {
                     PlayerComponent playerComp = engine.createComponent(PlayerComponent.class);
                     playerComp.speed.set(3f, 3f);
                     entity.add(playerComp);
+
+                    HearthComponent hearthComponent = engine.createComponent(HearthComponent.class);
+                    hearthComponent.currentHearths = 3;
+                    hearthComponent.maxHearths = 3;
+                    entity.add(hearthComponent);
 
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
                     animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;

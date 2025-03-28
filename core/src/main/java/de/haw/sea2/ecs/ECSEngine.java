@@ -4,11 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.PooledEngine;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.components.AnimationComponent;
-import de.haw.sea2.ecs.components.Box2DComponent;
-import de.haw.sea2.ecs.components.InteractionComponent;
-import de.haw.sea2.ecs.components.PlayerComponent;
-import de.haw.sea2.ecs.components.SimpleRenderComponent;
+import de.haw.sea2.ecs.components.*;
 import de.haw.sea2.ecs.systems.AnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerAnimationSystem;
 import de.haw.sea2.ecs.systems.PlayerCameraSystem;
@@ -72,6 +68,8 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<AnimationComponent> ANIMATION_COMP_MAPPER = ComponentMapper.getFor(AnimationComponent.class);
     public static final ComponentMapper<SimpleRenderComponent> SIMPLE_RENDER_COMPONENT_MAPPER = ComponentMapper.getFor(SimpleRenderComponent.class);
     public static final ComponentMapper<InteractionComponent> INTERACTION_COMPONENT_MAPPER = ComponentMapper.getFor(InteractionComponent.class);
+    public static final ComponentMapper<HearthComponent> HEARTH_COMPONENT_MAPPER = ComponentMapper.getFor(HearthComponent.class);
+
 
     /**
      * Erstellt eine neue ECS-Engine für das Spiel.
