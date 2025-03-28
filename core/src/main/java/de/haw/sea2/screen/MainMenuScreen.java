@@ -1,202 +1,260 @@
 package de.haw.sea2.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
-
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.paths.AssetPaths;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Der Startbildschirm des Spiels mit dem Hauptmenü.
+ * MainMenuScreen ist der Startbildschirm des Spiels, der ein Hauptmenü
+ * mit verschiedenen Schaltflächen darstellt.
  *
  * <p>
- * Diese Klasse implementiert das libGDX Screen-Interface und stellt einen
- * einfachen
- * Willkommensbildschirm dar, der den Spieltitel anzeigt und auf Tastendruck
- * wartet,
- * um das eigentliche Spiel zu starten.
- * </p>
- *
- * <p>
- * Das Hauptmenü ist absichtlich einfach gehalten und zeigt nur den Titel
- * "StudentQuest" und eine Aufforderung, eine beliebige Taste zu drücken.
- * Bei Tastendruck wird zum GameScreen gewechselt, der dann das eigentliche
- * Spiel startet.
+ * Das Menü zeigt Buttons für Start, Key-Binds, Einstellungen, Credits, Story und Tutorial an.
+ * Durch Drücken des Start-Buttons wird der GameScreen mit einem Ladebildschirm aufgerufen.
  * </p>
  */
 public class MainMenuScreen implements Screen {
 
-    /**
-     * Der Hauptkontext des Spiels, der Zugriff auf zentrale Ressourcen und Systeme
-     * bietet.
-     *
-     * <p>
-     * Über dieses Objekt hat der MainMenuScreen Zugriff auf wichtige Komponenten
-     * wie:
-     * <ul>
-     * <li>Den SpriteBatch zum Zeichnen von Text und Grafiken</li>
-     * <li>Den Viewport für die Bildschirmdarstellung</li>
-     * <li>Die Methode setScreen() zum Wechseln zwischen Bildschirmen</li>
-     * </ul>
-     * </p>
-     */
     private final StudentsQuest context;
+    private final Stage stage;
 
-    // TODO placeholder apply custom font at some point
-    /**
-     * Die Schriftart für die Anzeige von Text im Hauptmenü.
-     *
-     * <p>
-     * Aktuell wird die Standardschrift von libGDX verwendet. In Zukunft soll
-     * hier eine benutzerdefinierte Schriftart verwendet werden, wie im TODO
-     * vermerkt.
-     * </p>
-     */
-    private final BitmapFont font;
+    // TextureAtlas enthält die Schaltflächen-Grafiken
+    private final TextureAtlas buttonAtlas;
+
+    // TextureRegionDrawables für die einzelnen Buttons
+    private final TextureRegionDrawable startButtonRegion;
+    private final TextureRegionDrawable keyBindsRegion;
+    private final TextureRegionDrawable settingsRegion;
+    private final TextureRegionDrawable creditsRegion;
+    private final TextureRegionDrawable storyRegion;
+    private final TextureRegionDrawable tutorialRegion;
+
+    // Hintergrundtextur
+    private final Texture background;
+
+    //Schriftzug des Menüs
+    private final Texture heading;
+
+    // Konstanten zur Positionierung und Skalierung der Buttons
+    private static final float startButtonYValue = 4.5f;
+    private static final float startButtonXValue = 5f;
+    private static final float padding = 0.05f;
+    private static final float buttonScale = 2f;
 
     /**
-     * Erstellt einen neuen MainMenuScreen mit dem angegebenen Spiel-Kontext.
+     * Konstruktor, der den Spielkontext initialisiert und die UI-Komponenten lädt.
      *
-     * @param context Der StudentsQuest-Kontext, der Zugriff auf zentrale
-     *                Ressourcen und Systeme bietet
+     * @param context Der übergeordnete Spielkontext
      */
     public MainMenuScreen(StudentsQuest context) {
         this.context = context;
-        this.font = new BitmapFont();
+        this.stage = this.context.getStage();
+
+        // Lade das TextureAtlas mit den Button-Grafiken
+        buttonAtlas = new TextureAtlas(Gdx.files.internal(AssetPaths.BUTTONATLAS.getPath()));
+
+        // Initialisiere die Drawable-Regionen für die Buttons
+        startButtonRegion = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
+        keyBindsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("keybinds_button"));
+        creditsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("credits_button"));
+        settingsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("settings_button"));
+        storyRegion = new TextureRegionDrawable(buttonAtlas.findRegion("story_button"));
+        tutorialRegion = new TextureRegionDrawable(buttonAtlas.findRegion("tutorial_button"));
+
+        // Lade und füge den Hintergrund hinzu
+        background = new Texture(AssetPaths.MAINMENUBACKGROUND.getPath());
+        Image backgroundImage = new Image(background);
+        backgroundImage.setSize(17f, 12f);
+        stage.addActor(backgroundImage);
+
+        //Lade und füge die Überschrift hinzu
+        heading = new Texture(AssetPaths.MAINMENUHEADING.getPath());
+        Image headingImage = new Image(heading);
+        headingImage.setSize(9f, 1f);
+        headingImage.setPosition(StudentsQuest.screenWidth/2f - 4.3f, startButtonYValue+buttonScale*1.3f);
+        stage.addActor(headingImage);
+
+        // Erstelle und positioniere die Buttons
+        createButtons();
     }
 
     /**
-     * Wird aufgerufen, wenn dieser Screen der aktive Screen wird.
-     *
-     * <p>
-     * Diese Methode konfiguriert die Schriftart für die Anzeige:
-     * <ul>
-     * <li>Deaktiviert die Verwendung von ganzzahligen Positionen für eine glattere
-     * Darstellung</li>
-     * <li>Skaliert die Schriftgröße entsprechend dem Viewport</li>
-     * <li>Setzt die Textfarbe auf Weiß</li>
-     * </ul>
-     * </p>
+     * Diese Methode wird aufgerufen, wenn dieser Screen angezeigt wird.
+     * Aktuell werden hier keine zusätzlichen Aktionen benötigt.
      */
     @Override
     public void show() {
-
-        // Font konfigurieren
-        this.font.setUseIntegerPositions(false);
-        this.font.getData().setScale((this.context.viewport.getWorldHeight() / Gdx.graphics.getHeight()) * 2);
-        this.font.setColor(Color.WHITE);
+        Gdx.input.setInputProcessor(new InputMultiplexer(context.getInputManager(), stage));
+        LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen wird angezeigt, InputProcessor gesetzt");
     }
 
     /**
-     * Wird in jedem Frame aufgerufen, um das Hauptmenü zu aktualisieren und
-     * darzustellen.
+     * Render-Methode, die in jedem Frame aufgerufen wird.
      *
-     * <p>
-     * Diese Methode:
-     * <ul>
-     * <li>Löscht den Bildschirm mit schwarzer Farbe</li>
-     * <li>Aktiviert den Viewport für die korrekte Skalierung</li>
-     * <li>Zeichnet den Spieltitel und die Startaufforderung zentriert auf dem
-     * Bildschirm</li>
-     * <li>Prüft, ob eine Taste gedrückt wurde, um zum GameScreen zu wechseln</li>
-     * </ul>
-     * </p>
-     *
-     * @param delta Die Zeit in Sekunden seit dem letzten Frame
+     * @param delta Zeit in Sekunden seit dem letzten Frame
      */
     @Override
     public void render(float delta) {
-
+        // Bildschirm mit schwarzer Farbe löschen
         ScreenUtils.clear(Color.BLACK);
-        this.context.viewport.apply();
-        this.context.getSpriteBatch().setProjectionMatrix(this.context.viewport.getCamera().combined);
+        context.viewport.apply();
 
-        this.context.getSpriteBatch().begin();
+        // Setze die Projektion der Batch auf die Kamera des Viewports
+        stage.getBatch().setProjectionMatrix(context.viewport.getCamera().combined);
+        stage.act(delta);
+        stage.draw();
+    }
 
-        this.font.draw(this.context.getSpriteBatch(), "StudentQuest",
-                (this.context.viewport.getWorldWidth() / 2) - 1f, (this.context.viewport.getWorldHeight() / 2) + 1f);
-        this.font.draw(this.context.getSpriteBatch(), "Click any Key to start!",
-                (this.context.viewport.getWorldWidth() / 2) - 2f, (this.context.viewport.getWorldHeight() / 2) - 1f);
+    /**
+     * Erstellt, positioniert und fügt die Schaltflächen dem Stage hinzu.
+     * Die Buttons werden in zwei Reihen mit minimalem Abstand (padding) angeordnet.
+     */
+    private void createButtons() {
+        // Erstelle die einzelnen Buttons
+        ImageButton startButton = new ImageButton(startButtonRegion);
+        ImageButton keyBindsButton = new ImageButton(keyBindsRegion);
+        ImageButton settingsButton = new ImageButton(settingsRegion);
+        ImageButton creditsButton = new ImageButton(creditsRegion);
+        ImageButton storyButton = new ImageButton(storyRegion);
+        ImageButton tutorialButton = new ImageButton(tutorialRegion);
 
-        this.context.getSpriteBatch().end();
+        // Füge die Buttons einer Liste hinzu, um sie leichter verarbeiten zu können
+        List<ImageButton> imageButtons = new ArrayList<>();
+        imageButtons.add(startButton);
+        imageButtons.add(keyBindsButton);
+        imageButtons.add(settingsButton);
+        imageButtons.add(creditsButton);
+        imageButtons.add(storyButton);
+        imageButtons.add(tutorialButton);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-            this.context.getScreenManager().showScreenWithLoading(ScreenType.GAME);
+        // Setze die Größe aller Buttons auf den definierten Wert
+        for (ImageButton button : imageButtons) {
+            button.setSize(buttonScale, buttonScale);
         }
+
+        // Positioniere die Buttons in zwei Reihen (erste Reihe: 3 Buttons, zweite Reihe: 3 Buttons)
+        float currentX = startButtonXValue;
+        float currentY = startButtonYValue;
+        for (int i = 0; i < imageButtons.size(); i++) {
+            // Bei Button 4 (Index 3) in die nächste Reihe wechseln
+            if (i == 3) {
+                currentX = startButtonXValue;
+                // Verschiebe die Y-Position um die Höhe des Buttons plus padding
+                currentY -= (buttonScale + padding);
+            }
+            imageButtons.get(i).setPosition(currentX, currentY);
+            // Erhöhe currentX für den nächsten Button
+            currentX += buttonScale + padding;
+        }
+
+        // Füge alle Buttons dem Stage hinzu, damit sie gerendert werden
+        for (ImageButton button : imageButtons) {
+            stage.addActor(button);
+        }
+
+        // Beispiel-Listener: Wenn der Start-Button berührt wird, wird zum GameScreen gewechselt
+        startButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                context.getScreenManager().showScreenWithLoading(ScreenType.GAME);
+            }
+        });
+
+
+        // Listener für die anderen Buttons: Loggen der Betätigung
+        keyBindsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                LoggerUtil.log(LogCategory.LOG,this,"Keybindings button pressed");            }
+        });
+
+        settingsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                LoggerUtil.log(LogCategory.LOG,this,"Settings button pressed");
+            }
+        });
+
+        creditsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                LoggerUtil.log(LogCategory.LOG,this,"Credits button pressed");
+            }
+        });
+
+        storyButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                LoggerUtil.log(LogCategory.LOG,this,"Story button pressed");
+            }
+        });
+
+        tutorialButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                LoggerUtil.log(LogCategory.LOG,this,"Tutorial button pressed");
+            }
+        });
 
     }
 
     /**
-     * Wird aufgerufen, wenn die Größe des Fensters geändert wird.
+     * Aktualisiert den Viewport bei Änderung der Fenstergröße.
      *
-     * <p>
-     * Aktualisiert den Viewport, damit die Grafiken korrekt skaliert werden.
-     * Der Parameter true bewirkt, dass die Kamera an der Position zentriert wird.
-     * </p>
-     *
-     * @param width  Die neue Breite des Fensters in Pixeln
-     * @param height Die neue Höhe des Fensters in Pixeln
+     * @param width  Neue Breite des Fensters
+     * @param height Neue Höhe des Fensters
      */
     @Override
     public void resize(int width, int height) {
-        this.context.viewport.update(width, height, true);
+        context.viewport.update(width, height, true);
     }
 
     /**
-     * Wird aufgerufen, wenn das Spiel pausiert wird (z.B. wenn die App in den
-     * Hintergrund wechselt).
-     *
-     * <p>
-     * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
-     * um Ressourcen freizugeben oder den Menüzustand zu speichern.
-     * </p>
+     * Wird aufgerufen, wenn das Spiel pausiert wird.
      */
     @Override
     public void pause() {
-
     }
 
     /**
-     * Wird aufgerufen, wenn das Spiel fortgesetzt wird (z.B. nach einer Pause).
-     *
-     * <p>
-     * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
-     * um Ressourcen neu zu laden oder den Menüzustand wiederherzustellen.
-     * </p>
+     * Wird aufgerufen, wenn das Spiel fortgesetzt wird.
      */
     @Override
     public void resume() {
-
     }
 
     /**
-     * Wird aufgerufen, wenn dieser Screen nicht mehr der aktive Screen ist.
-     *
-     * <p>
-     * In dieser Implementierung passiert nichts, könnte aber genutzt werden,
-     * um temporäre Ressourcen freizugeben.
-     * </p>
+     * Wird aufgerufen, wenn dieser Screen nicht mehr aktiv ist.
      */
     @Override
     public void hide() {
-        LoggerUtil.log(LogCategory.DEBUG,this,"MainMenuScreen hidden");
+        LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen hidden");
     }
 
     /**
-     * Wird aufgerufen, wenn dieser Screen zerstört wird.
-     *
-     * <p>
-     * Gibt alle Ressourcen frei, die explizit für diesen Screen geladen wurden.
-     * In diesem Fall die BitmapFont, um Speicherlecks zu vermeiden.
-     * </p>
+     * Gibt Ressourcen frei, wenn dieser Screen zerstört wird.
      */
     @Override
     public void dispose() {
-        this.font.dispose();
+        buttonAtlas.dispose();
+        stage.dispose();
+        background.dispose();
     }
 }

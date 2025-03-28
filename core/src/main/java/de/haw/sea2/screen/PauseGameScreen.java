@@ -110,8 +110,6 @@ public class PauseGameScreen implements Screen, KeyInputListener {
         context.viewport.apply();
         stage.getBatch().setProjectionMatrix(context.viewport.getCamera().combined);
 
-        LoggerUtil.log(LogCategory.DEBUG,this,"PauseGameScreen rendering: " + stage.getActors().size + " actors on stage");
-
 
         stage.act(delta);
         stage.draw();
