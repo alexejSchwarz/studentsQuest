@@ -52,6 +52,9 @@ public enum Bits {
     // dazu gehoeren Enemies und Items
     BIT_GAME_ENTITY(1 << 3),
 
+    //TODO bis dmg interaction da ist, keine gesonderte Interaction mit enemy spaeter enemy zu game_entity
+    BIT_TMP_ENEMY(1 << 4),
+
     // use only for maskBits
     BIT_COLLIDES_WITH_EVERYTHING(-1);
 

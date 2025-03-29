@@ -1,17 +1,14 @@
 package de.haw.sea2.ecs.builders;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-
+import com.badlogic.gdx.physics.box2d.*;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.contact.InteractionType;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
-import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.Bits;
-import de.haw.sea2.contact.InteractionType;
+import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.*;
 import de.haw.sea2.view.animations.PlayerAnimation;
 
@@ -39,29 +36,29 @@ public class EntityCreator {
      */
     public void createPlayer(final Vector2 playerSpawnLocation, final float width, final float height) {
         LoggerUtil.log(LogCategory.GAME, this,
-                "Creating player at position: " + playerSpawnLocation + ", width: " + width + ", height: " + height);
+            "Creating player at position: " + playerSpawnLocation + ", width: " + width + ", height: " + height);
         new EntityBuilder(engine, world, createBoxShape(width, height))
-                .position(playerSpawnLocation.x, playerSpawnLocation.y)
-                .size(width, height)
-                .categoryBits(Bits.BIT_PLAYER.value)
-                .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value | Bits.BIT_GAME_ENTITY.value))
-                .addComponents(entity -> {
-                    PlayerComponent playerComp = engine.createComponent(PlayerComponent.class);
-                    playerComp.speed.set(3f, 3f);
-                    entity.add(playerComp);
+            .position(playerSpawnLocation.x, playerSpawnLocation.y)
+            .size(width, height)
+            .categoryBits(Bits.BIT_PLAYER.value)
+            .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value | Bits.BIT_GAME_ENTITY.value | Bits.BIT_TMP_ENEMY.value))
+            .addComponents(entity -> {
+                PlayerComponent playerComp = engine.createComponent(PlayerComponent.class);
+                playerComp.speed.set(3f, 3f);
+                entity.add(playerComp);
 
-                    HearthComponent hearthComponent = engine.createComponent(HearthComponent.class);
-                    hearthComponent.currentHearths = 3;
-                    hearthComponent.maxHearths = 3;
-                    entity.add(hearthComponent);
+                HearthComponent hearthComponent = engine.createComponent(HearthComponent.class);
+                hearthComponent.currentHearths = 3;
+                hearthComponent.maxHearths = 3;
+                entity.add(hearthComponent);
 
-                    AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
-                    animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
-                    animationComp.width = width;
-                    animationComp.height = height;
-                    entity.add(animationComp);
-                })
-                .build();
+                AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
+                animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
+                animationComp.width = width;
+                animationComp.height = height;
+                entity.add(animationComp);
+            })
+            .build();
     }
 
     /**
@@ -73,24 +70,24 @@ public class EntityCreator {
     public void createBall(Vector2 position, float size) {
         LoggerUtil.log(LogCategory.GAME, this, "Creating ball at position: " + position + ", size: " + size);
         new EntityBuilder(engine, world, createCircleShape(size / 2f))
-                .position(position.x, position.y)
-                .size(size, size)
-                .categoryBits(Bits.BIT_BALL.value)
-                .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value))
-                .restitution(0.5f)
-                .friction(0.2f)
-                .addComponents(entity -> {
-                    SimpleRenderComponent renderComp = engine.createComponent(SimpleRenderComponent.class);
-                    renderComp.textureFilePath = "assetsFromTut/Ball.png";
-                    renderComp.width = size;
-                    renderComp.height = size;
-                    entity.add(renderComp);
+            .position(position.x, position.y)
+            .size(size, size)
+            .categoryBits(Bits.BIT_BALL.value)
+            .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value))
+            .restitution(0.5f)
+            .friction(0.2f)
+            .addComponents(entity -> {
+                SimpleRenderComponent renderComp = engine.createComponent(SimpleRenderComponent.class);
+                renderComp.textureFilePath = "assetsFromTut/Ball.png";
+                renderComp.width = size;
+                renderComp.height = size;
+                entity.add(renderComp);
 
-                    InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
-                    interCopm.type = InteractionType.OBJECT_SHRINK;
-                    entity.add(interCopm);
-                })
-                .build();
+                InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
+                interCopm.type = InteractionType.OBJECT_SHRINK;
+                entity.add(interCopm);
+            })
+            .build();
     }
 
     public void createCoin(Vector2 position, float size) {
@@ -111,6 +108,56 @@ public class EntityCreator {
                 interCopm.type = InteractionType.OBJECT_COLLECT;
                 entity.add(interCopm);
             })
+            .build();
+    }
+
+    /**
+     * Creates an enemy entity in the game world.
+     *
+     * @param position The spawn position of the enemy in the world
+     * @param width    The width of the enemy in game units
+     * @param height   The height of the enemy in game units
+     */
+    public void createEnemy(final Vector2 position, final float width, final float height) {
+        LoggerUtil.log(LogCategory.GAME, this,
+            "Creating enemy at position: " + position + ", width: " + width + ", height: " + height);
+        new EntityBuilder(engine, world, createBoxShape(width*0.7f, height*0.8f))
+            .position(position.x, position.y)
+            .size(width, height)
+            .categoryBits(Bits.BIT_TMP_ENEMY.value)
+            .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value))
+            .addComponents(entity -> {
+                AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
+                animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
+                animationComp.width = width;
+                animationComp.height = height;
+                entity.add(animationComp);
+
+                // Add the enemy component for pathfinding behavior
+                EnemyComponent enemyComp = engine.createComponent(EnemyComponent.class);
+                // Set custom properties for enemy
+                enemyComp.speed.set(2f, 2f);
+                enemyComp.pathUpdateTimer = 1f;
+                entity.add(enemyComp);
+            })
+            .build();
+    }
+
+    public void createWall(Rectangle rectangle) {
+        float width = rectangle.width;
+        float height = rectangle.height;
+        float xCenter = rectangle.x + 0.5f * width;
+        float yCenter = rectangle.y + 0.5f * height;
+
+        LoggerUtil.log(LogCategory.GAME, this,
+            "Creating wall at position: " + "(" + xCenter + " , " + xCenter + ")" + ", width: " + width + ", height: " + height);
+        new EntityBuilder(engine, world, createBoxShape(width, height))
+            .position(xCenter, yCenter)
+            .size(width, height)
+            .bodyType(BodyDef.BodyType.StaticBody)
+            .categoryBits(Bits.BIT_WALL.value)
+            .maskBits(Bits.BIT_COLLIDES_WITH_EVERYTHING.value)
+            .addComponents(entity -> entity.add(engine.createComponent(ObstacleComponent.class)))
             .build();
     }
 

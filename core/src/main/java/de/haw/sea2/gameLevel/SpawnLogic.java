@@ -1,7 +1,7 @@
 package de.haw.sea2.gameLevel;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
-
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.builders.EntityCreator;
 import de.haw.sea2.map.EntitySpawnPoint;
@@ -29,7 +29,7 @@ public class SpawnLogic {
     /**
      * Gruppierung der SpawnPoints und initiales Spawnen von Level / Map abhaengigen Entitäten
      */
-    public void prepareLevelStart(Array<EntitySpawnPoint> spawnPoints) {
+    public void prepareLevelStart(Array<EntitySpawnPoint> spawnPoints, Array<Rectangle> walls) {
         clear();
         this.spawnPoints.addAll(spawnPoints);
         for (EntitySpawnPoint spawnPoint : this.spawnPoints) {
@@ -40,11 +40,24 @@ public class SpawnLogic {
             }
         }
 
-        // TODO fuers erste hier, spaeter laut Userstory aendern
+        // Spawn enemies
+        for (EntitySpawnPoint spawnPoint : this.enemySpawnPoints) {
+            spawnEnemy(spawnPoint);
+        }
+
+        // Existing logic for items
         for (EntitySpawnPoint spawnPoint : this.itemSpawnPoints) {
             spawnItem(spawnPoint);
         }
+    }
 
+    /**
+     * Spawns an enemy at the given spawn point.
+     *
+     * @param spawnPoint The spawn point for the enemy
+     */
+    private void spawnEnemy(EntitySpawnPoint spawnPoint) {
+        this.creator.createEnemy(spawnPoint.spawnPoint(), 1f, 1f);
     }
 
     private void spawnItem(EntitySpawnPoint spawnPoint) {

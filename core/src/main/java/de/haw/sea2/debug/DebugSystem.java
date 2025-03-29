@@ -58,6 +58,24 @@ public class DebugSystem implements Disposable {
             return;
         this.renderers.removeValue(renderer, true);
     }
+    
+    /**
+     * Sucht nach einem Renderer der angegebenen Klasse.
+     * 
+     * @param rendererClass Die Klasse des gesuchten Renderers
+     * @return Der Renderer, oder null wenn keiner gefunden wurde
+     */
+    public <T extends DebugRenderer> T findRenderer(Class<T> rendererClass) {
+        if (!DebugConfig.DEBUG_ENABLED)
+            return null;
+            
+        for (DebugRenderer renderer : renderers) {
+            if (rendererClass.isInstance(renderer)) {
+                return rendererClass.cast(renderer);
+            }
+        }
+        return null;
+    }
 
     /**
      * Aktualisiert die Debug-Informationen.
@@ -78,8 +96,11 @@ public class DebugSystem implements Disposable {
          * Objects and is maintained by the JVMs Garbage Collector.
          *
          * 2) Native memory/Off-heap: is memory allocated within the processes address
-         * space that is not within the heap and thus is not freed up by the Java
-         * Garbage Collector.
+         * space. This is the memory where the operating system has allocated the
+         * process that contains the JVM.
+         *
+         * If your application is making use of native OpenAL in LWJGL and your native heap
+         * keeps growing then there are probably leaks in the sound system.
          */
     }
 

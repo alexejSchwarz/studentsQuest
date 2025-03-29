@@ -1,26 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="30">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="49">
  <tileset firstgid="1" source="tileset.tsx"/>
  <layer id="1" name="Kachelebene 1" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJzt0zduQmEQReF5T/KKMBjcktkW2S2ZlsxKXk80rU1sbTC44jT/EkYUTPFJI91iqhO8iAQP9isiZ1zwhytu+MeP6O3uf8ITSSKFNDLIIoe4p7e7/3XuBppooY0Ouqh5erv7/829xQ57HHDECV+e3u7+v/oiYUTwhihieEfI19vd/wJ3ESWUUUEVH8j7erv7P+deYIkV1vjEBjNfb3f/+7QwwBAjjDHBFD3R261/69/6t/6tf+vf+rf+rX/r/xn7f6Q7DPmNIQ==
+   eJzt1blOAlAQheG5N4HH8CXYlBYF8bVAUFpAgRZcn4SeRaFFNltl0Yq/uZX1gAlTfMkkpzjVyXQjIt0D+xaRFdbYYIsf/OJL9PLQf+5ELpBFDpfI4woZp5eH/hp3HXe4RwNNtFB1enno/+CeYoY5FljiExOnl4f+uBdJIIkUTnGGNGJeLw/9Re5rlFDGDW5RQcHr5aG/zz3AEG94xwhj9LxeHvo7bOEBj3jCM17wirbo5bZ/27/t3/b/H/d/Ev3L9m/7t/0fx/7t/9v+97X/Q9oBUl2McQ==
   </data>
  </layer>
  <objectgroup color="#ff0000" id="4" name="collision">
-  <object id="8" x="0" y="0" width="31.5" height="1023.5"/>
-  <object id="10" x="30.6667" y="992" width="992" height="29.3333"/>
-  <object id="11" x="30.6667" y="0" width="993.333" height="32"/>
-  <object id="12" x="990.667" y="30.6667" width="32" height="960"/>
+  <object id="37" x="193.941" y="577.755" width="156.497" height="28.666">
+   <properties>
+    <property name="height" type="float" value="28.67"/>
+    <property name="width" type="float" value="156.5"/>
+    <property name="x" type="float" value="193.94"/>
+    <property name="y" type="float" value="577.76"/>
+   </properties>
+  </object>
+  <object id="42" x="0" y="0" width="29.3333" height="1021.33">
+   <properties>
+    <property name="height" type="float" value="1021.33"/>
+    <property name="width" type="float" value="29.33"/>
+    <property name="x" type="float" value="0"/>
+    <property name="y" type="float" value="0"/>
+   </properties>
+  </object>
+  <object id="45" x="993.333" y="2.66833" width="29.3333" height="1021.33">
+   <properties>
+    <property name="height" type="float" value="1021.33"/>
+    <property name="width" type="float" value="29.33"/>
+    <property name="x" type="float" value="993.33"/>
+    <property name="y" type="float" value="2.67"/>
+   </properties>
+  </object>
+  <object id="47" x="33" y="1.33333" width="955" height="28.5">
+   <properties>
+    <property name="height" type="float" value="28.5"/>
+    <property name="width" type="float" value="955"/>
+    <property name="x" type="float" value="33"/>
+    <property name="y" type="float" value="1.33"/>
+   </properties>
+  </object>
+  <object id="48" x="33.25" y="994.833" width="955" height="28.5">
+   <properties>
+    <property name="height" type="float" value="28.5"/>
+    <property name="width" type="float" value="955"/>
+    <property name="x" type="float" value="33.25"/>
+    <property name="y" type="float" value="994.83"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="5" name="entitySpawnPoints">
-  <object id="13" type="EntitySpawnPoint" x="126.953" y="809.618">
+  <object id="13" type="EntitySpawnPoint" x="273.62" y="638.785">
    <properties>
     <property name="entityType" value="player"/>
     <property name="hasSpawnProtection" type="bool" value="false"/>
     <property name="id" type="int" value="0"/>
     <property name="type" value="entitySpawnPoint"/>
-    <property name="x" type="float" value="126.95"/>
-    <property name="y" type="float" value="809.62"/>
+    <property name="x" type="float" value="273.62"/>
+    <property name="y" type="float" value="638.78"/>
    </properties>
    <point/>
   </object>
@@ -54,6 +90,17 @@
     <property name="type" value="entitySpawnPoint"/>
     <property name="x" type="float" value="249.11"/>
     <property name="y" type="float" value="912.62"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="30" type="EntitySpawnPoint" x="252.888" y="572.397">
+   <properties>
+    <property name="entityType" value="enemy"/>
+    <property name="hasSpawnProtection" type="bool" value="false"/>
+    <property name="id" type="int" value="1"/>
+    <property name="type" value="entitySpawnPoint"/>
+    <property name="x" type="float" value="252.89"/>
+    <property name="y" type="float" value="572.4"/>
    </properties>
    <point/>
   </object>
