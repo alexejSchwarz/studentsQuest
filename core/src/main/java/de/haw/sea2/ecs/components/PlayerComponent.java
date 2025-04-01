@@ -18,7 +18,7 @@ public class PlayerComponent implements Component, Pool.Poolable {
      */
     @Override
     public void reset() {
-        this.speed.set(0f,0f);
         this.collectedCoins = 0;
+        this.speed.set(Vector2.Zero);
     }
 }

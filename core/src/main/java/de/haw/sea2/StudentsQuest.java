@@ -20,9 +20,13 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
+import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.ecs.builders.EntityCreator;
 import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.ecs.systems.EnemyMovementSystem;
+import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
 import de.haw.sea2.input.InputManager;
+import de.haw.sea2.map.MapChangeListener;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
 import de.haw.sea2.screen.ScreenType;
@@ -212,6 +216,8 @@ public class StudentsQuest extends Game {
 
     private DebugSystem debugSystem;
 
+    private PathToPlayerFinder pathToPlayerFinder;
+
     /**
      * Setzt die Standardwerte für BodyDef und FixtureDef zurück.
      *
@@ -294,6 +300,8 @@ public class StudentsQuest extends Game {
 
         this.gameRenderer = new GameRenderer(this);
 
+        this.pathToPlayerFinder = new PathToPlayerFinder(this);
+
         this.mapManager = new MapManager(this);
 
         // Debug-System initialisieren
@@ -355,7 +363,6 @@ public class StudentsQuest extends Game {
         this.mapManager.dispose();
         this.gameRenderer.dispose();
         this.screenManager.dispose();
-        this.stage.dispose();
         this.screen.dispose();
 
         // Debug-System freigeben
@@ -428,8 +435,13 @@ public class StudentsQuest extends Game {
     public WorldContactListener getWorldContactListener() {
         return worldContactListener;
     }
+
     public Stage getStage() {
         return this.stage;
+    }
+
+    public PathToPlayerFinder getPathToPlayerFinder() {
+        return this.pathToPlayerFinder;
     }
 
     /**

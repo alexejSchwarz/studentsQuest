@@ -13,14 +13,17 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
+import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.ecs.systems.EnemyMovementSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.gameLevel.SpawnLogic;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.map.GameMap;
 import de.haw.sea2.paths.MapPaths;
 import de.haw.sea2.ui.GameUI;
 import de.haw.sea2.view.GameRenderer;
@@ -75,6 +78,8 @@ public class GameScreen implements Screen, KeyInputListener {
 
     private GameScreenDebugRenderer debugRenderer;
 
+    private EnemyMovementDebugRenderer enemyMovementDebugRenderer;
+
     private final Stage stage;
 
     private final GameUI gameUI;
@@ -106,11 +111,19 @@ public class GameScreen implements Screen, KeyInputListener {
         if (!this.context.getInputManager().getKeyInputListeners().contains(playerMovementSystem, true)) {
             this.context.getInputManager().addKeyInputListener(playerMovementSystem);
         }
-
         // Debug-Renderer erstellen und registrieren
         if (DebugConfig.DEBUG_ENABLED) {
-            debugRenderer = new GameScreenDebugRenderer(context);
-            context.getDebugSystem().addRenderer(debugRenderer);
+            this.debugRenderer = new GameScreenDebugRenderer(this.context);
+            this.context.getDebugSystem().addRenderer(this.debugRenderer);
+
+            // EnemyMovementDebugRenderer hinzufügen
+            EnemyMovementSystem enemyMovementSystem = this.engine.getSystem(EnemyMovementSystem.class);
+            if (enemyMovementSystem != null) {
+                this.enemyMovementDebugRenderer = new EnemyMovementDebugRenderer(this.context);
+                this.context.getDebugSystem().addRenderer(this.enemyMovementDebugRenderer);
+                // Verbindung zum PathToPlayerFinder herstellen
+                this.enemyMovementDebugRenderer.setPathFinder(this.context.getPathToPlayerFinder());
+            }
         }
 
     }
@@ -135,10 +148,12 @@ public class GameScreen implements Screen, KeyInputListener {
         float ballSize = 1f; // Adjust as needed
         this.context.getEntityCreator().createBall(ballPosition, ballSize);
 
-        this.spawnLogic.prepareLevelStart(this.context.getMapManager().getCurrentMap().getEntitySpawnPoints());
+        GameMap map = this.context.getMapManager().getCurrentMap();
+        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints(), map.getCollisionAreas());
 
         // Registriere diesen Screen als KeyInputListener
         this.context.getInputManager().addKeyInputListener(this);
+
     }
 
     /**
@@ -177,7 +192,6 @@ public class GameScreen implements Screen, KeyInputListener {
         stage.getBatch().begin();
         gameUI.render((SpriteBatch) stage.getBatch());
         stage.getBatch().end();
-
 
         // TODO look this up
         /*
@@ -256,8 +270,15 @@ public class GameScreen implements Screen, KeyInputListener {
         this.context.getInputManager()
                 .removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
         // Debug-Renderer entfernen
-        if (DebugConfig.DEBUG_ENABLED && debugRenderer != null) {
-            context.getDebugSystem().removeRenderer(debugRenderer);
+        if (DebugConfig.DEBUG_ENABLED) {
+            if (debugRenderer != null) {
+                context.getDebugSystem().removeRenderer(debugRenderer);
+            }
+            if (enemyMovementDebugRenderer != null) {
+                context.getDebugSystem().removeRenderer(enemyMovementDebugRenderer);
+                enemyMovementDebugRenderer.dispose();
+                enemyMovementDebugRenderer = null;
+            }
         }
     }
 
