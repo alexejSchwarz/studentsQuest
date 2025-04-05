@@ -53,10 +53,11 @@ public class MainMenuScreen implements Screen {
     private final Texture heading;
 
     // Konstanten zur Positionierung und Skalierung der Buttons
-    private static final float startButtonYValue = 4.5f;
+    private static final float START_BUTTON_Y_VALUE = 4.5f;
     private static final float startButtonXValue = 5f;
     private static final float padding = 0.05f;
     private static final float buttonScale = 2f;
+    private static final int BUTTONS_PER_ROW = 3;
 
     /**
      * Konstruktor, der den Spielkontext initialisiert und die UI-Komponenten lädt.
@@ -68,7 +69,15 @@ public class MainMenuScreen implements Screen {
         this.stage = this.context.getStage();
 
         // Lade das TextureAtlas mit den Button-Grafiken
-        buttonAtlas = new TextureAtlas(Gdx.files.internal(AssetPaths.BUTTONATLAS.getPath()));
+
+
+        //Texture loading Main Menu
+        context.getAssetManager().load(AssetPaths.BUTTONATLAS.getPath(), TextureAtlas.class);
+        context.getAssetManager().load(AssetPaths.MAINMENUBACKGROUND.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.MAINMENUHEADING.getPath(), Texture.class);
+        context.getAssetManager().finishLoading();
+
+        buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTONATLAS.getPath());
 
         // Initialisiere die Drawable-Regionen für die Buttons
         startButtonRegion = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
@@ -79,16 +88,16 @@ public class MainMenuScreen implements Screen {
         tutorialRegion = new TextureRegionDrawable(buttonAtlas.findRegion("tutorial_button"));
 
         // Lade und füge den Hintergrund hinzu
-        background = new Texture(AssetPaths.MAINMENUBACKGROUND.getPath());
+        background = context.getAssetManager().get(AssetPaths.MAINMENUBACKGROUND.getPath());
         Image backgroundImage = new Image(background);
         backgroundImage.setSize(17f, 12f);
         stage.addActor(backgroundImage);
 
         //Lade und füge die Überschrift hinzu
-        heading = new Texture(AssetPaths.MAINMENUHEADING.getPath());
+        heading = context.getAssetManager().get(AssetPaths.MAINMENUHEADING.getPath());
         Image headingImage = new Image(heading);
         headingImage.setSize(9f, 1f);
-        headingImage.setPosition(StudentsQuest.screenWidth/2f - 4.3f, startButtonYValue+buttonScale*1.3f);
+        headingImage.setPosition(16f/2f - 4.3f, START_BUTTON_Y_VALUE +buttonScale*1.3f);
         stage.addActor(headingImage);
 
         // Erstelle und positioniere die Buttons
@@ -151,10 +160,10 @@ public class MainMenuScreen implements Screen {
 
         // Positioniere die Buttons in zwei Reihen (erste Reihe: 3 Buttons, zweite Reihe: 3 Buttons)
         float currentX = startButtonXValue;
-        float currentY = startButtonYValue;
+        float currentY = START_BUTTON_Y_VALUE;
         for (int i = 0; i < imageButtons.size(); i++) {
             // Bei Button 4 (Index 3) in die nächste Reihe wechseln
-            if (i == 3) {
+            if (i == BUTTONS_PER_ROW) {
                 currentX = startButtonXValue;
                 // Verschiebe die Y-Position um die Höhe des Buttons plus padding
                 currentY -= (buttonScale + padding);
@@ -256,5 +265,6 @@ public class MainMenuScreen implements Screen {
         buttonAtlas.dispose();
         stage.dispose();
         background.dispose();
+        heading.dispose();
     }
 }

@@ -75,9 +75,6 @@ public class StudentsQuest extends Game {
     // scalierung fuer Physics Engine
     public static final float PHYSICS_TIME_STEP = 1 / 60f;
 
-    //16:9 ist das Bildschirmverhältnis
-    public static final float screenWidth = 16f;
-    public static final float screenHeight = 9f;
 
     /**
      * Wiederverwendbare Definitionen für physikalische Körper und ihre
