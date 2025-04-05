@@ -18,7 +18,6 @@ import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.ecs.components.HearthComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.systems.EnemyMovementSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
@@ -161,7 +160,7 @@ public class GameScreen implements Screen, KeyInputListener {
         this.context.getEntityCreator().createBall(ballPosition, ballSize);
 
         GameMap map = this.context.getMapManager().getCurrentMap();
-        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints(), map.getCollisionAreas());
+        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints());
 
         // Registriere diesen Screen als KeyInputListener
         this.context.getInputManager().addKeyInputListener(this);

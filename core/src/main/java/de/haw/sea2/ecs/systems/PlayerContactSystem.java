@@ -8,6 +8,7 @@ import de.haw.sea2.contact.PlayerContactListener;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.contact.InteractionType;
+import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.components.RemoveComponent;
 import de.haw.sea2.ecs.components.SimpleRenderComponent;
 
@@ -45,7 +46,8 @@ public class PlayerContactSystem extends IteratingSystem implements PlayerContac
         } else if (interactionType == InteractionType.OBJECT_COLLECT) {
             RemoveComponent removeComponent = this.context.getEngine().createComponent(RemoveComponent.class);
             interactable.add(removeComponent);
-            //TODO hier event an UI coinCounter++ oder so
+            PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(player);
+            playerComponent.collectedCoins++;
         }
     }
 }
