@@ -9,5 +9,6 @@ public enum ScreenType {
     SETTINGS,
     CREDITS,
     PAUSE,
-    LOADING 
+    LOADING,
+    SUCCESS
 }

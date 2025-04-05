@@ -124,6 +124,8 @@ public class ScreenManager {
             // werden kann
             case LOADING:
                 return new LoadingScreen(game, ScreenType.MAIN_MENU);
+            case SUCCESS:
+                return new SuccessScreen(game);
             default:
                 LoggerUtil.error(LogCategory.ERROR,this,"Unbekannter ScreenType: " + screenType);
                 return new MainMenuScreen(game); // Fallback
