@@ -75,6 +75,7 @@ public class StudentsQuest extends Game {
     // scalierung fuer Physics Engine
     public static final float PHYSICS_TIME_STEP = 1 / 60f;
 
+
     /**
      * Wiederverwendbare Definitionen für physikalische Körper und ihre
      * Eigenschaften.

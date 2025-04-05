@@ -16,7 +16,7 @@ public class ClassLogConfig {
     // Falls das Logging für eine bestimmte Klasse deaktiviert werden soll,
     // kann dies hier explizit festgelegt werden.
     static {
-        classLogSettings.put(MainMenuScreen.class, false);
+        //classLogSettings.put(MainMenuScreen.class, false);
     }
 
     /**
