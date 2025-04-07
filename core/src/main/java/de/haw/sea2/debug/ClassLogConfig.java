@@ -1,7 +1,5 @@
 package de.haw.sea2.debug;
 
-import de.haw.sea2.screen.MainMenuScreen;
-
 import java.util.HashMap;
 import java.util.Map;
 

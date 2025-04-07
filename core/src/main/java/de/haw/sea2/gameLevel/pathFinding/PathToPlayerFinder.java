@@ -8,7 +8,6 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
@@ -34,7 +33,6 @@ public class PathToPlayerFinder implements MapChangeListener {
     private GameMap map;
 
     // Pathfinding related objects
-    private final ObjectMap<Entity, Array<Vector2>> entityPaths = new ObjectMap<>();
     private NavigationGrid navGrid;
     private IndexedAStarPathFinder<GridNode> pathFinder;
 

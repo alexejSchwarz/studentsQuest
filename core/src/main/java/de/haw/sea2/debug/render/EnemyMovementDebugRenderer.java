@@ -160,9 +160,6 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
         // Set up projection matrix for world coordinates
         shapeRenderer.setProjectionMatrix(context.getGameCamera().combined);
 
-        // Update the enemies array to make sure we have the current state
-        this.enemies = context.getEngine().getEntitiesFor(Family.all(EnemyComponent.class).get());
-
         // Check if there are any enemies
         if (this.enemies.size() == 0) {
             return; // No enemies to draw paths for

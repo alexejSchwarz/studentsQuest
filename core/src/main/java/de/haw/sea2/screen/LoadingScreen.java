@@ -74,7 +74,9 @@ public class LoadingScreen implements Screen {
         // z.B. Sound-Effekte, Musik, UI-Elemente
         //TODO use atlas for entities, items etc
         context.getAssetManager().load(AssetPaths.BALL.getPath(), Texture.class);
-        context.getAssetManager().load(AssetPaths.COIN.getPath(), Texture.class);
+
+        // Coin-Atlas für CoinCounter laden
+        context.getAssetManager().load(AssetPaths.COIN_ATLAS.getPath(), TextureAtlas.class);
 
         //Herzen laden
         context.getAssetManager().load(AssetPaths.HEARTH.getPath(), Texture.class);

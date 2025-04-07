@@ -4,7 +4,7 @@ public enum AssetPaths {
 
     HEARTH("placeholderAssets/Sprite_heart.png"),
     BALL("assetsFromTut/Ball.png"),
-    COIN("assetsFromTut/coin.png"),
+    COIN_ATLAS("coins/coins.atlas"),
     MAINMENUBACKGROUND("assetsFromTut/MainScreen/atlas/background.jpg"),
     MAINMENUHEADING("assetsFromTut/MainScreen/atlas/main_menu_text.png"),
     CHARANDEFFEKTATLAS("assetsFromTut/character_and_effect.atlas"),

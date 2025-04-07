@@ -20,13 +20,10 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
-import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.ecs.builders.EntityCreator;
 import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.ecs.systems.EnemyMovementSystem;
 import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.map.MapChangeListener;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
 import de.haw.sea2.screen.ScreenType;
@@ -315,7 +312,7 @@ public class StudentsQuest extends Game {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
         // Log: Erfolgreich geladen
-        LoggerUtil.log(LogCategory.DEBUG, this, "Alle Ressourcen erfolgreich geladen");
+        LoggerUtil.log(LogCategory.DEBUG, this, "Alle Ressourcen erfolgreich erstellt.");
     }
 
     /**

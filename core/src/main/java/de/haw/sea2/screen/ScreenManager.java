@@ -2,7 +2,6 @@ package de.haw.sea2.screen;
 
 import java.util.EnumMap;
 import java.util.Map;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.LogCategory;
