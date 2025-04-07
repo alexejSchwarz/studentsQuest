@@ -98,11 +98,18 @@ public class EntityCreator {
             .categoryBits(Bits.BIT_GAME_ENTITY.value)
             .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value))
             .addComponents(entity -> {
-                SimpleRenderComponent renderComp = engine.createComponent(SimpleRenderComponent.class);
-                renderComp.textureFilePath = "assetsFromTut/coin.png";
-                renderComp.width = size;
-                renderComp.height = size;
-                entity.add(renderComp);
+                // Use AnimationComponent instead of SimpleRenderComponent for animated coins
+                AnimationComponent animComp = engine.createComponent(AnimationComponent.class);
+                // Create a custom animation type for the coin
+                animComp.animationType = new de.haw.sea2.view.animations.AnimationType(
+                    "coins/coins.atlas", 
+                    "MonedaD", 
+                    0.15f, // animation speed
+                    0      // row index (not used for our coin atlas layout)
+                );
+                animComp.width = size;
+                animComp.height = size;
+                entity.add(animComp);
 
                 InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
                 interCopm.type = InteractionType.OBJECT_COLLECT;

@@ -172,18 +172,38 @@ public class GameRenderer implements Disposable, MapChangeListener {
     private Animation<Sprite> getAnimation(AnimationType animationType) {
         Animation<Sprite> animation = this.animationCache.get(animationType);
         if (animation == null) {
-
-            // if animationType
-
             // create Animation
             LoggerUtil.log(LogCategory.DEBUG, this, "Creating new animation of type: " + animationType);
-            TextureAtlas.AtlasRegion atlasRegion = this.assetManager.get(animationType.atlasPath(), TextureAtlas.class)
-                    .findRegion(animationType.atlasKey());
+            TextureAtlas atlas = this.assetManager.get(animationType.atlasPath(), TextureAtlas.class);
+            TextureAtlas.AtlasRegion atlasRegion = atlas.findRegion(animationType.atlasKey());
 
-            // TODO in dem Bsp 64 x 64, spaeter evt 32 * 32??
-            final TextureRegion[][] textureRegions = atlasRegion.split(64, 64);
-            animation = new Animation<>(animationType.frameTime(),
-                    getKeyFrames(textureRegions[animationType.rowIndex()]), Animation.PlayMode.LOOP);
+            // Special handling for coin animation which has a different format
+            if (animationType.atlasPath().contains("coins")) { //TODO REFACTOR ANIMATION
+                // For coin sprites, they are arranged horizontally in a strip
+                int frameWidth = atlasRegion.getRegionWidth() / 5; // 5 frames in the strip
+                int frameHeight = atlasRegion.getRegionHeight();
+                
+                Array<Sprite> keyFrames = new Array<>(5);
+                
+                
+                // Extract each frame from the strip
+                for (int i = 0; i < 5; i++) {
+                    TextureRegion frame = new TextureRegion(atlasRegion, 
+                                                           i * frameWidth, 0, 
+                                                           frameWidth, frameHeight);
+                    Sprite sprite = new Sprite(frame);
+                    sprite.setOriginCenter();
+                    keyFrames.add(sprite);
+                }
+                
+                animation = new Animation<>(animationType.frameTime(), keyFrames, Animation.PlayMode.LOOP);
+            } else {
+                // Standard animation handling for character sprites (64x64 grid)
+                final TextureRegion[][] textureRegions = atlasRegion.split(64, 64);
+                animation = new Animation<>(animationType.frameTime(),
+                        getKeyFrames(textureRegions[animationType.rowIndex()]), Animation.PlayMode.LOOP);
+            }
+            
             this.animationCache.put(animationType, animation);
         }
         return animation;

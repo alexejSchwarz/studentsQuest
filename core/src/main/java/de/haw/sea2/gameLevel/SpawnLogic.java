@@ -74,7 +74,7 @@ public class SpawnLogic {
     private void spawnItem() {
         int randomIndex = MathUtils.random(this.availableItemSpawns.size - 1);
         EntitySpawnPoint newUsedItemSpawn = this.availableItemSpawns.removeIndex(randomIndex);
-        this.creator.createCoin(newUsedItemSpawn.spawnPoint(), 1f);
+        this.creator.createCoin(newUsedItemSpawn.spawnPoint(), 0.5f);
 
         if (this.lastUsedItemSpawn != null) {
             this.availableItemSpawns.add(this.lastUsedItemSpawn);
