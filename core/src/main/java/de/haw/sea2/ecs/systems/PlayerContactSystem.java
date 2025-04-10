@@ -8,6 +8,7 @@ import de.haw.sea2.contact.PlayerContactListener;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.contact.InteractionType;
+import de.haw.sea2.ecs.components.HearthComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.components.RemoveComponent;
 import de.haw.sea2.ecs.components.SimpleRenderComponent;
@@ -48,6 +49,9 @@ public class PlayerContactSystem extends IteratingSystem implements PlayerContac
             interactable.add(removeComponent);
             PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(player);
             playerComponent.collectedCoins++;
+        } else if (interactionType == InteractionType.PLAYER_TAKES_DMG) {
+            HearthComponent hearths = ECSEngine.HEARTH_COMPONENT_MAPPER.get(player);
+            hearths.currentHearths--;
         }
     }
 }

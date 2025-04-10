@@ -5,5 +5,6 @@ package de.haw.sea2.contact;
  */
 public enum InteractionType {
     OBJECT_COLLECT,
-    OBJECT_SHRINK
+    OBJECT_SHRINK,
+    PLAYER_TAKES_DMG
 }

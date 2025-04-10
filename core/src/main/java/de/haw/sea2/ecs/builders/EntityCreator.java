@@ -142,14 +142,18 @@ public class EntityCreator {
                     animationComp.height = height;
                     entity.add(animationComp);
 
-                    // Add the enemy component for pathfinding behavior
-                    EnemyComponent enemyComp = engine.createComponent(EnemyComponent.class);
-                    // Set custom properties for enemy
-                    enemyComp.speed.set(2f, 2f);
-                    enemyComp.pathUpdateTimer = 1f;
-                    entity.add(enemyComp);
-                })
-                .build();
+                // Add the enemy component for pathfinding behavior
+                EnemyComponent enemyComp = engine.createComponent(EnemyComponent.class);
+                // Set custom properties for enemy
+                enemyComp.speed.set(2f, 2f);
+                enemyComp.pathUpdateTimer = 1f;
+                entity.add(enemyComp);
+
+                InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
+                interCopm.type = InteractionType.PLAYER_TAKES_DMG;
+                entity.add(interCopm);
+            })
+            .build();
     }
 
     public void createWall(Rectangle rectangle) {
