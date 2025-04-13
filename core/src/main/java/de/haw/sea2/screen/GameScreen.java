@@ -160,7 +160,8 @@ public class GameScreen implements Screen, KeyInputListener {
         this.context.getEntityCreator().createBall(ballPosition, ballSize);
 
         GameMap map = this.context.getMapManager().getCurrentMap();
-        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints());
+        // Übergebe sowohl die Spawnpunkte als auch die Kollisionswände an SpawnLogic
+        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints(), map.getCollisionAreas());
 
         // Registriere diesen Screen als KeyInputListener
         this.context.getInputManager().addKeyInputListener(this);

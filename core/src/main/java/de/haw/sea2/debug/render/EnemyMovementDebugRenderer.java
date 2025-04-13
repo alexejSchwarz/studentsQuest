@@ -165,39 +165,69 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
             return; // No enemies to draw paths for
         }
 
-        // Draw paths
+        // Enable blending and set line width once
         Gdx.gl.glEnable(GL20.GL_BLEND);
-
-        // Draw lines connecting all waypoints
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         Gdx.gl.glLineWidth(PATH_LINE_WIDTH);
-        Entity enemy = this.enemies.get(0);
-        EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
-        Array<Vector2> paths = enemyComp.waypoints;
 
-        if (paths.size >= 2) {
-            shapeRenderer.setColor(PATH_COLOR);
+        // Single rendering pass combining lines and nodes
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        Color tempColor = new Color();
+        for (int enemyIndex = 0; enemyIndex < this.enemies.size(); enemyIndex++) {
+            Entity enemy = this.enemies.get(enemyIndex);
+            EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
+            Array<Vector2> paths = enemyComp.waypoints;
+
+            if (paths.size < 1)
+                continue;
+
+            // Generate color once per enemy
+            float hue = (enemyIndex * 0.618033988749895f) % 1.0f;
+            tempColor.fromHsv(hue * 360f, 0.8f, 0.9f);
+            tempColor.r = tempColor.r * 0.7f + PATH_COLOR.r * 0.3f;
+            tempColor.g = tempColor.g * 0.7f + PATH_COLOR.g * 0.3f;
+            tempColor.b = tempColor.b * 0.7f + PATH_COLOR.b * 0.3f;
+            tempColor.a = PATH_COLOR.a;
+            shapeRenderer.setColor(tempColor);
+
+            // Draw path lines
             for (int i = 0; i < paths.size - 1; i++) {
                 Vector2 current = paths.get(i);
                 Vector2 next = paths.get(i + 1);
                 shapeRenderer.line(current.x, current.y, next.x, next.y);
             }
         }
-
         shapeRenderer.end();
 
-        // Draw nodes
+        // Draw nodes in a separate pass since ShapeType is different
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        if (paths.size >= 1) {
-            shapeRenderer.setColor(NODE_COLOR);
-            for (Vector2 node : paths) {
+        for (int enemyIndex = 0; enemyIndex < this.enemies.size(); enemyIndex++) {
+            Entity enemy = this.enemies.get(enemyIndex);
+            EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
+            Array<Vector2> paths = enemyComp.waypoints;
+
+            if (paths.size < 1)
+                continue;
+
+            // Use same color calculation for consistency
+            float hue = (enemyIndex * 0.618033988749895f) % 1.0f;
+            tempColor.fromHsv(hue * 360f, 0.8f, 1.0f);
+            tempColor.r = tempColor.r * 0.7f + NODE_COLOR.r * 0.3f;
+            tempColor.g = tempColor.g * 0.7f + NODE_COLOR.g * 0.3f;
+            tempColor.b = tempColor.b * 0.7f + NODE_COLOR.b * 0.3f;
+            tempColor.a = NODE_COLOR.a;
+            shapeRenderer.setColor(tempColor);
+
+            // Draw nodes
+            for (int i = 0; i < paths.size; i++) {
+                Vector2 node = paths.get(i);
                 shapeRenderer.circle(node.x, node.y, NODE_SIZE, 8);
             }
         }
-
         shapeRenderer.end();
 
+        // Reset line width
         Gdx.gl.glLineWidth(1.0f);
     }
 

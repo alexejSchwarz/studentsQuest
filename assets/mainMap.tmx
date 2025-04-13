@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="49">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="51">
  <tileset firstgid="1" source="tileset.tsx"/>
  <layer id="1" name="Kachelebene 1" width="32" height="32">
   <data encoding="base64" compression="zlib">
@@ -101,6 +101,28 @@
     <property name="type" value="entitySpawnPoint"/>
     <property name="x" type="float" value="252.89"/>
     <property name="y" type="float" value="572.4"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="49" type="EntitySpawnPoint" x="379.984" y="523.147">
+   <properties>
+    <property name="entityType" value="enemy"/>
+    <property name="hasSpawnProtection" type="bool" value="false"/>
+    <property name="id" type="int" value="1"/>
+    <property name="type" value="entitySpawnPoint"/>
+    <property name="x" type="float" value="379.98"/>
+    <property name="y" type="float" value="523.15"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="50" type="EntitySpawnPoint" x="473.642" y="511.105">
+   <properties>
+    <property name="entityType" value="enemy"/>
+    <property name="hasSpawnProtection" type="bool" value="false"/>
+    <property name="id" type="int" value="1"/>
+    <property name="type" value="entitySpawnPoint"/>
+    <property name="x" type="float" value="473.64"/>
+    <property name="y" type="float" value="511.11"/>
    </properties>
    <point/>
   </object>
