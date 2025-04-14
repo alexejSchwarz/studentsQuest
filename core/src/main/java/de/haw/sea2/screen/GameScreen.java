@@ -18,6 +18,7 @@ import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.ecs.components.HearthComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.systems.EnemyMovementSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
@@ -28,6 +29,7 @@ import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.paths.MapPaths;
 import de.haw.sea2.ui.GameUI;
+import de.haw.sea2.util.EntityUtils;
 import de.haw.sea2.view.GameRenderer;
 
 /**
@@ -86,9 +88,11 @@ public class GameScreen implements Screen, KeyInputListener {
 
     private final GameUI gameUI;
 
-    ImmutableArray<Entity> players;
+    private ImmutableArray<Entity> players;
 
-    PlayerComponent playerComponent;
+    private PlayerComponent playerComponent;
+
+    private HearthComponent playerHearthComp;
 
     public GameScreen(StudentsQuest context) {
         this.context = context;
@@ -133,10 +137,10 @@ public class GameScreen implements Screen, KeyInputListener {
         }
 
         players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
-        if (players.get(0) == null) {
-            LoggerUtil.error(LogCategory.ERROR,this,"Fehler. Kein Spieler im players array.");
-        }
-        playerComponent = players.get(0).getComponent(PlayerComponent.class);
+        Entity player = EntityUtils.checkAndGetPlayer(players);
+
+        playerComponent = player.getComponent(PlayerComponent.class);
+        playerHearthComp = player.getComponent(HearthComponent.class);
     }
 
     private void initialize() {
@@ -185,6 +189,11 @@ public class GameScreen implements Screen, KeyInputListener {
         this.accumulator += deltaTime;
 
         if (playerComponent.collectedCoins == playerComponent.neededCoins) {
+            context.getScreenManager().showScreen(ScreenType.SUCCESS);
+        }
+
+        if (playerHearthComp.currentHearths <= 0) {
+            //TODO ersetze durch gameOverScreen
             context.getScreenManager().showScreen(ScreenType.SUCCESS);
         }
 
