@@ -6,6 +6,6 @@ package de.haw.sea2.view.animations;
  * @param atlasPath path to the coresponding atlas in assets
  * @param atlasKey key for the atlas region like "hero"
  * @param frameTime time its takes to switch from one frame to another
- * @param rowIndex index for the texture row in the atlas region
+ * @param frameCount number of frames in animation
  */
-public record AnimationType(String atlasPath, String atlasKey, float frameTime, int rowIndex) {}
+public record AnimationType(String atlasPath, String atlasKey, float frameTime, int frameCount) {}

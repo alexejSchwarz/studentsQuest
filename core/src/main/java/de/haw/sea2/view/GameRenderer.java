@@ -35,6 +35,7 @@ import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.map.MapChangeListener;
 import de.haw.sea2.view.animations.AnimationType;
+import de.haw.sea2.view.animations.AnimationUtils;
 
 /**
  * responsible for drawing the map, Character, Entities in general, light,
@@ -46,7 +47,6 @@ public class GameRenderer implements Disposable, MapChangeListener {
     private final FitViewport viewport;
     private final SpriteBatch spriteBatch;
     private final AssetManager assetManager;
-    private final ObjectMap<AnimationType, Animation<Sprite>> animationCache;
 
     /**
      * Spezifischer Renderer für Tiled-Karten, der die Spielwelt darstellt. Dieser
@@ -73,7 +73,6 @@ public class GameRenderer implements Disposable, MapChangeListener {
                 .getEntitiesFor(Family.all(AnimationComponent.class, Box2DComponent.class).get());
         this.unanimatedEntities = context.getEngine()
                 .getEntitiesFor(Family.all(SimpleRenderComponent.class, Box2DComponent.class).get());
-        this.animationCache = new ObjectMap<>();
 
         // Richtet den TiledMapRenderer für die Spielkarten ein
         this.mapRenderer = new OrthogonalTiledMapRenderer(null, StudentsQuest.UNIT_SCALE, this.spriteBatch);
@@ -135,10 +134,11 @@ public class GameRenderer implements Disposable, MapChangeListener {
         AnimationComponent animationComponent = ECSEngine.ANIMATION_COMP_MAPPER.get(entity);
 
         // throws RuntimeException if animationType is null
-        Optional.ofNullable(animationComponent.animationType)
+        AnimationType animationType = Optional.ofNullable(animationComponent.animationType)
                 .orElseThrow(() -> new RuntimeException("No AnimationType found for animated Entity"));
 
-        Animation<Sprite> animation = getAnimation(animationComponent.animationType);
+        TextureAtlas atlas = this.assetManager.get(animationType.atlasPath(), TextureAtlas.class);
+        Animation<Sprite> animation = AnimationUtils.getAnimation(animationType, atlas);
         Sprite frame = animation.getKeyFrame(animationComponent.animationTime);
         drawInterpolatedEntity(frame, b2dComp, alpha, animationComponent.width, animationComponent.height);
 
@@ -152,8 +152,10 @@ public class GameRenderer implements Disposable, MapChangeListener {
      * https://www.youtube.com/watch?v=4JOqn-ZKA8Y&list=PLTKHCDn5RKK-seXZveiSQuSXkLq3wBYn1&index=30
      */
     private void drawInterpolatedEntity(Sprite frame, Box2DComponent b2dComp, float alpha, float width, float height) {
-        frame.setBounds(b2dComp.interpolatedRenderPosition.x - width * 0.5f,
-                b2dComp.interpolatedRenderPosition.y - b2dComp.height * 0.5f, width, height);
+        frame.setBounds(
+            b2dComp.interpolatedRenderPosition.x - width * 0.5f,
+            b2dComp.interpolatedRenderPosition.y - b2dComp.height * 0.5f, width, height
+        );
         frame.draw(spriteBatch);
 
         // interpolate renderposition
@@ -163,62 +165,6 @@ public class GameRenderer implements Disposable, MapChangeListener {
         float interpolatedy = MathUtils.lerp(b2dComp.previousY, b2dComp.body.getPosition().y, alpha);
 
         b2dComp.interpolatedRenderPosition.set(interpolatedX, interpolatedy);
-    }
-
-    /**
-     * retrieve Animation from Atlas. Save it in a cache and use it for later
-     * retrievals
-     */
-    private Animation<Sprite> getAnimation(AnimationType animationType) {
-        Animation<Sprite> animation = this.animationCache.get(animationType);
-        if (animation == null) {
-            // create Animation
-            LoggerUtil.log(LogCategory.DEBUG, this, "Creating new animation of type: " + animationType);
-            TextureAtlas atlas = this.assetManager.get(animationType.atlasPath(), TextureAtlas.class);
-            TextureAtlas.AtlasRegion atlasRegion = atlas.findRegion(animationType.atlasKey());
-
-            // Special handling for coin animation which has a different format
-            if (animationType.atlasPath().contains("coins")) { //TODO REFACTOR ANIMATION
-                // For coin sprites, they are arranged horizontally in a strip
-                int frameWidth = atlasRegion.getRegionWidth() / 5; // 5 frames in the strip
-                int frameHeight = atlasRegion.getRegionHeight();
-                
-                Array<Sprite> keyFrames = new Array<>(5);
-                
-                
-                // Extract each frame from the strip
-                for (int i = 0; i < 5; i++) {
-                    TextureRegion frame = new TextureRegion(atlasRegion, 
-                                                           i * frameWidth, 0, 
-                                                           frameWidth, frameHeight);
-                    Sprite sprite = new Sprite(frame);
-                    sprite.setOriginCenter();
-                    keyFrames.add(sprite);
-                }
-                
-                animation = new Animation<>(animationType.frameTime(), keyFrames, Animation.PlayMode.LOOP);
-            } else {
-                // Standard animation handling for character sprites (64x64 grid)
-                final TextureRegion[][] textureRegions = atlasRegion.split(64, 64);
-                animation = new Animation<>(animationType.frameTime(),
-                        getKeyFrames(textureRegions[animationType.rowIndex()]), Animation.PlayMode.LOOP);
-            }
-            
-            this.animationCache.put(animationType, animation);
-        }
-        return animation;
-    }
-
-    private Array<? extends Sprite> getKeyFrames(TextureRegion[] textureRegion) {
-        Array<Sprite> keyFrames = new Array<>();
-
-        for (TextureRegion region : textureRegion) {
-            Sprite sprite = new Sprite(region);
-            sprite.setOriginCenter();
-            keyFrames.add(sprite);
-        }
-
-        return keyFrames;
     }
 
     @Override

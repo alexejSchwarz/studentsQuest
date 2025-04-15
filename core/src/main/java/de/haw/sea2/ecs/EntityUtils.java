@@ -1,8 +1,7 @@
-package de.haw.sea2.util;
+package de.haw.sea2.ecs;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.LogCategory;

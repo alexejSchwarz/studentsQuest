@@ -28,8 +28,8 @@ import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.paths.MapPaths;
-import de.haw.sea2.ui.GameUI;
-import de.haw.sea2.util.EntityUtils;
+import de.haw.sea2.view.ui.GameUI;
+import de.haw.sea2.ecs.EntityUtils;
 import de.haw.sea2.view.GameRenderer;
 
 /**

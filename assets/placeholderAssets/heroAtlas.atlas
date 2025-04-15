@@ -1,0 +1,11 @@
+heroAtlas.png
+size:576,256
+repeat:none
+heroDown
+bounds:0,192,576,64
+heroLeft
+bounds:0,64,576,64
+heroRight
+bounds:0,128,576,64
+heroUp
+bounds:0,0,576,64

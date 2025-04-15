@@ -1,11 +1,13 @@
 package de.haw.sea2.view.animations;
 
+import de.haw.sea2.paths.AssetPaths;
+
 public enum PlayerAnimation {
 
-    HERO_MOVE_UP(new AnimationType("assetsFromTut/character_and_effect.atlas", "hero", 0.05f, 0)),
-    HERO_MOVE_LEFT(new AnimationType("assetsFromTut/character_and_effect.atlas", "hero", 0.05f, 1)),
-    HERO_MOVE_DOWN(new AnimationType("assetsFromTut/character_and_effect.atlas", "hero", 0.05f, 2)),
-    HERO_MOVE_RIGHT(new AnimationType("assetsFromTut/character_and_effect.atlas", "hero", 0.05f, 3));
+    HERO_MOVE_UP(new AnimationType(AssetPaths.HERO_ATLAS.getPath(), "heroUp", 0.05f, 9)),
+    HERO_MOVE_LEFT(new AnimationType(AssetPaths.HERO_ATLAS.getPath(), "heroLeft", 0.05f, 9)),
+    HERO_MOVE_DOWN(new AnimationType(AssetPaths.HERO_ATLAS.getPath(), "heroDown", 0.05f, 9)),
+    HERO_MOVE_RIGHT(new AnimationType(AssetPaths.HERO_ATLAS.getPath(), "heroRight", 0.05f, 9));
 
     public final AnimationType animationType;
 
