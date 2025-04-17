@@ -2,14 +2,14 @@ package de.haw.sea2.paths;
 
 public enum AssetPaths {
 
-    HEARTH("placeholderAssets/Sprite_heart.png"),
-    BALL("assetsFromTut/Ball.png"),
-    COIN_ATLAS("coins/coins.atlas"),
-    MAIN_MENU_BACKGROUND("assetsFromTut/MainScreen/atlas/background.jpg"),
-    MAIN_MENU_HEADING("assetsFromTut/MainScreen/atlas/main_menu_text.png"),
-    HERO_OLD_ATLAS("placeholderAssets/heroAtlas.atlas"),
+    HEARTH("screens/gameScreen/spriteHeart.png"),
+    BALL("screens/gameScreen/ball.png"),
+    COIN_ATLAS("screens/gameScreen/coins/coins.atlas"),
+    MAIN_MENU_BACKGROUND("screens/mainScreen/background.jpg"),
+    MAIN_MENU_HEADING("screens/mainScreen/text.png"),
+    HERO_OLD_ATLAS("screens/gameScreen/heroAtlas.atlas"),
     BOY_PLAYER_ATLAS("customEntities/playerAtlasCustom.atlas"),
-    BUTTON_ATLAS("assetsFromTut/MainScreen/atlas/buttonAtlas.atlas");
+    BUTTON_ATLAS("screens/mainScreen/button.atlas");
 
     private final String path;
 

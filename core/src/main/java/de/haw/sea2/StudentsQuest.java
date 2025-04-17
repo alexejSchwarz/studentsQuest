@@ -67,8 +67,7 @@ public class StudentsQuest extends Game {
      * dargestellt.
      * </p>
      */
-    public static final float UNIT_SCALE = 1 / 32f;
-    public static final float UNIT_SIZE_IN_PIXELS = 32f;
+    public static final float UNIT_SCALE = 1/16f;
 
     // scalierung fuer Physics Engine
     public static final float PHYSICS_TIME_STEP = 1 / 60f;

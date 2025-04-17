@@ -2,7 +2,7 @@ package de.haw.sea2.paths;
 
 public enum MapPaths {
 
-    MAINMAP("mainMap.tmx"),
+    MAINMAP("maps/firstMap/firstLevel48x48New21.04.tmx"),
     MAP2("map2.tmx");
 
     private final String path;

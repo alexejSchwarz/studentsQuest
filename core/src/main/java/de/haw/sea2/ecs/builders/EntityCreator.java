@@ -10,6 +10,7 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.*;
+import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.animations.BoyPlayerAnimation;
 import de.haw.sea2.view.animations.CoinAnimation;
 import de.haw.sea2.view.animations.EnemyAnimation;
@@ -82,7 +83,7 @@ public class EntityCreator {
                 .friction(0.2f)
                 .addComponents(entity -> {
                     SimpleRenderComponent renderComp = engine.createComponent(SimpleRenderComponent.class);
-                    renderComp.textureFilePath = "assetsFromTut/Ball.png";
+                    renderComp.textureFilePath = AssetPaths.BALL.getPath();
                     renderComp.width = size;
                     renderComp.height = size;
                     entity.add(renderComp);
