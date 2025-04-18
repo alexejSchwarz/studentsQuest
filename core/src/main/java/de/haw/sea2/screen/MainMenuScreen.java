@@ -72,12 +72,12 @@ public class MainMenuScreen implements Screen {
 
 
         //Texture loading Main Menu
-        context.getAssetManager().load(AssetPaths.BUTTONATLAS.getPath(), TextureAtlas.class);
-        context.getAssetManager().load(AssetPaths.MAINMENUBACKGROUND.getPath(), Texture.class);
-        context.getAssetManager().load(AssetPaths.MAINMENUHEADING.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.BUTTON_ATLAS.getPath(), TextureAtlas.class);
+        context.getAssetManager().load(AssetPaths.MAIN_MENU_BACKGROUND.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.MAIN_MENU_HEADING.getPath(), Texture.class);
         context.getAssetManager().finishLoading();
 
-        buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTONATLAS.getPath());
+        buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
 
         // Initialisiere die Drawable-Regionen für die Buttons
         startButtonRegion = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
@@ -88,13 +88,13 @@ public class MainMenuScreen implements Screen {
         tutorialRegion = new TextureRegionDrawable(buttonAtlas.findRegion("tutorial_button"));
 
         // Lade und füge den Hintergrund hinzu
-        background = context.getAssetManager().get(AssetPaths.MAINMENUBACKGROUND.getPath());
+        background = context.getAssetManager().get(AssetPaths.MAIN_MENU_BACKGROUND.getPath());
         Image backgroundImage = new Image(background);
         backgroundImage.setSize(17f, 12f);
         stage.addActor(backgroundImage);
 
         //Lade und füge die Überschrift hinzu
-        heading = context.getAssetManager().get(AssetPaths.MAINMENUHEADING.getPath());
+        heading = context.getAssetManager().get(AssetPaths.MAIN_MENU_HEADING.getPath());
         Image headingImage = new Image(heading);
         headingImage.setSize(9f, 1f);
         headingImage.setPosition(16f/2f - 4.3f, START_BUTTON_Y_VALUE +buttonScale*1.3f);

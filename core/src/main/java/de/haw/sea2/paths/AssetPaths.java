@@ -5,10 +5,10 @@ public enum AssetPaths {
     HEARTH("placeholderAssets/Sprite_heart.png"),
     BALL("assetsFromTut/Ball.png"),
     COIN_ATLAS("coins/coins.atlas"),
-    MAINMENUBACKGROUND("assetsFromTut/MainScreen/atlas/background.jpg"),
-    MAINMENUHEADING("assetsFromTut/MainScreen/atlas/main_menu_text.png"),
-    CHARANDEFFEKTATLAS("assetsFromTut/character_and_effect.atlas"),
-    BUTTONATLAS("assetsFromTut/MainScreen/atlas/buttonAtlas.atlas");
+    MAIN_MENU_BACKGROUND("assetsFromTut/MainScreen/atlas/background.jpg"),
+    MAIN_MENU_HEADING("assetsFromTut/MainScreen/atlas/main_menu_text.png"),
+    HERO_ATLAS("placeholderAssets/heroAtlas.atlas"),
+    BUTTON_ATLAS("assetsFromTut/MainScreen/atlas/buttonAtlas.atlas");
 
     private final String path;
 

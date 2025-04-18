@@ -68,7 +68,7 @@ public class LoadingScreen implements Screen {
         // SpielerAtlas laden
         context.getAssetManager().setLoader(Texture.class,
                 new TextureLoader(context.getAssetManager().getFileHandleResolver()));
-        context.getAssetManager().load(AssetPaths.CHARANDEFFEKTATLAS.getPath(), TextureAtlas.class);
+        context.getAssetManager().load(AssetPaths.HERO_ATLAS.getPath(), TextureAtlas.class);
 
         // Optional: Weitere Assets hier laden
         // z.B. Sound-Effekte, Musik, UI-Elemente

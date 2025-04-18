@@ -10,6 +10,7 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.*;
+import de.haw.sea2.view.animations.CoinAnimation;
 import de.haw.sea2.view.animations.PlayerAnimation;
 
 /**
@@ -102,13 +103,7 @@ public class EntityCreator {
             .addComponents(entity -> {
                 // Use AnimationComponent instead of SimpleRenderComponent for animated coins
                 AnimationComponent animComp = engine.createComponent(AnimationComponent.class);
-                // Create a custom animation type for the coin
-                animComp.animationType = new de.haw.sea2.view.animations.AnimationType(
-                    "coins/coins.atlas",
-                    "MonedaD",
-                    0.15f, // animation speed
-                    0      // row index (not used for our coin atlas layout)
-                );
+                animComp.animationType = CoinAnimation.GOLD_COIN_SPIN.animationType;
                 animComp.width = size;
                 animComp.height = size;
                 entity.add(animComp);

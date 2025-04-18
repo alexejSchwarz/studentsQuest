@@ -16,7 +16,7 @@ import de.haw.sea2.ecs.components.EnemyComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.map.EntitySpawnPoint;
 import de.haw.sea2.map.mapObjectEnums.MapEntityTypes;
-import de.haw.sea2.util.EntityUtils;
+import de.haw.sea2.ecs.EntityUtils;
 
 /**
  * Klasse zum Verwalten, welche Entities, zu welcher Zeit und Frequenz spawnen
