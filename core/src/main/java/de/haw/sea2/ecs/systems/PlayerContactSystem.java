@@ -50,7 +50,7 @@ public class PlayerContactSystem extends IteratingSystem implements PlayerContac
             interactable.add(removeComponent);
             PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(player);
             playerComponent.collectedCoins++;
-            context.getAudioManager().playAudio(AudioType.COIN_PICKUP);
+            context.getAudioManager().playAudio(AudioType.COIN_PICKUP_SOUND);
         } else if (interactionType == InteractionType.PLAYER_TAKES_DMG) {
             HearthComponent hearths = ECSEngine.HEARTH_COMPONENT_MAPPER.get(player);
             hearths.currentHearths--;

@@ -296,6 +296,8 @@ public class StudentsQuest extends Game {
         // Initialisiert den ScreenManager
         this.screenManager = new ScreenManager(this);
 
+        this.audioManager = new AudioManager(this);
+
         // Setzt den MainMenuScreen als ersten aktiven Bildschirm
         this.screenManager.showScreen(ScreenType.MAIN_MENU);
 
@@ -304,8 +306,6 @@ public class StudentsQuest extends Game {
         this.pathToPlayerFinder = new PathToPlayerFinder(this);
 
         this.mapManager = new MapManager(this);
-
-        this.audioManager = new AudioManager(this);
 
         // Debug-System initialisieren
         this.debugSystem = new DebugSystem();

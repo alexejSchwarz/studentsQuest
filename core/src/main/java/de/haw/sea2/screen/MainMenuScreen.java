@@ -3,6 +3,7 @@ package de.haw.sea2.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -13,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import de.haw.sea2.audio.AudioManager;
+import de.haw.sea2.audio.AudioType;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
@@ -75,6 +78,7 @@ public class MainMenuScreen implements Screen {
         context.getAssetManager().load(AssetPaths.BUTTON_ATLAS.getPath(), TextureAtlas.class);
         context.getAssetManager().load(AssetPaths.MAIN_MENU_BACKGROUND.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.MAIN_MENU_HEADING.getPath(), Texture.class);
+        context.getAssetManager().load(AudioType.START_SCREEN_MUSIC.getPath(), Music.class);
         context.getAssetManager().finishLoading();
 
         buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
@@ -97,8 +101,10 @@ public class MainMenuScreen implements Screen {
         heading = context.getAssetManager().get(AssetPaths.MAIN_MENU_HEADING.getPath());
         Image headingImage = new Image(heading);
         headingImage.setSize(9f, 1f);
-        headingImage.setPosition(16f/2f - 4.3f, START_BUTTON_Y_VALUE +buttonScale*1.3f);
+        headingImage.setPosition(16f / 2f - 4.3f, START_BUTTON_Y_VALUE + buttonScale * 1.3f);
         stage.addActor(headingImage);
+
+       context.getAudioManager().playAudio(AudioType.START_SCREEN_MUSIC);
 
         // Erstelle und positioniere die Buttons
         createButtons();
@@ -191,34 +197,35 @@ public class MainMenuScreen implements Screen {
         keyBindsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG,this,"Keybindings button pressed");            }
+                LoggerUtil.log(LogCategory.LOG, this, "Keybindings button pressed");
+            }
         });
 
         settingsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG,this,"Settings button pressed");
+                LoggerUtil.log(LogCategory.LOG, this, "Settings button pressed");
             }
         });
 
         creditsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG,this,"Credits button pressed");
+                LoggerUtil.log(LogCategory.LOG, this, "Credits button pressed");
             }
         });
 
         storyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG,this,"Story button pressed");
+                LoggerUtil.log(LogCategory.LOG, this, "Story button pressed");
             }
         });
 
         tutorialButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG,this,"Tutorial button pressed");
+                LoggerUtil.log(LogCategory.LOG, this, "Tutorial button pressed");
             }
         });
 
@@ -254,7 +261,10 @@ public class MainMenuScreen implements Screen {
      */
     @Override
     public void hide() {
-        LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen hidden");
+       //Funktioniert gerade noch nicht richtig, da der Game Screen zu schnell geladen wird.
+       //Wenn man useSimulatedLoading im Loading Screen auf true setzt, funktioniert es.
+       context.getAudioManager().fadeOutCurrentMusic(2f);
+       LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen hidden");
     }
 
     /**

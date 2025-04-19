@@ -143,7 +143,7 @@ public class GameScreen implements Screen, KeyInputListener {
         playerComponent = player.getComponent(PlayerComponent.class);
         playerHearthComp = player.getComponent(HearthComponent.class);
 
-        context.getAudioManager().playAudio(AudioType.LEVEL_1);
+        context.getAudioManager().playAudio(AudioType.LEVEL_1_MUSIC);
     }
 
     private void initialize() {
