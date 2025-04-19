@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import de.haw.sea2.audio.AudioManager;
 import de.haw.sea2.contact.WorldContactListener;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
@@ -216,6 +217,8 @@ public class StudentsQuest extends Game {
 
     private PathToPlayerFinder pathToPlayerFinder;
 
+    private AudioManager audioManager;
+
     /**
      * Setzt die Standardwerte für BodyDef und FixtureDef zurück.
      *
@@ -301,6 +304,8 @@ public class StudentsQuest extends Game {
         this.pathToPlayerFinder = new PathToPlayerFinder(this);
 
         this.mapManager = new MapManager(this);
+
+        this.audioManager = new AudioManager(this);
 
         // Debug-System initialisieren
         this.debugSystem = new DebugSystem();
@@ -440,6 +445,10 @@ public class StudentsQuest extends Game {
 
     public PathToPlayerFinder getPathToPlayerFinder() {
         return this.pathToPlayerFinder;
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
     }
 
     /**

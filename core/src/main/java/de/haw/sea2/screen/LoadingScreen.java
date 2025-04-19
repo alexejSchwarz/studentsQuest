@@ -5,6 +5,8 @@ import java.util.Objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.audio.AudioType;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.paths.MapPaths;
 
@@ -80,6 +83,12 @@ public class LoadingScreen implements Screen {
 
         //Herzen laden
         context.getAssetManager().load(AssetPaths.HEARTH.getPath(), Texture.class);
+
+        //Musik und Sounds laden
+        for (final AudioType audioType : AudioType.values()) {
+            Class<?> type = audioType.isMusic() ? Music.class : Sound.class;
+            context.getAssetManager().load(audioType.getPath(), type);
+        }
     }
 
     @Override
