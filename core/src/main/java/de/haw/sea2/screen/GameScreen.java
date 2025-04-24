@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import de.haw.sea2.audio.AudioType;
+import de.haw.sea2.audio.Audio;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
@@ -143,7 +143,7 @@ public class GameScreen implements Screen, KeyInputListener {
         playerComponent = player.getComponent(PlayerComponent.class);
         playerHearthComp = player.getComponent(HearthComponent.class);
 
-        context.getAudioManager().playAudio(AudioType.LEVEL_1_MUSIC);
+        context.getAudioManager().playAudio(Audio.LEVEL_1_MUSIC);
     }
 
     private void initialize() {

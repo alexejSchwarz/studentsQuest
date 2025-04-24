@@ -15,7 +15,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.audio.AudioType;
+import de.haw.sea2.audio.Audio;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.paths.MapPaths;
 
@@ -85,7 +85,7 @@ public class LoadingScreen implements Screen {
         context.getAssetManager().load(AssetPaths.HEARTH.getPath(), Texture.class);
 
         //Musik und Sounds laden
-        for (final AudioType audioType : AudioType.values()) {
+        for (final Audio audioType : Audio.values()) {
             Class<?> type = audioType.isMusic() ? Music.class : Sound.class;
             context.getAssetManager().load(audioType.getPath(), type);
         }

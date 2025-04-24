@@ -1,7 +1,7 @@
 package de.haw.sea2.audio;
 
-public enum AudioType {
-    LEVEL_1_MUSIC("audio/back_ground_music.mp3",true, 0.4f),
+public enum Audio {
+    LEVEL_1_MUSIC("audio/back_ground_music.mp3",true, 0.6f),
     START_SCREEN_MUSIC("audio/start_screen_music.mp3",true,0.4f),
     COIN_PICKUP_SOUND("audio/coin_sound.wav",false,0.4f);
 
@@ -9,7 +9,7 @@ public enum AudioType {
     private final boolean isMusic;
     private final float volume;
 
-    AudioType(String path, boolean isMusic, float volume) {
+    Audio(String path, boolean isMusic, float volume) {
         this.path = path;
         this.isMusic = isMusic;
         this.volume = volume;

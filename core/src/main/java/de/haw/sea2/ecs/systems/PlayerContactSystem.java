@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
-import de.haw.sea2.audio.AudioType;
+import de.haw.sea2.audio.Audio;
 import de.haw.sea2.contact.PlayerContactListener;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
@@ -50,7 +50,7 @@ public class PlayerContactSystem extends IteratingSystem implements PlayerContac
             interactable.add(removeComponent);
             PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(player);
             playerComponent.collectedCoins++;
-            context.getAudioManager().playAudio(AudioType.COIN_PICKUP_SOUND);
+            context.getAudioManager().playAudio(Audio.COIN_PICKUP_SOUND);
         } else if (interactionType == InteractionType.PLAYER_TAKES_DMG) {
             HearthComponent hearths = ECSEngine.HEARTH_COMPONENT_MAPPER.get(player);
             hearths.currentHearths--;
