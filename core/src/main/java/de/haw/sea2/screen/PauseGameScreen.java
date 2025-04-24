@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.audio.Audio;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
@@ -80,6 +81,7 @@ public class PauseGameScreen implements Screen, KeyInputListener {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 context.getScreenManager().showScreen(ScreenType.MAIN_MENU);
+                context.getAudioManager().playAudio(Audio.START_SCREEN_MUSIC);
             }
         });
 

@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import de.haw.sea2.audio.Audio;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.StudentsQuest;
@@ -141,6 +142,8 @@ public class GameScreen implements Screen, KeyInputListener {
 
         playerComponent = player.getComponent(PlayerComponent.class);
         playerHearthComp = player.getComponent(HearthComponent.class);
+
+        context.getAudioManager().playAudio(Audio.LEVEL_1_MUSIC);
     }
 
     private void initialize() {
@@ -290,6 +293,9 @@ public class GameScreen implements Screen, KeyInputListener {
     public void hide() {
         // entfernt den KeyInputListener aus dem InputManager, wenn er verstekt wird
         this.context.getInputManager().removeKeyInputListener(this);
+
+        //Stoppen des Hintergrundlieds
+        context.getAudioManager().stopCurrentMusic();
 
         // Stelle sicher, dass das der KeyInputListener vom PlayerMovementSystem nicht
         // mehr aktiv ist
