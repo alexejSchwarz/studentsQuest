@@ -1,10 +1,7 @@
 package de.haw.sea2.screen;
 
-import java.util.Objects;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -14,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
 import de.haw.sea2.paths.AssetPaths;
@@ -25,7 +23,6 @@ import de.haw.sea2.paths.MapPaths;
 public class LoadingScreen implements Screen {
 
     private final StudentsQuest context;
-    private final ScreenType targetScreenType;
     private final BitmapFont font;
     private final ShapeRenderer shapeRenderer;
 
@@ -38,11 +35,9 @@ public class LoadingScreen implements Screen {
      * Erstellt einen neuen LoadingScreen mit dem angegebenen Ziel-Screen.
      *
      * @param context          Der StudentsQuest-Kontext
-     * @param targetScreenType Der Typ des Ziel-Screens
      */
-    public LoadingScreen(StudentsQuest context, ScreenType targetScreenType) {
+    public LoadingScreen(StudentsQuest context) {
         this.context = context;
-        this.targetScreenType = targetScreenType;
         this.font = new BitmapFont();
         this.shapeRenderer = new ShapeRenderer();
 
@@ -51,15 +46,11 @@ public class LoadingScreen implements Screen {
         this.font.getData().setScale((this.context.viewport.getWorldHeight() / Gdx.graphics.getHeight()) * 2);
         this.font.setColor(Color.WHITE);
 
-        initializeAssetLoading();
+        loadGameScreenAssets();
     }
 
-    private void initializeAssetLoading() {
-        if (Objects.requireNonNull(targetScreenType) == ScreenType.GAME) {
-            loadGameScreenAssets();
-        }
-    }
-
+    //TODO refactoring von Assets. So viel wie moeglich in so wenig wie moegliche Atli packen, hie, an dem Ort wo geladen wird einen Check einbauen. Dieser wirft im DebugMode Exceptions siehe EntityUtils
+    //TODO alle Assets die wir hier Laden koennen auch hier laden
     /**
      * Lädt die spezifischen Assets für den GameScreen.
      */
@@ -68,22 +59,19 @@ public class LoadingScreen implements Screen {
         // Karte über den MapManager laden
         context.getMapManager().loadMap(MapPaths.MAINMAP.getPath());
 
-        // SpielerAtlas laden
-        context.getAssetManager().setLoader(Texture.class,
-                new TextureLoader(context.getAssetManager().getFileHandleResolver()));
-        context.getAssetManager().load(AssetPaths.ENEMY_ATLAS.getPath(), TextureAtlas.class);
-        context.getAssetManager().load(AssetPaths.BOY_PLAYER_ATLAS.getPath(), TextureAtlas.class);
-
-        // Optional: Weitere Assets hier laden
-        // z.B. Sound-Effekte, Musik, UI-Elemente
-        //TODO use atlas for entities, items etc
-        context.getAssetManager().load(AssetPaths.BALL.getPath(), Texture.class);
-
         // Coin-Atlas für CoinCounter laden
         context.getAssetManager().load(AssetPaths.COIN_ATLAS.getPath(), TextureAtlas.class);
 
         //Herzen laden
         context.getAssetManager().load(AssetPaths.HEARTH.getPath(), Texture.class);
+
+        // SpielerAtlas laden
+        context.getAssetManager().load(AssetPaths.ENEMY_ATLAS.getPath(), TextureAtlas.class);
+        context.getAssetManager().load(AssetPaths.BOY_PLAYER_ATLAS.getPath(), TextureAtlas.class);
+
+        // Optional: Weitere Assets hier laden
+        // z.B. Sound-Effekte, Musik, UI-Elemente
+        context.getAssetManager().load(AssetPaths.BALL.getPath(), Texture.class);
 
         //Musik und Sounds laden
         for (final Audio audioType : Audio.values()) {
@@ -154,7 +142,7 @@ public class LoadingScreen implements Screen {
         // Wenn fertig und Mindestanzeigezeit überschritten, zum Zielscreen wechseln
         if (finished && (!useSimulatedLoading || elapsedTime >= minLoadTime)) {
             // Wechsel zum Ziel-Screen
-            context.getScreenManager().showScreen(targetScreenType);
+            context.getScreenManager().showScreen(ScreenType.INFO_SCREEN_LV1);
         }
     }
 

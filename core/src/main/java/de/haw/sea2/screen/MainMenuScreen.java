@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
@@ -37,6 +38,13 @@ import de.haw.sea2.view.ui.StageUtils;
  */
 public class MainMenuScreen implements Screen, KeyInputListener {
 
+    // Konstanten zur Positionierung und Skalierung der Buttons
+    private static final float START_BUTTON_Y_VALUE = 4.5f;
+    private static final float START_BUTTON_X_VALUE = 5f;
+    private static final float PADDING = 0.05f;
+    private static final float BUTTON_SCALE = 2f;
+    private static final int BUTTONS_PER_ROW = 3;
+
     private final StudentsQuest context;
     private final Stage stage;
 
@@ -57,17 +65,10 @@ public class MainMenuScreen implements Screen, KeyInputListener {
     //Schriftzug des Menüs
     private final Texture heading;
 
-    // Konstanten zur Positionierung und Skalierung der Buttons
-    private static final float START_BUTTON_Y_VALUE = 4.5f;
-    private static final float startButtonXValue = 5f;
-    private static final float padding = 0.05f;
-    private static final float buttonScale = 2f;
-    private static final int BUTTONS_PER_ROW = 3;
-
     private final Image backgroundImage;
     private final Image headingImage;
 
-    private  List<ImageButton> imageButtons;
+    private Array<ImageButton> imageButtons;
 
     /**
      * Konstruktor, der den Spielkontext initialisiert und die UI-Komponenten lädt.
@@ -88,26 +89,26 @@ public class MainMenuScreen implements Screen, KeyInputListener {
         context.getAssetManager().load(AssetPaths.HOME_BUTTON.getPath(), Texture.class);
         context.getAssetManager().finishLoading();
 
-        buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
+        this.buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
 
         // Initialisiere die Drawable-Regionen für die Buttons
-        startButtonRegion = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
-        keyBindsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("keybinds_button"));
-        creditsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("credits_button"));
-        settingsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("settings_button"));
-        storyRegion = new TextureRegionDrawable(buttonAtlas.findRegion("story_button"));
-        tutorialRegion = new TextureRegionDrawable(buttonAtlas.findRegion("tutorial_button"));
+        this.startButtonRegion = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
+        this.keyBindsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("keybinds_button"));
+        this.creditsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("credits_button"));
+        this.settingsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("settings_button"));
+        this.storyRegion = new TextureRegionDrawable(buttonAtlas.findRegion("story_button"));
+        this.tutorialRegion = new TextureRegionDrawable(buttonAtlas.findRegion("tutorial_button"));
 
         // Lade und füge den Hintergrund hinzu
-        background = context.getAssetManager().get(AssetPaths.MAIN_MENU_BACKGROUND.getPath());
-        backgroundImage = new Image(background);
-        backgroundImage.setSize(17f, 12f);
+        this.background = context.getAssetManager().get(AssetPaths.MAIN_MENU_BACKGROUND.getPath());
+        this.backgroundImage = new Image(this.background);
+        this.backgroundImage.setSize(17f, 12f);
 
         //Lade und füge die Überschrift hinzu
-        heading = context.getAssetManager().get(AssetPaths.MAIN_MENU_HEADING.getPath());
-        headingImage = new Image(heading);
-        headingImage.setSize(9f, 1f);
-        headingImage.setPosition(16f / 2f - 4.3f, START_BUTTON_Y_VALUE + buttonScale * 1.3f);
+        this.heading = context.getAssetManager().get(AssetPaths.MAIN_MENU_HEADING.getPath());
+        this.headingImage = new Image(this.heading);
+        this.headingImage.setSize(9f, 1f);
+        this.headingImage.setPosition(16f / 2f - 4.3f, START_BUTTON_Y_VALUE + BUTTON_SCALE * 1.3f);
 
         // Erstelle und positioniere die Buttons
         createButtons();
@@ -142,7 +143,7 @@ public class MainMenuScreen implements Screen, KeyInputListener {
 
     /**
      * Erstellt, positioniert und fügt die Schaltflächen dem Stage hinzu.
-     * Die Buttons werden in zwei Reihen mit minimalem Abstand (padding) angeordnet.
+     * Die Buttons werden in zwei Reihen mit minimalem Abstand (PADDING) angeordnet.
      */
     private void createButtons() {
         // Erstelle die einzelnen Buttons
@@ -154,32 +155,32 @@ public class MainMenuScreen implements Screen, KeyInputListener {
         ImageButton tutorialButton = new ImageButton(tutorialRegion);
 
         // Füge die Buttons einer Liste hinzu, um sie leichter verarbeiten zu können
-        imageButtons = new ArrayList<>();
-        imageButtons.add(startButton);
-        imageButtons.add(keyBindsButton);
-        imageButtons.add(settingsButton);
-        imageButtons.add(creditsButton);
-        imageButtons.add(storyButton);
-        imageButtons.add(tutorialButton);
+        this.imageButtons = new Array<>();
+        this.imageButtons.add(startButton);
+        this.imageButtons.add(keyBindsButton);
+        this.imageButtons.add(settingsButton);
+        this.imageButtons.add(creditsButton);
+        this.imageButtons.add(storyButton);
+        this.imageButtons.add(tutorialButton);
 
         // Setze die Größe aller Buttons auf den definierten Wert
-        for (ImageButton button : imageButtons) {
-            button.setSize(buttonScale, buttonScale);
+        for (ImageButton button : this.imageButtons) {
+            button.setSize(BUTTON_SCALE, BUTTON_SCALE);
         }
 
         // Positioniere die Buttons in zwei Reihen (erste Reihe: 3 Buttons, zweite Reihe: 3 Buttons)
-        float currentX = startButtonXValue;
+        float currentX = START_BUTTON_X_VALUE;
         float currentY = START_BUTTON_Y_VALUE;
-        for (int i = 0; i < imageButtons.size(); i++) {
+        for (int i = 0; i < imageButtons.size; i++) {
             // Bei Button 4 (Index 3) in die nächste Reihe wechseln
             if (i == BUTTONS_PER_ROW) {
-                currentX = startButtonXValue;
-                // Verschiebe die Y-Position um die Höhe des Buttons plus padding
-                currentY -= (buttonScale + padding);
+                currentX = START_BUTTON_X_VALUE;
+                // Verschiebe die Y-Position um die Höhe des Buttons plus PADDING
+                currentY -= (BUTTON_SCALE + PADDING);
             }
             imageButtons.get(i).setPosition(currentX, currentY);
             // Erhöhe currentX für den nächsten Button
-            currentX += buttonScale + padding;
+            currentX += BUTTON_SCALE + PADDING;
         }
 
         // Beispiel-Listener: Wenn der Start-Button berührt wird, wird zum GameScreen gewechselt
@@ -187,7 +188,7 @@ public class MainMenuScreen implements Screen, KeyInputListener {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 context.getAudioManager().stopCurrentMusic();
-                context.getScreenManager().showScreenWithLoading(ScreenType.GAME);
+                context.getScreenManager().showScreen(ScreenType.LOADING);
             }
         });
 

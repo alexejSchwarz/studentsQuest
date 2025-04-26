@@ -44,10 +44,7 @@ public class GameUI implements Disposable {
         this.context = context;
         ECSEngine ecsEngine = context.getEngine();
         players = ecsEngine.getEntitiesFor(Family.all(PlayerComponent.class, HearthComponent.class).get());
-
         this.heartIdleTexture = context.getAssetManager().get(AssetPaths.HEARTH.getPath(), Texture.class);
-
-        // Coin-Animation aus dem Atlas laden
         TextureAtlas coinAtlas = context.getAssetManager().get(AssetPaths.COIN_ATLAS.getPath(), TextureAtlas.class);
 
         // Erstelle die Animation für goldene Münzen
@@ -117,11 +114,11 @@ public class GameUI implements Disposable {
             TextureRegion currentFrame = coinAnimation.getKeyFrame(coinAnimTime);
 
             batch.draw(currentFrame,
-                      x, y, // Position
-                      coinSize/2, coinSize/2, // Origin center
-                      coinSize, coinSize, // Size
-                      1, 1, // Scale
-                      0); // Rotation
+                x, y, // Position
+                coinSize/2, coinSize/2, // Origin center
+                coinSize, coinSize, // Size
+                1, 1, // Scale
+                0); // Rotation
         }
 
         // Noch nicht gesammelte Münzen darstellen (grau und animiert)
@@ -138,11 +135,11 @@ public class GameUI implements Disposable {
             // Graue Münze für noch nicht gesammelte Coins
             batch.setColor(1, 1, 1, 0.7f); // Leicht transparent
             batch.draw(currentGrayFrame,
-                      x, y, // Position
-                      coinSize/2, coinSize/2, // Origin center
-                      coinSize, coinSize, // Size
-                      1, 1, // Scale
-                      0); // Rotation
+                x, y, // Position
+                coinSize/2, coinSize/2, // Origin center
+                coinSize, coinSize, // Size
+                1, 1, // Scale
+                0); // Rotation
             batch.setColor(1, 1, 1, 1); // Zurücksetzen der Farbe
         }
 
