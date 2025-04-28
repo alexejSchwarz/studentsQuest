@@ -1,5 +1,7 @@
 package de.haw.sea2.gameLevel.pathFinding;
 
+import java.util.Objects;
+
 import com.badlogic.gdx.ai.pfa.Connection;
 
 /**
@@ -31,5 +33,17 @@ public class GridConnection implements Connection<GridNode> {
     @Override
     public GridNode getToNode() {
         return toNode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GridConnection that)) return false;
+        return Float.compare(cost, that.cost) == 0 && Objects.equals(fromNode, that.fromNode) && Objects.equals(toNode, that.toNode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fromNode, toNode, cost);
     }
 }

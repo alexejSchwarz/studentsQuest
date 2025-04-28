@@ -17,13 +17,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.audio.AudioManager;
 import de.haw.sea2.contact.WorldContactListener;
-import de.haw.sea2.debug.LogCategory;
-import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
-import de.haw.sea2.ecs.builders.EntityCreator;
+import de.haw.sea2.debug.LogCategory;
+import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
+import de.haw.sea2.ecs.builders.EntityCreator;
+import de.haw.sea2.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
@@ -115,8 +115,6 @@ public class StudentsQuest extends Game {
      * aussieht.
      * </p>
      */
-    // TODO use in resize in Screen impl
-    // evt ExtendViewPort?
     public FitViewport viewport;
 
     /**
@@ -214,7 +212,7 @@ public class StudentsQuest extends Game {
 
     private DebugSystem debugSystem;
 
-    private PathToPlayerFinder pathToPlayerFinder;
+    private PathingCalculationManager pathCalcManager;
 
     private AudioManager audioManager;
 
@@ -302,7 +300,7 @@ public class StudentsQuest extends Game {
 
         this.gameRenderer = new GameRenderer(this);
 
-        this.pathToPlayerFinder = new PathToPlayerFinder(this);
+        this.pathCalcManager = new PathingCalculationManager();
 
         this.mapManager = new MapManager(this);
 
@@ -442,12 +440,12 @@ public class StudentsQuest extends Game {
         return this.stage;
     }
 
-    public PathToPlayerFinder getPathToPlayerFinder() {
-        return this.pathToPlayerFinder;
-    }
-
     public AudioManager getAudioManager() {
         return audioManager;
+    }
+
+    public PathingCalculationManager getPathCalcManager() {
+        return pathCalcManager;
     }
 
     /**

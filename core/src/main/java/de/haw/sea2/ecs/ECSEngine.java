@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.components.*;
 import de.haw.sea2.ecs.systems.*;
+import de.haw.sea2.ecs.systems.customSystems.EnemyBatchMovementSystem;
 
 /**
  * Die zentrale Engine des Entity-Component-Systems (ECS) für das Spiel.
@@ -67,6 +68,8 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<HearthComponent> HEARTH_COMPONENT_MAPPER = ComponentMapper.getFor(HearthComponent.class);
     public static final ComponentMapper<EnemyComponent> ENEMY_COMPONENT_MAPPER = ComponentMapper.getFor(EnemyComponent.class);
 
+    //Custom System
+    private final EnemyBatchMovementSystem enemyBatchMovementSystem;
 
     /**
      * Erstellt eine neue ECS-Engine für das Spiel.
@@ -83,11 +86,22 @@ public class ECSEngine extends PooledEngine {
     public ECSEngine(final StudentsQuest context) {
         super();
         this.addSystem(new PlayerMovementSystem(context));
-        this.addSystem(new EnemyMovementSystem(context));
         this.addSystem(new PlayerCameraSystem(context));
         this.addSystem(new AnimationSystem(context));
         this.addSystem(new PlayerAnimationSystem());
         this.addSystem(new EnemyAnimationSystem());
         this.addSystem(new PlayerContactSystem(context));
+        this.enemyBatchMovementSystem = new EnemyBatchMovementSystem(this, context);
+
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        this.enemyBatchMovementSystem.process(deltaTime);
+    }
+
+    public EnemyBatchMovementSystem getBatchMovementSystem() {
+        return this.enemyBatchMovementSystem;
     }
 }

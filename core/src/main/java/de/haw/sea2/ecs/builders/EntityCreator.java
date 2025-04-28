@@ -45,16 +45,15 @@ public class EntityCreator {
                 .position(playerSpawnLocation.x, playerSpawnLocation.y)
                 .size(width, height)
                 .categoryBits(Bits.BIT_PLAYER.value)
-                .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value | Bits.BIT_GAME_ENTITY.value
-                        | Bits.BIT_TMP_ENEMY.value))
+                .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_BALL.value | Bits.BIT_GAME_ENTITY.value | Bits.BIT_TMP_ENEMY.value))
                 .addComponents(entity -> {
                     PlayerComponent playerComp = engine.createComponent(PlayerComponent.class);
                     playerComp.speed.set(3f, 3f);
                     entity.add(playerComp);
 
                     HearthComponent hearthComponent = engine.createComponent(HearthComponent.class);
-                    hearthComponent.currentHearths = 3;
-                    hearthComponent.maxHearths = 3;
+                    hearthComponent.currentHearths = 5;
+                    hearthComponent.maxHearths = 5;
                     entity.add(hearthComponent);
 
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
@@ -131,7 +130,7 @@ public class EntityCreator {
                 .position(position.x, position.y)
                 .size(width, height)
                 .categoryBits(Bits.BIT_TMP_ENEMY.value)
-                .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value | Bits.BIT_TMP_ENEMY.value))
+                .maskBits((short) (Bits.BIT_WALL.value  | Bits.BIT_TMP_ENEMY.value | Bits.BIT_PLAYER.value))
                 .addComponents(entity -> {
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
                     animationComp.animationType = EnemyAnimation.HERO_MOVE_DOWN.animationType;

@@ -1,61 +1,80 @@
-package de.haw.sea2.ecs.systems;
+
+package de.haw.sea2.ecs.systems.customSystems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.ecs.EntityUtils;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.EnemyComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.gameLevel.pathFinding.PathFindingListener;
 import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
 
-public class EnemyMovementSystem extends IteratingSystem implements PathFindingListener {
+/**
+ * provisorisches Custom Movement System um Gegner Bewegung per batch und Multithreading durchzufuehren.
+ */
+public class EnemyBatchMovementSystem implements PathFindingListener {
 
     private final StudentsQuest context;
-    private PathToPlayerFinder pathToPlayerFinder;
+    private final ECSEngine engine;
+
+    private ImmutableArray<Entity> enemies;
+    private boolean pathingIsInitialized = false;
     private ImmutableArray<Entity> players;
 
-    public EnemyMovementSystem(StudentsQuest context) {
-        super(Family.all(Box2DComponent.class, EnemyComponent.class).get());
+    public EnemyBatchMovementSystem(ECSEngine engine, StudentsQuest context) {
         this.context = context;
+        this.engine = engine;
     }
 
-    @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    public void process(float deltaTime) {
 
-        if (pathToPlayerFinder == null) {
+        if (!pathingIsInitialized) {
             return;
         }
 
-        EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(entity);
-        Box2DComponent enemyBox2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
-        Box2DComponent playerBox2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(this.players.first());
+        Box2DComponent playerBox2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(EntityUtils.checkAndGetPlayer(this.players));
 
-        // Update timer for path recalculation
-        enemyComp.pathUpdateTimer += deltaTime;
+        Array<Entity> currentEnemies = new Array<>();
+        this.enemies.forEach(currentEnemies::add);
 
-        // Check if we need to update the path
-        if (enemyComp.pathUpdateTimer >= enemyComp.pathUpdateInterval) {
-            enemyComp.pathUpdateTimer = 0f;
-            enemyComp.waypoints = this.pathToPlayerFinder.getWayPoints(enemyBox2DComponent.body.getPosition(),
-                playerBox2DComponent.body.getPosition());
+        for (Entity enemy : currentEnemies) {
+            EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
+            Box2DComponent enemyBox2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(enemy);
+
+            // Update timer for path recalculation
+            enemyComp.pathUpdateTimer += deltaTime;
+
+            // Check if we need to update the path
+            if (enemyComp.pathUpdateTimer >= enemyComp.pathUpdateInterval) {
+                enemyComp.pathUpdateTimer = 0f;
+                this.context.getPathCalcManager().submitPathCalculationTask(enemyComp, enemyBox2DComponent, playerBox2DComponent);
+            }
         }
 
-        if (enemyComp.waypoints.isEmpty()) {
-            return;
+        this.context.getPathCalcManager().executeTasks();
+
+        for (Entity enemy : currentEnemies) {
+            EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
+            Box2DComponent enemyBox2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(enemy);
+
+            if (enemyComp.waypoints.isEmpty()) {
+                continue;
+            }
+
+            Vector2 nextWayPoint = extractNextWaypoint(enemyComp.waypoints, enemyBox2DComponent.body.getPosition());
+            applyMovement(enemyBox2DComponent, enemyComp, nextWayPoint);
         }
 
-        Vector2 nextWayPoint = extractNextWaypoint(enemyComp.waypoints, enemyBox2DComponent.body.getPosition());
-        applyMovement(enemyBox2DComponent, enemyComp, nextWayPoint);
     }
 
     private Vector2 extractNextWaypoint(Array<Vector2> waypoints, Vector2 currentPosition) {
-
 
         Vector2 nextWaypoint = waypoints.first();
 
@@ -100,8 +119,9 @@ public class EnemyMovementSystem extends IteratingSystem implements PathFindingL
     }
 
     @Override
-    public void pathFindingInitialized(PathToPlayerFinder pathToPlayerFinder) {
-        this.pathToPlayerFinder = pathToPlayerFinder;
+    public void onPathfindingInit() {
+        this.pathingIsInitialized = true;
         this.players = this.context.getEngine().getEntitiesFor(Family.one(PlayerComponent.class).get());
+        this.enemies = engine.getEntitiesFor(Family.one(EnemyComponent.class).get());
     }
 }

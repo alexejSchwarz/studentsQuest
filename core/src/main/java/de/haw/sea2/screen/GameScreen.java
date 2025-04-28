@@ -21,7 +21,6 @@ import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.HearthComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
-import de.haw.sea2.ecs.systems.EnemyMovementSystem;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.gameLevel.SpawnLogic;
 import de.haw.sea2.input.GameKey;
@@ -127,14 +126,15 @@ public class GameScreen implements Screen, KeyInputListener {
             this.debugRenderer = new GameScreenDebugRenderer(this.context);
             this.context.getDebugSystem().addRenderer(this.debugRenderer);
 
+            //TODO EnemyMovementDebugRenderer anpassen an neues EnemyMovementSystem oder diese Funktionalität im Debug raus
             // EnemyMovementDebugRenderer hinzufügen
-            EnemyMovementSystem enemyMovementSystem = this.engine.getSystem(EnemyMovementSystem.class);
+            /*EnemyMovementSystem enemyMovementSystem = this.engine.getSystem(EnemyMovementSystem.class);
             if (enemyMovementSystem != null) {
                 this.enemyMovementDebugRenderer = new EnemyMovementDebugRenderer(this.context);
                 this.context.getDebugSystem().addRenderer(this.enemyMovementDebugRenderer);
                 // Verbindung zum PathToPlayerFinder herstellen
                 this.enemyMovementDebugRenderer.setPathFinder(this.context.getPathToPlayerFinder());
-            }
+            }*/
         }
 
         players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
@@ -221,13 +221,6 @@ public class GameScreen implements Screen, KeyInputListener {
         stage.getBatch().begin();
         gameUI.render((SpriteBatch) stage.getBatch());
         stage.getBatch().end();
-
-        // TODO look this up
-        /*
-         * stage.getViewport().apply();
-         * stage.act(deltaTime);
-         * stage.draw(deltaTime);
-         */
     }
 
     /**
@@ -277,8 +270,7 @@ public class GameScreen implements Screen, KeyInputListener {
         PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
         this.context.getInputManager()
             .addKeyInputListener(playerMovementSystem);
-        // wir müssen die Kamera hier nicht aktualisieren, da sie im render() aufgerufen
-        // wird
+        // wir müssen die Kamera hier nicht aktualisieren, da sie im render() aufgerufen wird
     }
 
     /**

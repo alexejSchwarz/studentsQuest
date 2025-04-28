@@ -1,5 +1,7 @@
 package de.haw.sea2.gameLevel.pathFinding;
 
+import java.util.Objects;
+
 /**
  * A node in the navigation grid
  */
@@ -22,5 +24,17 @@ public class GridNode {
     @Override
     public String toString() {
         return "GridNode[" + x + "," + y + ",walkable=" + walkable + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GridNode gridNode)) return false;
+        return index == gridNode.index;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(index);
     }
 }

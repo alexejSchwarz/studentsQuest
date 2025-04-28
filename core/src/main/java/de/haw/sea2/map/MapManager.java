@@ -13,6 +13,7 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.ecs.builders.EntityCreator;
 import de.haw.sea2.ecs.components.RemoveComponent;
+import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
 
 /**
  * Verwaltet das Laden, Aktivieren und Verwalten von Spielkarten.
@@ -36,7 +37,7 @@ public class MapManager implements Disposable {
         // for now like this. add/remove listener methods later, if needed
         this.mapChangeListeners = new Array<>();
         this.mapChangeListeners.add(this.context.getGameRenderer());
-        this.mapChangeListeners.add(this.context.getPathToPlayerFinder());
+        this.mapChangeListeners.add(this.context.getPathCalcManager());
     }
 
     /**
@@ -100,6 +101,9 @@ public class MapManager implements Disposable {
         createCollisionWalls(gameMap);
 
         this.currentMap = gameMap;
+
+        //TODO schlauer gestalten
+        PathToPlayerFinder.SetMap(currentMap, this.context);
 
         notifyMapChange();
     }

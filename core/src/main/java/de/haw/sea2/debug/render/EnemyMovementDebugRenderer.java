@@ -23,6 +23,7 @@ import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
 /**
  * Debug renderer for visualizing enemy movement paths and detection zones.
  */
+//TODO auf das neue EnemyBatchMovementSystem anpassen, oder rausnehmen
 public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
 
     private final StudentsQuest context;
