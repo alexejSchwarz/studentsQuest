@@ -974,7 +974,7 @@
   <object id="37" x="560.667" y="14.0015" width="14.6666" height="354.664">
    <properties>
     <property name="height" type="float" value="354.66"/>
-    <property name="width" type="float" value="0"/>
+    <property name="width" type="float" value="14.6666"/>
     <property name="x" type="float" value="560.67"/>
     <property name="y" type="float" value="14"/>
    </properties>
