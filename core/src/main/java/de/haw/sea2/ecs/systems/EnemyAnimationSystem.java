@@ -8,7 +8,7 @@ import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.EnemyComponent;
-import de.haw.sea2.view.animations.PlayerAnimation;
+import de.haw.sea2.view.animations.EnemyAnimation;
 
 //TODO GegnerAnimation wird nicht ganz korrekt gehandhabt. Irgendwie mit Gehrichtung anpassen
 public class EnemyAnimationSystem extends IteratingSystem {
@@ -27,16 +27,16 @@ public class EnemyAnimationSystem extends IteratingSystem {
             animationComp.animationTime = 0;
         } else if (box2DComponent.body.getLinearVelocity().x > 0) {
             // player moves to the right
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_RIGHT.animationType;
+            animationComp.animationType = EnemyAnimation.HERO_MOVE_RIGHT.animationType;
         } else if (box2DComponent.body.getLinearVelocity().x < 0) {
             // player moves to the left
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_LEFT.animationType;
+            animationComp.animationType = EnemyAnimation.HERO_MOVE_LEFT.animationType;
         } else if (box2DComponent.body.getLinearVelocity().y > 0) {
             // player moves up
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_UP.animationType;
+            animationComp.animationType = EnemyAnimation.HERO_MOVE_UP.animationType;
         } else if (box2DComponent.body.getLinearVelocity().y < 0) {
             // player moves down
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
+            animationComp.animationType = EnemyAnimation.HERO_MOVE_DOWN.animationType;
         }
     }
 }

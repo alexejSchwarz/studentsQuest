@@ -1,0 +1,11 @@
+playerAtlasCustom.png
+size:320,256
+repeat:none
+boy_player_down
+bounds:0,64,320,64
+boy_player_left
+bounds:0,192,320,64
+boy_player_right
+bounds:0,128,320,64
+boy_player_up
+bounds:0,0,320,64

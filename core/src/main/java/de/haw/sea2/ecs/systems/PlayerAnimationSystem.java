@@ -9,7 +9,7 @@ import de.haw.sea2.ecs.components.AnimationComponent;
 import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.view.animations.PlayerAnimation;
+import de.haw.sea2.view.animations.BoyPlayerAnimation;
 
 public class PlayerAnimationSystem extends IteratingSystem {
 
@@ -26,16 +26,16 @@ public class PlayerAnimationSystem extends IteratingSystem {
             animationComp.animationTime = 0;
         } else if (box2DComponent.body.getLinearVelocity().x > 0) {
             // player moves to the right
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_RIGHT.animationType;
+            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_RIGHT.animationType;
         } else if (box2DComponent.body.getLinearVelocity().x < 0) {
             // player moves to the left
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_LEFT.animationType;
+            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_LEFT.animationType;
         } else if (box2DComponent.body.getLinearVelocity().y > 0) {
             // player moves up
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_UP.animationType;
+            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_UP.animationType;
         } else if (box2DComponent.body.getLinearVelocity().y < 0) {
             // player moves down
-            animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
+            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
         }
     }
 }

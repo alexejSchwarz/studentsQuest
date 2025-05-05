@@ -10,8 +10,9 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.*;
+import de.haw.sea2.view.animations.BoyPlayerAnimation;
 import de.haw.sea2.view.animations.CoinAnimation;
-import de.haw.sea2.view.animations.PlayerAnimation;
+import de.haw.sea2.view.animations.EnemyAnimation;
 
 /**
  * Diese Klasse bietet Methoden zur Erstellung von Spieler- und Ball-Entitäten
@@ -56,7 +57,7 @@ public class EntityCreator {
                     entity.add(hearthComponent);
 
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
-                    animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
+                    animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
                     animationComp.width = width;
                     animationComp.height = height;
                     entity.add(animationComp);
@@ -132,7 +133,7 @@ public class EntityCreator {
                 .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value | Bits.BIT_TMP_ENEMY.value))
                 .addComponents(entity -> {
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
-                    animationComp.animationType = PlayerAnimation.HERO_MOVE_DOWN.animationType;
+                    animationComp.animationType = EnemyAnimation.HERO_MOVE_DOWN.animationType;
                     animationComp.width = width;
                     animationComp.height = height;
                     entity.add(animationComp);
