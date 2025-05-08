@@ -118,13 +118,12 @@ public class ScreenManager {
                 return new MainMenuScreen(game);
             case PAUSE:
                 return new PauseGameScreen(game);
-
-            // TODO hier mal schauen, ob das nicht spaeter createScreenWithLoading gepackt
-            // werden kann
             case LOADING:
                 return new LoadingScreen(game, ScreenType.MAIN_MENU);
             case SUCCESS:
                 return new SuccessScreen(game);
+            case SETTINGS:
+                return new SettingsScreen(game);
             default:
                 LoggerUtil.error(LogCategory.ERROR,this,"Unbekannter ScreenType: " + screenType);
                 return new MainMenuScreen(game); // Fallback

@@ -15,6 +15,8 @@ public class AudioManager {
     private Audio currentAudio;
     private Music currentMusic;
     private final AssetManager assetManager;
+    private float currentSliderVolumeSetting;
+    private float currentMusicMaxVolume;
 
     private final Map<Audio, Music> musicCache;
     private final Map<Audio, Sound> soundCache;
@@ -24,6 +26,7 @@ public class AudioManager {
 
         this.currentAudio = null;
         this.currentMusic = null;
+        currentSliderVolumeSetting = 100.0f;
 
         this.musicCache = new HashMap<>();
         this.soundCache = new HashMap<>();
@@ -45,7 +48,8 @@ public class AudioManager {
             currentAudio = type;
             currentMusic = musicCache.computeIfAbsent(type, t -> assetManager.get(t.getPath(), Music.class));
             currentMusic.setLooping(true);
-            currentMusic.setVolume(type.getVolume());
+            currentMusicMaxVolume = type.getVolume();
+            currentMusic.setVolume(Math.min(currentMusicMaxVolume, (currentSliderVolumeSetting / 100f) * currentMusicMaxVolume));
             LoggerUtil.log(LogCategory.LOG, this, "Starte Musik: " + type.name());
             currentMusic.play();
         } else {
@@ -62,6 +66,11 @@ public class AudioManager {
         } else {
             LoggerUtil.log(LogCategory.ERROR,this,"Es spielt gerade kein Song, Musik kann daher nicht gestoppt werden.");
         }
+    }
+
+    public void setVolume(float volume) {
+        currentSliderVolumeSetting = volume;
+        currentMusic.setVolume(Math.min(currentMusicMaxVolume, (currentSliderVolumeSetting / 100f) * currentMusicMaxVolume));
     }
 
     //TODO Threads syncen, damit die Methode nicht ungewollt noch ein anderes Lied stoppt. Erstmal wird stopCurrentMusic() benutzt.
