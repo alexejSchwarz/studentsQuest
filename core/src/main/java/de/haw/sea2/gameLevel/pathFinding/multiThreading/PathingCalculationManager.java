@@ -68,4 +68,12 @@ public class PathingCalculationManager implements MapChangeListener {
             .limit(25)
             .forEach(this.pathToPlayerFinders::add);
     }
+    
+    /**
+     * Get access to the PathToPlayerFinders for debugging purposes
+     * @return Array of PathToPlayerFinders used by this manager
+     */
+    public Array<PathToPlayerFinder> getPathFinders() {
+        return this.pathToPlayerFinders;
+    }
 }

@@ -25,16 +25,19 @@ public class DebugSystem implements Disposable {
     private long nativeHeap;
 
     public DebugSystem() {
+        this.font = new BitmapFont();
+        this.renderers = new Array<>();
+        
         if (!DebugConfig.DEBUG_ENABLED)
             return;
 
         LoggerUtil.log(LogCategory.DEBUG,this,"Debug-System wird initialisiert");
 
-        this.font = new BitmapFont();
+        
         this.font.setColor(DebugConfig.DEFAULT_COLOR);
         this.font.getData().setScale(DebugConfig.FONT_SCALE);
 
-        this.renderers = new Array<>();
+        
 
         // Standardrenderer für allgemeine Debug-Infos hinzufügen
         this.renderers.add(new BasicDebugRenderer());
