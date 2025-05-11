@@ -126,15 +126,9 @@ public class GameScreen implements Screen, KeyInputListener {
             this.debugRenderer = new GameScreenDebugRenderer(this.context);
             this.context.getDebugSystem().addRenderer(this.debugRenderer);
 
-            //TODO EnemyMovementDebugRenderer anpassen an neues EnemyMovementSystem oder diese Funktionalität im Debug raus
-            // EnemyMovementDebugRenderer hinzufügen
-            /*EnemyMovementSystem enemyMovementSystem = this.engine.getSystem(EnemyMovementSystem.class);
-            if (enemyMovementSystem != null) {
-                this.enemyMovementDebugRenderer = new EnemyMovementDebugRenderer(this.context);
-                this.context.getDebugSystem().addRenderer(this.enemyMovementDebugRenderer);
-                // Verbindung zum PathToPlayerFinder herstellen
-                this.enemyMovementDebugRenderer.setPathFinder(this.context.getPathToPlayerFinder());
-            }*/
+            // EnemyMovementDebugRenderer hinzufügen - angepasst für den PathingCalculationManager
+            this.enemyMovementDebugRenderer = new EnemyMovementDebugRenderer(this.context);
+            this.context.getDebugSystem().addRenderer(this.enemyMovementDebugRenderer);
         }
 
         players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());

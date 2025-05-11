@@ -40,12 +40,24 @@ public enum GameKey {
      * Kann mit der D-Taste oder der rechten Pfeiltaste ausgelöst werden.
      */
     RIGHT(Input.Keys.D, Input.Keys.RIGHT),
-
+    
     /**
      * Taste zum Pausieren des Spiels.
      * Kann mit der ESCAPE-Taste ausgelöst werden.
      */
-    PAUSE(Input.Keys.ESCAPE);
+    PAUSE(Input.Keys.ESCAPE),
+    
+    /**
+     * Debug: Taste zum Umschalten der Grid-Anzeige.
+     * Wird mit der G-Taste ausgelöst.
+     */
+    DEBUG_GRID(Input.Keys.G),
+    
+    /**
+     * Debug: Taste zum Umschalten der Path-Anzeige.
+     * Wird mit der P-Taste ausgelöst.
+     */
+    DEBUG_PATH(Input.Keys.P);
 
     /**
      * Array von Tastencodes, die dieser Spielaktion zugeordnet sind.

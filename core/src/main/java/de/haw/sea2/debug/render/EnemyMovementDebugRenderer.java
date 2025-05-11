@@ -19,12 +19,14 @@ import de.haw.sea2.ecs.components.EnemyComponent;
 import de.haw.sea2.gameLevel.pathFinding.GridNode;
 import de.haw.sea2.gameLevel.pathFinding.NavigationGrid;
 import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
+import de.haw.sea2.input.InputManager;
+import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.GameKey;
 
 /**
  * Debug renderer for visualizing enemy movement paths and detection zones.
  */
-//TODO auf das neue EnemyBatchMovementSystem anpassen, oder rausnehmen
-public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
+public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, KeyInputListener {
 
     private final StudentsQuest context;
     private final ShapeRenderer shapeRenderer;
@@ -35,41 +37,64 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
     private final static Color NODE_COLOR = new Color(0.0f, 1.0f, 0.0f, 0.8f);
     private final static Color GRID_WALKABLE_COLOR = new Color(0.0f, 0.2f, 0.7f, 0.1f);
     private final static Color GRID_UNWALKABLE_COLOR = new Color(0.7f, 0.0f, 0.0f, 0.2f);
-    private final static Color GRID_LINE_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.5f); // Neue hellere Farbe für
-                                                                                    // Gitterlinien
+    private final static Color GRID_LINE_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.5f);
     private final static float PATH_LINE_WIDTH = 2.0f;
-    private final static float GRID_LINE_WIDTH = 1.5f; // Neue dickere Linienstärke für das Gitter
+    private final static float GRID_LINE_WIDTH = 1.5f;
     private final static float NODE_SIZE = 0.1f;
     private final static float GRID_CELL_SIZE = 1.0f;
 
     private ImmutableArray<Entity> enemies;
     private boolean showGrid = true;
+    private boolean showPaths = true;
+    private boolean isRegisteredAsListener = false;
 
     public EnemyMovementDebugRenderer(StudentsQuest context) {
         this.context = context;
         this.shapeRenderer = new ShapeRenderer();
         this.enemies = context.getEngine().getEntitiesFor(Family.one(EnemyComponent.class).get());
+
+        // Nur registrieren, wenn Debug-Modus aktiv ist
+        if (DebugConfig.DEBUG_ENABLED) {
+            context.getInputManager().addKeyInputListener(this);
+            isRegisteredAsListener = true;
+        }
     }
 
-    public void setPathFinder(PathToPlayerFinder pathFinder) {
-        this.pathFinder = pathFinder;
+    /**
+     * Try to get a PathToPlayerFinder from the PathingCalculationManager
+     */
+    private void tryGetPathFinder() {
+        if (pathFinder != null) return;
+
+        if (context.getPathCalcManager() != null) {
+            Array<PathToPlayerFinder> finders = context.getPathCalcManager().getPathFinders();
+            if (finders != null && finders.size > 0) {
+                pathFinder = finders.first();
+            }
+        }
     }
 
     @Override
     public float render(SpriteBatch batch, BitmapFont font, float x, float y) {
         // Display enemy count
-        ImmutableArray<Entity> enemies = context.getEngine().getEntitiesFor(
-                Family.all(EnemyComponent.class).get());
-
         font.draw(batch, "Enemies: " + enemies.size(), x, y);
         y -= DebugConfig.LINE_SPACING;
 
-        // Toggle grid display with key G
-        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.G)) {
-            showGrid = !showGrid;
+        // Count enemies with valid paths
+        int enemiesWithPaths = 0;
+        for (int i = 0; i < enemies.size(); i++) {
+            EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemies.get(i));
+            if (enemyComp != null && enemyComp.waypoints != null && enemyComp.waypoints.size > 0) {
+                enemiesWithPaths++;
+            }
         }
+        font.draw(batch, "Enemies with paths: " + enemiesWithPaths, x, y);
+        y -= DebugConfig.LINE_SPACING;
 
         font.draw(batch, "Grid Display: " + (showGrid ? "ON (Press G to toggle)" : "OFF (Press G to toggle)"), x, y);
+        y -= DebugConfig.LINE_SPACING;
+
+        font.draw(batch, "Path Display: " + (showPaths ? "ON (Press P to toggle)" : "OFF (Press P to toggle)"), x, y);
         y -= DebugConfig.LINE_SPACING;
 
         // End the SpriteBatch to use the ShapeRenderer
@@ -78,14 +103,20 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
             batch.end();
         }
 
+        // Try to get a PathToPlayerFinder if we don't have one yet
+        if (showGrid && pathFinder == null) {
+            tryGetPathFinder();
+        }
+
         // Draw the navigation grid first (in the background)
         if (showGrid && pathFinder != null) {
             drawNavigationGrid();
         }
 
-        // Use ShapeRenderer to draw paths in world coordinates
-        drawPaths();
-        // drawEnemyVisualizations();
+        // Use ShapeRenderer to draw paths in world coordinates if paths should be shown
+        if (showPaths) {
+            drawPaths();
+        }
 
         // Restore batch if it was drawing
         if (wasBatchDrawing) {
@@ -108,6 +139,7 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+        // Set the color for the grid cells, walkable and unwalkable
         // Iterate through all grid cells
         for (int x = 0; x < navGrid.getWidth(); x++) {
             for (int y = 0; y < navGrid.getHeight(); y++) {
@@ -157,39 +189,74 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
         Gdx.gl.glLineWidth(1.0f);
     }
 
+    /**
+     * Generates a unique color for each enemy based on their index
+     *
+     * @param enemyIndex Index of the enemy
+     * @param baseColor Base color to mix with
+     * @param saturation Saturation value for HSV
+     * @param baseAlpha Alpha value for the color
+     * @return Generated color
+     */
+    private Color getEnemyColor(int enemyIndex, Color baseColor, float saturation, float baseAlpha) {
+        // Using golden ratio conjugate for an even distribution of colors
+        float hue = (enemyIndex * 0.618033988749895f) % 1.0f;
+
+        Color color = new Color();
+        color.fromHsv(hue * 360f, saturation, 0.9f);
+
+        // Mix with base color
+        color.r = color.r * 0.7f + baseColor.r * 0.3f;
+        color.g = color.g * 0.7f + baseColor.g * 0.3f;
+        color.b = color.b * 0.7f + baseColor.b * 0.3f;
+        color.a = baseAlpha;
+
+        return color;
+    }
+
+    /**
+     * Draw paths for all enemies
+     */
     private void drawPaths() {
         // Set up projection matrix for world coordinates
         shapeRenderer.setProjectionMatrix(context.getGameCamera().combined);
 
         // Check if there are any enemies
-        if (this.enemies.size() == 0) {
-            return; // No enemies to draw paths for
+        if (this.enemies.size() == 0 || !DebugConfig.DEBUG_ENABLED) {
+            return; // No enemies to draw paths for or debugging disabled
         }
 
         // Enable blending and set line width once
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glLineWidth(PATH_LINE_WIDTH);
 
-        // Single rendering pass combining lines and nodes
+        // First pass - draw lines
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        drawPathLines();
+        shapeRenderer.end();
 
-        Color tempColor = new Color();
+        // Second pass - draw nodes
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        drawPathNodes();
+        shapeRenderer.end();
+        // Always reset line width (even if an exception occurs)
+        Gdx.gl.glLineWidth(1.0f);
+    }
+
+    /**
+     * Draw the lines connecting path nodes
+     */
+    private void drawPathLines() {
         for (int enemyIndex = 0; enemyIndex < this.enemies.size(); enemyIndex++) {
             Entity enemy = this.enemies.get(enemyIndex);
             EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
             Array<Vector2> paths = enemyComp.waypoints;
 
-            if (paths.size < 1)
+            if (paths == null || paths.size < 1)
                 continue;
 
-            // Generate color once per enemy
-            float hue = (enemyIndex * 0.618033988749895f) % 1.0f;
-            tempColor.fromHsv(hue * 360f, 0.8f, 0.9f);
-            tempColor.r = tempColor.r * 0.7f + PATH_COLOR.r * 0.3f;
-            tempColor.g = tempColor.g * 0.7f + PATH_COLOR.g * 0.3f;
-            tempColor.b = tempColor.b * 0.7f + PATH_COLOR.b * 0.3f;
-            tempColor.a = PATH_COLOR.a;
-            shapeRenderer.setColor(tempColor);
+            // Set the color for this enemy's path
+            shapeRenderer.setColor(getEnemyColor(enemyIndex, PATH_COLOR, 0.8f, PATH_COLOR.a));
 
             // Draw path lines
             for (int i = 0; i < paths.size - 1; i++) {
@@ -198,44 +265,86 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable {
                 shapeRenderer.line(current.x, current.y, next.x, next.y);
             }
         }
-        shapeRenderer.end();
+    }
 
-        // Draw nodes in a separate pass since ShapeType is different
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
+    /**
+     * Draw the nodes (points) of the paths
+     */
+    private void drawPathNodes() {
         for (int enemyIndex = 0; enemyIndex < this.enemies.size(); enemyIndex++) {
             Entity enemy = this.enemies.get(enemyIndex);
             EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
             Array<Vector2> paths = enemyComp.waypoints;
 
-            if (paths.size < 1)
+            if (paths == null || paths.size < 1)
                 continue;
 
-            // Use same color calculation for consistency
-            float hue = (enemyIndex * 0.618033988749895f) % 1.0f;
-            tempColor.fromHsv(hue * 360f, 0.8f, 1.0f);
-            tempColor.r = tempColor.r * 0.7f + NODE_COLOR.r * 0.3f;
-            tempColor.g = tempColor.g * 0.7f + NODE_COLOR.g * 0.3f;
-            tempColor.b = tempColor.b * 0.7f + NODE_COLOR.b * 0.3f;
-            tempColor.a = NODE_COLOR.a;
-            shapeRenderer.setColor(tempColor);
+            // Set the color for this enemy's nodes
+            shapeRenderer.setColor(getEnemyColor(enemyIndex, NODE_COLOR, 0.8f, NODE_COLOR.a));
 
             // Draw nodes
             for (int i = 0; i < paths.size; i++) {
                 Vector2 node = paths.get(i);
-                shapeRenderer.circle(node.x, node.y, NODE_SIZE, 8);
+                // Make first and last nodes larger for better visibility
+                float nodeSize = NODE_SIZE;
+                if (i == 0 || i == paths.size - 1) {
+                    nodeSize = NODE_SIZE * 2.0f;
+                }
+                shapeRenderer.circle(node.x, node.y, nodeSize, 8);
             }
         }
-        shapeRenderer.end();
-
-        // Reset line width
-        Gdx.gl.glLineWidth(1.0f);
     }
 
     @Override
     public void dispose() {
         if (shapeRenderer != null) {
             shapeRenderer.dispose();
+        }
+
+        // Deregistrieren des KeyInputListeners
+        if (isRegisteredAsListener) {
+            context.getInputManager().removeKeyInputListener(this);
+            isRegisteredAsListener = false;
+        }
+    }
+
+    /**
+     * Wird aufgerufen, wenn eine Taste gedrückt wird.
+     * Hier werden die G und P Tasten über den InputManager abgefangen.
+     *
+     * @param manager Der InputManager
+     * @param key Die gedrückte GameKey-Taste
+     */
+    @Override
+    public void keyDown(InputManager manager, GameKey key) {
+        // Keine Aktion bei keyDown, da wir nur auf einmalige Tastendrücke reagieren wollen
+    }
+
+    /**
+     * Wird aufgerufen, wenn eine Taste losgelassen wird.
+     * Hier werden die G und P Tasten über den InputManager abgefangen.
+     *
+     * @param manager Der InputManager
+     * @param key Die losgelassene GameKey-Taste
+     */
+    @Override
+    public void keyUp(InputManager manager, GameKey key) {
+        if (!DebugConfig.DEBUG_ENABLED) return;
+
+        switch (key) {
+            case DEBUG_GRID: {
+                // Toggle Grid anzeigen
+                this.showGrid = !this.showGrid;
+                break;
+            }
+            case DEBUG_PATH: {
+                // Toggle Path anzeigen
+                this.showPaths = !this.showPaths;
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
 }
