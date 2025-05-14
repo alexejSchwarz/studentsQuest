@@ -129,7 +129,7 @@ public class GameMap implements Disposable {
                     this.entitySpawnPoints.add(entitySpawnPoint);
                 }
             } catch (IllegalSpawnCoordinatesException e) {
-                LoggerUtil.log(LogCategory.DEBUG, this, e.getMessage());
+                throw new RuntimeException(e);
             }
         }
 
@@ -166,8 +166,13 @@ public class GameMap implements Disposable {
                 float height = mapObject.getProperties().get("height", Float.class);
 
                 // im editor ist der (0,0) Punkt oben Links
-                float heightInTiles = this.tiledMap.getProperties().get("height", Integer.class);
-                this.collisionWalls.add(ConversionUtils.convertFromRectangleObjectInPixelToLogicWithTransformedY(x, y, width, height, heightInTiles));
+                int heightInTiles = this.tiledMap.getProperties().get("height", Integer.class);
+                // arbeiten in kooradinatensystem aber tool ist in pixel und y achse verkehrt herum
+                try {
+                    this.collisionWalls.add(ConversionUtils.convertFromRectangleObjectInPixelToLogicWithTransformedY(x, y, width, height, heightInTiles));
+                } catch (IllegalSpawnCoordinatesException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 LoggerUtil.error(LogCategory.ERROR, this, "MoapObject of Type: " + mapObject + "is not supported!");
             }
@@ -223,7 +228,7 @@ public class GameMap implements Disposable {
             throw new IllegalSpawnCoordinatesException();
         }
         // im editor ist der (0,0) Punkt oben Links
-        float heightInTiles = this.tiledMap.getProperties().get("height", Integer.class);
+        int heightInTiles = this.tiledMap.getProperties().get("height", Integer.class);
         return ConversionUtils.convertFromPixelToLogicPointWithTransformedY(xInPixel, yInPixel, heightInTiles);
     }
 
