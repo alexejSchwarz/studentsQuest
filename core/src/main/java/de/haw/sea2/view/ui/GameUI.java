@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.HearthComponent;
@@ -54,21 +55,23 @@ public class GameUI implements Disposable {
 
         // Erstelle die Animation für graue Münzen
         this.grayCoinAnimation = AnimationUtils.getAnimation(CoinAnimation.GREY_COIN_SPIN.animationType, coinAtlas);
-
     }
 
+    public void render() {
+        this.context.viewport.apply();
 
-    /**
-     * Zeichnet das UI auf dem Bildschirm
-     * @param batch der SpriteBatch, der bereits im render()-Loop gestartet wurde
-     */
-    public void render(SpriteBatch batch) {
+        SpriteBatch batch = this.context.getSpriteBatch();
+        batch.setProjectionMatrix(context.viewport.getCamera().combined);
+        batch.begin();
+
         // Update coin animation time
         coinAnimTime += Gdx.graphics.getDeltaTime();
 
         // UI-Elemente rendern
         renderHearts(batch);
         renderCoins(batch);
+
+        batch.end();
     }
 
     /**

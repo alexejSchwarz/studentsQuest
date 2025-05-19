@@ -1,7 +1,6 @@
 package de.haw.sea2.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,13 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
-import de.haw.sea2.debug.LogCategory;
-import de.haw.sea2.debug.LoggerUtil;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.view.ui.StageUtils;
 
 /**
  * SuccessScreen zeigt den Erfolg (Level abgeschlossen) an, wenn ein Level erfolgreich beendet wurde.
@@ -31,6 +29,8 @@ public class SuccessScreen implements Screen, KeyInputListener {
     private final Stage stage;
     // BitmapFont für die Anzeige von Text in der UI.
     private final BitmapFont font;
+    // Erstelle ein Table-Layout, das für die Positionierung der UI-Elemente verwendet wird
+    private final Table table = new Table();
 
     /**
      * Konstruktor: Initialisiert den SuccessScreen mit dem gegebenen Spielkontext.
@@ -39,8 +39,7 @@ public class SuccessScreen implements Screen, KeyInputListener {
      */
     public SuccessScreen(StudentsQuest context) {
         this.context = context;
-        // Erstelle eine neue Stage mit dem aktuellen Viewport
-        this.stage = new Stage(context.viewport);
+        this.stage = context.getStage();
         // Erstelle ein neues BitmapFont für die Anzeige von Text
         this.font = new BitmapFont();
 
@@ -59,9 +58,7 @@ public class SuccessScreen implements Screen, KeyInputListener {
      * Richtet die UI-Elemente ein und positioniert sie auf dem Bildschirm.
      */
     private void setupUI() {
-        // Erstelle ein Table-Layout, das für die Positionierung der UI-Elemente verwendet wird
-        Table table = new Table();
-        table.setFillParent(true); // Table füllt den gesamten Stage-Bereich
+        this.table.setFillParent(true); // Table füllt den gesamten Stage-Bereich
 
         // Definiere die UI-Stile für Labels und Buttons
         Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
@@ -102,9 +99,6 @@ public class SuccessScreen implements Screen, KeyInputListener {
         table.add(titleLabel).width(4.0f).align(Align.center).padBottom(1.0f).padTop(1.0f).row();
         table.add(resumeButton).width(4.0f).height(1.0f).align(Align.center).padBottom(0.5f).row();
         table.add(mainMenuButton).width(4.0f).height(1.0f).align(Align.center).row();
-
-        // Füge das Table dem Stage hinzu, damit es gerendert wird
-        stage.addActor(table);
     }
 
     /**
@@ -113,10 +107,9 @@ public class SuccessScreen implements Screen, KeyInputListener {
      */
     @Override
     public void show() {
-        // Setze den InputProcessor, damit sowohl das InputManager-Objekt als auch die Stage Eingaben erhalten
-        Gdx.input.setInputProcessor(new InputMultiplexer(context.getInputManager(), stage));
         // Füge diesen Screen als KeyInputListener hinzu, um Tasteneingaben zu verarbeiten
         context.getInputManager().addKeyInputListener(this);
+        this.stage.addActor(this.table);
     }
 
     /**
@@ -126,19 +119,7 @@ public class SuccessScreen implements Screen, KeyInputListener {
      */
     @Override
     public void render(float delta) {
-        // Lösche den Bildschirm und fülle ihn mit einem halbtransparenten schwarzen Hintergrund
-        ScreenUtils.clear(0, 0, 0, 0.8f);
-
-        // Wende den Viewport an und setze die Kamera für die Stage
-        context.viewport.apply();
-        stage.getBatch().setProjectionMatrix(context.viewport.getCamera().combined);
-
-        // Logge die Anzahl der aktuell aktiven Actors auf der Stage (Debug-Zwecke)
-        LoggerUtil.log(LogCategory.DEBUG, this, "SuccessScreen rendering: " + stage.getActors().size + " actors on stage");
-
-        // Aktualisiere die Stage und zeichne sie neu
-        stage.act(delta);
-        stage.draw();
+        StageUtils.prepareAndDraw(this.context, delta);
     }
 
     /**
@@ -150,7 +131,7 @@ public class SuccessScreen implements Screen, KeyInputListener {
     @Override
     public void resize(int width, int height) {
         // Aktualisiere den Viewport der Stage, damit UI-Elemente korrekt skaliert werden
-        stage.getViewport().update(width, height, true);
+        this.context.viewport.update(width, height, true);
     }
 
     /**
@@ -175,7 +156,8 @@ public class SuccessScreen implements Screen, KeyInputListener {
     @Override
     public void hide() {
         // Entferne diesen Screen als KeyInputListener, wenn er nicht mehr aktiv ist
-        context.getInputManager().removeKeyInputListener(this);
+        this.context.getInputManager().removeKeyInputListener(this);
+        this.stage.clear();
     }
 
     /**
@@ -183,8 +165,7 @@ public class SuccessScreen implements Screen, KeyInputListener {
      */
     @Override
     public void dispose() {
-        // Entsorge die Stage und den Font, um Speicher freizugeben
-        stage.dispose();
+        // Entsorge den Font, um Speicher freizugeben
         font.dispose();
     }
 

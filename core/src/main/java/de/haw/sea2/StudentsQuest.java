@@ -326,8 +326,6 @@ public class StudentsQuest extends Game {
      * ausführt.
      * </p>
      */
-    // TODO deltaTime, Accumulator, alphaValue und Stage world und engine hier
-    // vielleicht
     @Override
     public void render() {
         // Ruft die render-Methode der Elternklasse auf, was wiederum die
