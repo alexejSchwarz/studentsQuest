@@ -23,5 +23,12 @@ dependencies {
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
   }
 
+  test {
+    reports {
+      junitXml.required.set(true)
+      junitXml.outputLocation.set(layout.buildDirectory.dir("test-results/test"))
+    }
+  }
+
 
 }

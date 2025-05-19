@@ -1,0 +1,30 @@
+stages:
+  - build
+  - test
+
+build_job:
+  stage: build
+  image: gradle:8.5-jdk17
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew assemble compileTestJava
+  artifacts:
+    paths:
+      - core/build/
+    expire_in: 1 hour
+
+test_job:
+  stage: test
+  image: gradle:8.5-jdk17
+  dependencies:
+    - build_job
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew test
+  artifacts:
+    when: always
+    reports:
+      junit: core/build/test-results/test/*.xml
+    paths:
+      - core/build/test-results/test/
+      - core/build/reports/tests/test/
