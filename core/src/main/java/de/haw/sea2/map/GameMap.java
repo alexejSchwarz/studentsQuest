@@ -260,4 +260,28 @@ public class GameMap implements Disposable {
     public Array<EntitySpawnPoint> getEntitySpawnPoints() {
         return this.entitySpawnPoints;
     }
+
+    /**
+     * Liefert einen beschreibenden Identifier für die Karte.
+     * Dies ist nützlich für Logging und Debugging.
+     * 
+     * @return Ein aussagekräftiger Identifier für die Karte
+     */
+    public String getMapIdentifier() {
+        // Eigentlich sollten TiledMaps-Objekte immer mit spezifischem Pfad geladen werden
+        // Die Eigenschaft könnte im MapManager beim Laden gesetzt werden
+        String fileName = tiledMap.getProperties().get("fileName", String.class);
+        if (fileName != null && !fileName.isEmpty()) {
+            return fileName;
+        }
+        
+        // Falls keine explizite fileName-Property gesetzt wurde, versuchen wir andere bekannte Properties
+        Object sourceObj = tiledMap.getProperties().get("source");
+        if (sourceObj != null) {
+            return sourceObj.toString();
+        }
+        
+        // Als letzte Möglichkeit geben wir einen generischen Identifier zurück
+        return "Map@" + Integer.toHexString(hashCode());
+    }
 }

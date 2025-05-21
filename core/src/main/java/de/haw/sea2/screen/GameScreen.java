@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
 import de.haw.sea2.debug.DebugConfig;
@@ -171,7 +170,7 @@ public class GameScreen implements Screen, KeyInputListener {
     @Override
     public void render(float delta) {
 
-        final float deltaTime = Math.min(0.25f, Gdx.graphics.getRawDeltaTime());
+        final float deltaTime = Math.min(0.25f, Gdx.graphics.getDeltaTime());
         this.engine.update(deltaTime);
 
         // naehcstes Tick fuer SpawnLogik

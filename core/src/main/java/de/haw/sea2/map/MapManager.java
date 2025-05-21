@@ -13,7 +13,6 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.ecs.builders.EntityCreator;
 import de.haw.sea2.ecs.components.RemoveComponent;
-import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
 
 /**
  * Verwaltet das Laden, Aktivieren und Verwalten von Spielkarten.
@@ -78,8 +77,10 @@ public class MapManager implements Disposable {
             context.getGameRenderer().getMapRenderer().setMap(cachedMap.getTiledMap());
 
             // alte Walls zerstoeren und neue erzeugen
-            destroyCollisionWalls();
+            destroyCollisionWalls(); 
+            createCollisionWalls(cachedMap); 
             this.currentMap = cachedMap;
+            notifyMapChange(); 
             return;
         }
 
@@ -92,18 +93,16 @@ public class MapManager implements Disposable {
         TiledMap tiledMap = context.getAssetManager().get(mapPath, TiledMap.class);
 
         // Erstelle ein GameMap-Objekt und cache es
+        if(tiledMap == null) {
+            throw new IllegalStateException("Map " + mapPath + " ist null!");
+        }
         GameMap gameMap = new GameMap(tiledMap);
         mapCache.put(mapPath, gameMap);
 
-        //TODO ueberarbeiten
-        // alte Walls zerstoeren und neue erzeugen
         destroyCollisionWalls();
         createCollisionWalls(gameMap);
 
         this.currentMap = gameMap;
-
-        //TODO schlauer gestalten
-        PathToPlayerFinder.SetMap(currentMap, this.context);
 
         notifyMapChange();
     }

@@ -1,5 +1,7 @@
 package de.haw.sea2.debug.render;
 
+import java.util.Optional;
+
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
@@ -12,16 +14,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.ecs.ECSEngine;
 import de.haw.sea2.ecs.components.EnemyComponent;
 import de.haw.sea2.gameLevel.pathFinding.GridNode;
 import de.haw.sea2.gameLevel.pathFinding.NavigationGrid;
-import de.haw.sea2.gameLevel.pathFinding.PathToPlayerFinder;
+import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
-import de.haw.sea2.input.GameKey;
 
 /**
  * Debug renderer for visualizing enemy movement paths and detection zones.
@@ -30,7 +32,6 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
 
     private final StudentsQuest context;
     private final ShapeRenderer shapeRenderer;
-    private PathToPlayerFinder pathFinder;
 
     // Debug visualization configuration
     private final static Color PATH_COLOR = new Color(0.2f, 0.8f, 0.2f, 0.8f);
@@ -47,6 +48,7 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
     private boolean showGrid = true;
     private boolean showPaths = true;
     private boolean isRegisteredAsListener = false;
+    private NavigationGrid currentNavGrid;
 
     public EnemyMovementDebugRenderer(StudentsQuest context) {
         this.context = context;
@@ -57,20 +59,6 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
         if (DebugConfig.DEBUG_ENABLED) {
             context.getInputManager().addKeyInputListener(this);
             isRegisteredAsListener = true;
-        }
-    }
-
-    /**
-     * Try to get a PathToPlayerFinder from the PathingCalculationManager
-     */
-    private void tryGetPathFinder() {
-        if (pathFinder != null) return;
-
-        if (context.getPathCalcManager() != null) {
-            Array<PathToPlayerFinder> finders = context.getPathCalcManager().getPathFinders();
-            if (finders != null && finders.size > 0) {
-                pathFinder = finders.first();
-            }
         }
     }
 
@@ -103,13 +91,14 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
             batch.end();
         }
 
-        // Try to get a PathToPlayerFinder if we don't have one yet
-        if (showGrid && pathFinder == null) {
-            tryGetPathFinder();
+        // Try to get a current NavGrid if we don't have one yet
+        if (showGrid && currentNavGrid == null) {
+            this.currentNavGrid = Optional.ofNullable(this.context.getPathCalcManager().getNavigationGrid())
+                .orElseThrow(() -> new IllegalStateException("Navgrid must be already build and PathFinding initialized by this point"));
         }
 
         // Draw the navigation grid first (in the background)
-        if (showGrid && pathFinder != null) {
+        if (showGrid) {
             drawNavigationGrid();
         }
 
@@ -127,11 +116,6 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
     }
 
     private void drawNavigationGrid() {
-        // Get the reference to the NavigationGrid from PathToPlayerFinder
-        NavigationGrid navGrid = pathFinder.getNavigationGrid();
-
-        if (navGrid == null)
-            return;
 
         // Set up projection matrix for world coordinates
         shapeRenderer.setProjectionMatrix(context.getGameCamera().combined);
@@ -141,10 +125,10 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
 
         // Set the color for the grid cells, walkable and unwalkable
         // Iterate through all grid cells
-        for (int x = 0; x < navGrid.getWidth(); x++) {
-            for (int y = 0; y < navGrid.getHeight(); y++) {
-                GridNode node = navGrid.getNode(x, y);
-                Vector2 worldPos = navGrid.getWorldPosition(node);
+        for (int x = 0; x < this.currentNavGrid.getWidth(); x++) {
+            for (int y = 0; y < this.currentNavGrid.getHeight(); y++) {
+                GridNode node = this.currentNavGrid.getNode(x, y);
+                Vector2 worldPos = this.currentNavGrid.getWorldPosition(node);
 
                 // Draw cell based on walkability
                 if (node.isWalkable()) {
@@ -172,15 +156,15 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
         Gdx.gl.glLineWidth(GRID_LINE_WIDTH);
 
         // Draw horizontal grid lines
-        for (int y = 0; y <= navGrid.getHeight(); y++) {
+        for (int y = 0; y <= this.currentNavGrid.getHeight(); y++) {
             float worldY = y * GRID_CELL_SIZE;
-            shapeRenderer.line(0, worldY, navGrid.getWidth() * GRID_CELL_SIZE, worldY);
+            shapeRenderer.line(0, worldY, this.currentNavGrid.getWidth() * GRID_CELL_SIZE, worldY);
         }
 
         // Draw vertical grid lines
-        for (int x = 0; x <= navGrid.getWidth(); x++) {
+        for (int x = 0; x <= this.currentNavGrid.getWidth(); x++) {
             float worldX = x * GRID_CELL_SIZE;
-            shapeRenderer.line(worldX, 0, worldX, navGrid.getHeight() * GRID_CELL_SIZE);
+            shapeRenderer.line(worldX, 0, worldX, this.currentNavGrid.getHeight() * GRID_CELL_SIZE);
         }
 
         shapeRenderer.end();
