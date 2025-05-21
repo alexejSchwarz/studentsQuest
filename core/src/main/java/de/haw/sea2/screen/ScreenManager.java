@@ -185,7 +185,6 @@ public class ScreenManager {
 
     /**
      * Gibt alle gecachten Screens frei und leert den Cache.
-     * TODO: Sollte beim Beenden des Spiels aufgerufen werden.
      */
     public void dispose() {
         for (Screen screen : screenCache.values()) {

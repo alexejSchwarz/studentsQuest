@@ -98,6 +98,7 @@ public class LoadingScreen implements Screen {
         // Zum Beispiel je nach targetScreenType unterschiedliche Assets laden
     }
 
+    @SuppressWarnings("unused")
     @Override
     public void render(float delta) {
         // Zeit aktualisieren

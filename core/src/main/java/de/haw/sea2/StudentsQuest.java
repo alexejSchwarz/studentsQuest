@@ -300,7 +300,7 @@ public class StudentsQuest extends Game {
 
         this.gameRenderer = new GameRenderer(this);
 
-        this.pathCalcManager = new PathingCalculationManager();
+        this.pathCalcManager = new PathingCalculationManager(this);
 
         this.mapManager = new MapManager(this);
 
