@@ -5,20 +5,19 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
+import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
-import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
-import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.ecs.EntityUtils;
+import de.haw.sea2.ecs.components.Box2DComponent;
 import de.haw.sea2.ecs.components.HearthComponent;
 import de.haw.sea2.ecs.components.PlayerComponent;
 import de.haw.sea2.ecs.systems.PlayerMovementSystem;
@@ -28,9 +27,8 @@ import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.paths.MapPaths;
-import de.haw.sea2.view.ui.GameUI;
-import de.haw.sea2.ecs.EntityUtils;
 import de.haw.sea2.view.GameRenderer;
+import de.haw.sea2.view.ui.GameUI;
 
 /**
  * Der Haupt-Spielbildschirm, der die aktive Spielwelt darstellt und verwaltet.
@@ -84,8 +82,6 @@ public class GameScreen implements Screen, KeyInputListener {
 
     private EnemyMovementDebugRenderer enemyMovementDebugRenderer;
 
-    private final Stage stage;
-
     private final GameUI gameUI;
 
     private ImmutableArray<Entity> players;
@@ -100,7 +96,6 @@ public class GameScreen implements Screen, KeyInputListener {
         this.gameRenderer = this.context.getGameRenderer();
         this.world = this.context.getWorld();
         this.spawnLogic = new SpawnLogic(context);
-        this.stage = context.getStage();
         this.gameUI = new GameUI(context);
         initialize();
     }
@@ -209,12 +204,7 @@ public class GameScreen implements Screen, KeyInputListener {
 
         // interpolation rendering. reduces stuttering between frames
         this.gameRenderer.render(this.accumulator / StudentsQuest.PHYSICS_TIME_STEP); // alpha value
-
-        context.viewport.apply();
-        stage.getBatch().setProjectionMatrix(context.viewport.getCamera().combined);
-        stage.getBatch().begin();
-        gameUI.render((SpriteBatch) stage.getBatch());
-        stage.getBatch().end();
+        gameUI.render();
     }
 
     /**

@@ -1,7 +1,6 @@
 package de.haw.sea2.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,12 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.view.ui.StageUtils;
 
 /**
  * Pause-Screen, der angezeigt wird, wenn das Spiel pausiert wird.
@@ -27,6 +27,7 @@ public class PauseGameScreen implements Screen, KeyInputListener {
     private final StudentsQuest context;
     private final Stage stage;
     private final BitmapFont font;
+    private final Table table;
 
     /**
      * Erstellt einen neuen PauseGameScreen.
@@ -35,13 +36,14 @@ public class PauseGameScreen implements Screen, KeyInputListener {
      */
     public PauseGameScreen(StudentsQuest context) {
         this.context = context;
-        this.stage = new Stage(context.viewport);
+        this.stage = context.getStage();
         this.font = new BitmapFont();
 
         // Schriftgröße anpassen
         this.font.setUseIntegerPositions(false);
         float scaleFactor = (this.context.viewport.getWorldHeight() / Gdx.graphics.getHeight()) * 3.0f;
         this.font.getData().setScale(scaleFactor);
+        this.table = new Table();
 
         setupUI();
     }
@@ -50,7 +52,6 @@ public class PauseGameScreen implements Screen, KeyInputListener {
      * Richtet die UI-Elemente ein und positioniert sie.
      */
     private void setupUI() {
-        Table table = new Table();
         table.setFillParent(true);
 
         // UI-Stile definieren
@@ -91,33 +92,22 @@ public class PauseGameScreen implements Screen, KeyInputListener {
         table.add(titleLabel).width(4.0f).align(Align.center).padBottom(1.0f).padTop(1.0f).row();
         table.add(resumeButton).width(4.0f).height(1.0f).align(Align.center).padBottom(0.5f).row();
         table.add(mainMenuButton).width(4.0f).height(1.0f).align(Align.center).row();
-
-        stage.addActor(table);
     }
 
     @Override
     public void show() {
-        // InputProcessor-Kette einrichten
-        Gdx.input.setInputProcessor(new InputMultiplexer(context.getInputManager(), stage));
         context.getInputManager().addKeyInputListener(this);
+        this.stage.addActor(table);
     }
 
     @Override
     public void render(float delta) {
-        // Halbtransparenter schwarzer Hintergrund
-        ScreenUtils.clear(0, 0, 0, 0.8f);
-
-        context.viewport.apply();
-        stage.getBatch().setProjectionMatrix(context.viewport.getCamera().combined);
-
-
-        stage.act(delta);
-        stage.draw();
+        StageUtils.prepareAndDraw(this.context, delta);
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
+        this.context.viewport.update(width, height, true);
     }
 
     @Override
@@ -132,12 +122,12 @@ public class PauseGameScreen implements Screen, KeyInputListener {
 
     @Override
     public void hide() {
-        context.getInputManager().removeKeyInputListener(this);
+        this.context.getInputManager().removeKeyInputListener(this);
+        this.stage.clear();
     }
 
     @Override
     public void dispose() {
-        stage.dispose();
         font.dispose();
     }
 
