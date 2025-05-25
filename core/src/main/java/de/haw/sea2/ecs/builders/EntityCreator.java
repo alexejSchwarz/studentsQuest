@@ -133,7 +133,7 @@ public class EntityCreator {
                 .maskBits((short) (Bits.BIT_WALL.value  | Bits.BIT_TMP_ENEMY.value | Bits.BIT_PLAYER.value))
                 .addComponents(entity -> {
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
-                    animationComp.animationType = EnemyAnimation.HERO_MOVE_DOWN.animationType;
+                    animationComp.animationType = EnemyAnimation.ENEMY_MOVE_DOWN.animationType;
                     animationComp.width = width;
                     animationComp.height = height;
                     entity.add(animationComp);
