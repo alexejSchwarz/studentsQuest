@@ -8,18 +8,25 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AudioManager {
     private Audio currentAudio;
     private Music currentMusic;
     private final AssetManager assetManager;
 
-    //TODO implement Caching System for Audio
+    private final Map<Audio, Music> musicCache;
+    private final Map<Audio, Sound> soundCache;
 
     public AudioManager(final StudentsQuest context) {
         this.assetManager = context.getAssetManager();
 
         this.currentAudio = null;
         this.currentMusic = null;
+
+        this.musicCache = new HashMap<>();
+        this.soundCache = new HashMap<>();
     }
 
     public void playAudio(final Audio type) {
@@ -36,13 +43,16 @@ public class AudioManager {
             }
 
             currentAudio = type;
-            currentMusic = assetManager.get(type.getPath(), Music.class);
+            currentMusic = musicCache.computeIfAbsent(type, t -> assetManager.get(t.getPath(), Music.class));
             currentMusic.setLooping(true);
             currentMusic.setVolume(type.getVolume());
+            LoggerUtil.log(LogCategory.LOG, this, "Starte Musik: " + type.name());
             currentMusic.play();
         } else {
             //Sound abspielen
-            assetManager.get(type.getPath(), Sound.class).play();
+            LoggerUtil.log(LogCategory.LOG, this, "Starte Sound: " + type.name());
+            soundCache.computeIfAbsent(type, t -> assetManager.get(t.getPath(), Sound.class)).play();
+
         }
     }
 
