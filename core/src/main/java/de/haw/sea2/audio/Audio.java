@@ -1,7 +1,7 @@
 package de.haw.sea2.audio;
 
 public enum Audio {
-    LEVEL_1_MUSIC("audio/back_ground_music.mp3",true, 0.6f),
+    LEVEL_1_MUSIC("audio/back_ground_music.mp3",true, 1.0f),
     START_SCREEN_MUSIC("audio/start_screen_music.mp3",true,0.4f),
     COIN_PICKUP_SOUND("audio/coin_sound.wav",false,0.4f);
 

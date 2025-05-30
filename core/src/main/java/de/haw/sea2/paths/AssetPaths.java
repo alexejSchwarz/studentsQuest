@@ -9,7 +9,10 @@ public enum AssetPaths {
     MAIN_MENU_HEADING("screens/mainScreen/text.png"),
     HERO_OLD_ATLAS("screens/gameScreen/heroAtlas.atlas"),
     BOY_PLAYER_ATLAS("customEntities/playerAtlasCustom.atlas"),
-    BUTTON_ATLAS("screens/mainScreen/button.atlas");
+    BUTTON_ATLAS("screens/mainScreen/button.atlas"),
+    SLIDER_BACKGROUND("screens/settingsScreen/slider_background.png"),
+    SLIDER_KNOB("screens/settingsScreen/slider_knob.png"),
+    HOME_BUTTON("screens/settingsScreen/home_button.png");
 
     private final String path;
 

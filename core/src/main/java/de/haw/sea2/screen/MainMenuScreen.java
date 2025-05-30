@@ -3,6 +3,8 @@ package de.haw.sea2.screen;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,6 +20,9 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
+import de.haw.sea2.input.GameKey;
+import de.haw.sea2.input.InputManager;
+import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.ui.StageUtils;
 
@@ -30,7 +35,7 @@ import de.haw.sea2.view.ui.StageUtils;
  * Durch Drücken des Start-Buttons wird der GameScreen mit einem Ladebildschirm aufgerufen.
  * </p>
  */
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen implements Screen, KeyInputListener {
 
     private final StudentsQuest context;
     private final Stage stage;
@@ -73,14 +78,14 @@ public class MainMenuScreen implements Screen {
         this.context = context;
         this.stage = this.context.getStage();
 
-        // Lade das TextureAtlas mit den Button-Grafiken
-
-
-        //Texture loading Main Menu
+        // Main Menu Assets Loading
         context.getAssetManager().load(AssetPaths.BUTTON_ATLAS.getPath(), TextureAtlas.class);
         context.getAssetManager().load(AssetPaths.MAIN_MENU_BACKGROUND.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.MAIN_MENU_HEADING.getPath(), Texture.class);
         context.getAssetManager().load(Audio.START_SCREEN_MUSIC.getPath(), Music.class);
+        context.getAssetManager().load(AssetPaths.SLIDER_BACKGROUND.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.SLIDER_KNOB.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.HOME_BUTTON.getPath(), Texture.class);
         context.getAssetManager().finishLoading();
 
         buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
@@ -104,8 +109,6 @@ public class MainMenuScreen implements Screen {
         headingImage.setSize(9f, 1f);
         headingImage.setPosition(16f / 2f - 4.3f, START_BUTTON_Y_VALUE + buttonScale * 1.3f);
 
-       context.getAudioManager().playAudio(Audio.START_SCREEN_MUSIC);
-
         // Erstelle und positioniere die Buttons
         createButtons();
     }
@@ -116,6 +119,11 @@ public class MainMenuScreen implements Screen {
      */
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(new InputMultiplexer(context.getInputManager(), stage));
+
+        context.getAudioManager().playAudio(Audio.START_SCREEN_MUSIC);
+        context.getInputManager().addKeyInputListener(this);
+
         LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen wird angezeigt, InputProcessor gesetzt");
         this.stage.addActor(this.backgroundImage);
         this.stage.addActor(headingImage);
@@ -178,10 +186,10 @@ public class MainMenuScreen implements Screen {
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                context.getAudioManager().stopCurrentMusic();
                 context.getScreenManager().showScreenWithLoading(ScreenType.GAME);
             }
         });
-
 
         // Listener für die anderen Buttons: Loggen der Betätigung
         keyBindsButton.addListener(new ClickListener() {
@@ -195,6 +203,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 LoggerUtil.log(LogCategory.LOG, this, "Settings button pressed");
+                context.getScreenManager().showScreen(ScreenType.SETTINGS);
             }
         });
 
@@ -218,7 +227,6 @@ public class MainMenuScreen implements Screen {
                 LoggerUtil.log(LogCategory.LOG, this, "Tutorial button pressed");
             }
         });
-
     }
 
     /**
@@ -253,9 +261,10 @@ public class MainMenuScreen implements Screen {
     public void hide() {
        //Funktioniert gerade noch nicht richtig, da der Game Screen zu schnell geladen wird.
        //Wenn man useSimulatedLoading im Loading Screen auf true setzt, funktioniert es.
-       context.getAudioManager().stopCurrentMusic();
-       LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen hidden");
-       this.stage.clear();
+        stage.clear();
+        context.getInputManager().removeKeyInputListener(this);
+        LoggerUtil.log(LogCategory.LOG,this,"Stage cleared!");
+        LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen hidden");
     }
 
     /**
@@ -266,5 +275,17 @@ public class MainMenuScreen implements Screen {
         buttonAtlas.dispose();
         background.dispose();
         heading.dispose();
+    }
+
+    @Override
+    public void keyDown(InputManager manager, GameKey key) {
+        if (key == GameKey.PAUSE) {
+            context.getScreenManager().showScreen(ScreenType.SETTINGS);
+        }
+    }
+
+    @Override
+    public void keyUp(InputManager manager, GameKey key) {
+
     }
 }

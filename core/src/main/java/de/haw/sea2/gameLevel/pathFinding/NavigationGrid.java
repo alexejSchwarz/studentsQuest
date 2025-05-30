@@ -7,9 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
-import de.haw.sea2.debug.LogCategory;
-import de.haw.sea2.debug.LoggerUtil;
-
 /**
  * A grid-based navigation system for A* pathfinding
  */
@@ -61,7 +58,6 @@ public class NavigationGrid implements IndexedGraph<GridNode> {
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 nodes[x][y].walkable = false;
-                LoggerUtil.log(LogCategory.GAME, this, nodes[x][y].toString());
             }
         }
     }
