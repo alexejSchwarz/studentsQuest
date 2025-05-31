@@ -14,9 +14,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.ecs.components.HearthComponent;
-import de.haw.sea2.ecs.components.PlayerComponent;
+import de.haw.sea2.logic.ecs.ECSEngine;
+import de.haw.sea2.logic.ecs.components.HearthComponent;
+import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.animations.AnimationUtils;
 import de.haw.sea2.view.animations.CoinAnimation;

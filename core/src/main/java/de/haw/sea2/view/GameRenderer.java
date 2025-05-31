@@ -24,10 +24,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
-import de.haw.sea2.ecs.components.AnimationComponent;
-import de.haw.sea2.ecs.components.Box2DComponent;
-import de.haw.sea2.ecs.components.SimpleRenderComponent;
-import de.haw.sea2.ecs.ECSEngine;
+import de.haw.sea2.logic.ecs.components.AnimationComponent;
+import de.haw.sea2.logic.ecs.components.Box2DComponent;
+import de.haw.sea2.logic.ecs.components.SimpleRenderComponent;
+import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.map.MapChangeListener;
 import de.haw.sea2.view.animations.AnimationType;

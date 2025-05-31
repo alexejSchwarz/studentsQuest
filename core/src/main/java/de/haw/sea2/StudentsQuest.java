@@ -16,14 +16,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.audio.AudioManager;
+import de.haw.sea2.contact.PlayerContactHandeler;
 import de.haw.sea2.contact.WorldContactListener;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
-import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.ecs.builders.EntityCreator;
-import de.haw.sea2.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
+import de.haw.sea2.logic.ecs.ECSEngine;
+import de.haw.sea2.logic.ecs.builders.EntityCreator;
+import de.haw.sea2.logic.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
@@ -156,6 +157,8 @@ public class StudentsQuest extends Game {
 
     private WorldContactListener worldContactListener;
 
+    private PlayerContactHandeler playerContactHandeler;
+
     /**
      * Die virtuelle Kamera, die den sichtbaren Bereich der Spielwelt bestimmt.
      *
@@ -275,6 +278,7 @@ public class StudentsQuest extends Game {
         // Erstellt und registriert den ContactListener für Kollisionsereignisse
         this.worldContactListener = new WorldContactListener();
         this.world.setContactListener(worldContactListener);
+        this.playerContactHandeler = new PlayerContactHandeler(this);
 
         // Konfiguriert Kamera und Viewport für die Bildschirmdarstellung
         this.gameCamera = new OrthographicCamera();

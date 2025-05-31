@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 /**
  * Definiert die im Spiel verwendeten Tasten und ihre Zuordnungen zu
  * tatsächlichen Tastaturtasten.
- * 
+ *
  * <p>
  * Diese Enum-Klasse dient als zentrale Stelle für die Definition der
  * Spielsteuerung.
@@ -40,19 +40,19 @@ public enum GameKey {
      * Kann mit der D-Taste oder der rechten Pfeiltaste ausgelöst werden.
      */
     RIGHT(Input.Keys.D, Input.Keys.RIGHT),
-    
+
     /**
      * Taste zum Pausieren des Spiels.
      * Kann mit der ESCAPE-Taste ausgelöst werden.
      */
     PAUSE(Input.Keys.ESCAPE),
-    
+
     /**
      * Debug: Taste zum Umschalten der Grid-Anzeige.
      * Wird mit der G-Taste ausgelöst.
      */
     DEBUG_GRID(Input.Keys.G),
-    
+
     /**
      * Debug: Taste zum Umschalten der Path-Anzeige.
      * Wird mit der P-Taste ausgelöst.
@@ -62,12 +62,12 @@ public enum GameKey {
     /**
      * Array von Tastencodes, die dieser Spielaktion zugeordnet sind.
      * Enthält die Codes aller Tasten, die die gleiche Aktion auslösen.
-     * 
+     *
      * <p>
      * Beispiel-Arrays für verschiedene GameKey-Werte:
      * <ul>
      * <li>UP: [51, 19] (51 ist der Code für W, 19 für UP)</li>
-     * <li>DOWN: [47, 20] (47 ist der Code für S, 20 für DOWN)</li>
+     * <li>BOTTOM: [47, 20] (47 ist der Code für S, 20 für BOTTOM)</li>
      * <li>BACK: [131] (131 ist der Code für ESCAPE)</li>
      * </ul>
      * Die genauen Zahlenwerte können je nach Implementierung der Input.Keys-Klasse
@@ -78,7 +78,7 @@ public enum GameKey {
 
     /**
      * Konstruktor für die GameKey-Enum.
-     * 
+     *
      * <p>
      * Der Parameter "int... keyCode" ist ein sogenannter "vararg"-Parameter
      * (variable Argumente).
@@ -90,7 +90,7 @@ public enum GameKey {
      * eigenen Parameter
      * definieren zu müssen.
      * </p>
-     * 
+     *
      * <p>
      * Beispiele für die Verwendung:
      * <ul>
@@ -111,7 +111,7 @@ public enum GameKey {
     /**
      * Gibt ein Array mit allen Tastencodes zurück, die dieser Spielaktion
      * zugeordnet sind.
-     * 
+     *
      * <p>
      * Diese Methode wird vom InputManager verwendet, um zu prüfen, ob eine
      * gedrückte

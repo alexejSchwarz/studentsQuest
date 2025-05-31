@@ -17,10 +17,10 @@ import com.badlogic.gdx.utils.Disposable;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
-import de.haw.sea2.ecs.ECSEngine;
-import de.haw.sea2.ecs.components.EnemyComponent;
-import de.haw.sea2.gameLevel.pathFinding.GridNode;
-import de.haw.sea2.gameLevel.pathFinding.NavigationGrid;
+import de.haw.sea2.logic.ecs.ECSEngine;
+import de.haw.sea2.logic.ecs.components.EnemyComponent;
+import de.haw.sea2.logic.gameLevel.pathFinding.GridNode;
+import de.haw.sea2.logic.gameLevel.pathFinding.NavigationGrid;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;

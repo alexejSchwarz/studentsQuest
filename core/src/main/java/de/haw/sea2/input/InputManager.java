@@ -77,7 +77,7 @@ public class InputManager implements InputProcessor {
         // Initialisiere ein Array für bis zu 256 verschiedene Tastencodes
         this.keyMapping = new GameKey[256];
 
-        // Für jede GameKey-Konstante (UP, DOWN, LEFT, RIGHT, BACK)
+        // Für jede GameKey-Konstante (UP, BOTTOM, LEFT, RIGHT, BACK)
         for (final GameKey key : GameKey.values()) {
             // Für jeden Tastencode, der dieser Konstante zugeordnet ist
             for (final int code : key.keyCodes) {
