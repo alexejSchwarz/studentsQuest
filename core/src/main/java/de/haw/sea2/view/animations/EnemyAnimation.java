@@ -4,10 +4,10 @@ import de.haw.sea2.paths.AssetPaths;
 
 public enum EnemyAnimation {
 
-    ENEMY_MOVE_UP(new AnimationType(AssetPaths.HERO_OLD_ATLAS.getPath(), "heroUp", 0.05f, 9)),
-    ENEMY_MOVE_LEFT(new AnimationType(AssetPaths.HERO_OLD_ATLAS.getPath(), "heroLeft", 0.05f, 9)),
-    ENEMY_MOVE_DOWN(new AnimationType(AssetPaths.HERO_OLD_ATLAS.getPath(), "heroDown", 0.05f, 9)),
-    ENEMY_MOVE_RIGHT(new AnimationType(AssetPaths.HERO_OLD_ATLAS.getPath(), "heroRight", 0.05f, 9));
+    ENEMY_MOVE_UP(new AnimationType(AssetPaths.ENEMY_ATLAS.getPath(), "enemyUp", 0.075f, 5)),
+    ENEMY_MOVE_LEFT(new AnimationType(AssetPaths.ENEMY_ATLAS.getPath(), "enemyLeft", 0.075f, 5)),
+    ENEMY_MOVE_DOWN(new AnimationType(AssetPaths.ENEMY_ATLAS.getPath(), "enemyDown", 0.075f, 5)),
+    ENEMY_MOVE_RIGHT(new AnimationType(AssetPaths.ENEMY_ATLAS.getPath(), "enemyRight", 0.075f, 5));
 
     public final AnimationType animationType;
 

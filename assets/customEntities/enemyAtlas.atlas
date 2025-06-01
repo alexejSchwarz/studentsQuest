@@ -1,0 +1,11 @@
+enemyAtlas.png
+size:1280,64
+repeat:none
+enemyDown
+bounds:320,0,320,64
+enemyLeft
+bounds:960,0,320,64
+enemyRight
+bounds:0,0,320,64
+enemyUp
+bounds:640,0,320,64
