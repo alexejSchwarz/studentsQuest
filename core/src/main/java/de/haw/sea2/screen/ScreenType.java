@@ -10,5 +10,6 @@ public enum ScreenType {
     CREDITS,
     PAUSE,
     LOADING,
-    SUCCESS
+    SUCCESS,
+    INFO_SCREEN_LV1
 }

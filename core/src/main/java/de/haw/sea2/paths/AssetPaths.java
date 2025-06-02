@@ -10,6 +10,7 @@ public enum AssetPaths {
     ENEMY_ATLAS("customEntities/enemyAtlas.atlas"),
     BOY_PLAYER_ATLAS("customEntities/playerAtlasCustom.atlas"),
     BUTTON_ATLAS("screens/mainScreen/button.atlas"),
+    MISSION_SCREEN("screens/missionScreen.png"),
     SLIDER_BACKGROUND("screens/settingsScreen/slider_background.png"),
     SLIDER_KNOB("screens/settingsScreen/slider_knob.png"),
     HOME_BUTTON("screens/settingsScreen/home_button.png");

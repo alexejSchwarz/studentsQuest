@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.ecs.Bits;
 import de.haw.sea2.ecs.builders.EntityCreator;
@@ -50,7 +51,7 @@ public class MapManager implements Disposable {
         // Registriert den TmxMapLoader, falls noch nicht geschehen
         if (!context.getAssetManager().isLoaded(mapPath)) {
             context.getAssetManager().setLoader(TiledMap.class,
-                    new TmxMapLoader(context.getAssetManager().getFileHandleResolver()));
+                new TmxMapLoader(context.getAssetManager().getFileHandleResolver()));
             context.getAssetManager().load(mapPath, TiledMap.class);
         }
     }
@@ -77,10 +78,10 @@ public class MapManager implements Disposable {
             context.getGameRenderer().getMapRenderer().setMap(cachedMap.getTiledMap());
 
             // alte Walls zerstoeren und neue erzeugen
-            destroyCollisionWalls(); 
-            createCollisionWalls(cachedMap); 
+            destroyCollisionWalls();
+            createCollisionWalls(cachedMap);
             this.currentMap = cachedMap;
-            notifyMapChange(); 
+            notifyMapChange();
             return;
         }
 
@@ -107,15 +108,15 @@ public class MapManager implements Disposable {
         notifyMapChange();
     }
 
+
     private void createCollisionWalls(GameMap gameMap) {
         for(Rectangle rectangle : gameMap.getCollisionAreas()) {
             this.creator.createWall(rectangle);
         }
     }
 
-    //TODO ueberArbeiten mit RemoveComponent
     /**
-     * Soll bei jeder Mapchaneg aufgerufen werden
+     * Soll bei jeder Mapchange aufgerufen werden
      */
     private void destroyCollisionWalls() {
         this.context.getWorld().getBodies(this.bodies);

@@ -21,36 +21,22 @@ import de.haw.sea2.debug.LoggerUtil;
  */
 public class ScreenManager {
 
-    /**
-     * Der StudentsQuest-Kontext, der Zugriff auf zentrale Ressourcen bietet.
-     */
-    private final StudentsQuest game;
+    private final StudentsQuest context;
 
-    /**
-     * ScreenCache für bereits erstellte Screens.
-     */
     private final Map<ScreenType, Screen> screenCache;
 
-    /**
-     * Der aktuell angezeigte Screen.
-     */
     private Screen currentScreen;
 
-    /**
-     * Der zuvor angezeigte Screen (für Rückkehr-Funktionalität).
-     */
     private Screen previousScreen;
 
     /**
      * Erstellt einen neuen ScreenManager mit dem angegebenen Spiel-Kontext.
      *
-     * @param game Der StudentsQuest-Kontext
+     * @param context Der StudentsQuest-Kontext
      */
-    public ScreenManager(StudentsQuest game) {
-        this.game = game;
-        this.screenCache = new EnumMap<>(ScreenType.class); // durch das verwenden der ScreenType Klasse wird
-                                                            // sichergestellt, dass keine doppelten Bildschirme
-                                                            // entstehen können
+    public ScreenManager(StudentsQuest context) {
+        this.context = context;
+        this.screenCache = new EnumMap<>(ScreenType.class);
     }
 
     /**
@@ -63,23 +49,8 @@ public class ScreenManager {
         previousScreen = currentScreen;
 
         Screen screen = getOrCreateScreen(screenType);
-        game.setScreen(screen);
+        context.setScreen(screen);
         currentScreen = screen;
-    }
-
-    /**
-     * Zeigt einen Screen mit Ladebildschirm an.
-     *
-     * @param targetScreenType Der Typ des Zielscreens
-     */
-    public void showScreenWithLoading(ScreenType targetScreenType) {
-        // Speichert den aktuellen Screen als vorherigen Screen
-        previousScreen = currentScreen;
-
-        // Erstelle einen LoadingScreen mit dem Ziel-Screen-Typ
-        Screen loadingScreen = createLoadingScreen(targetScreenType);
-        game.setScreen(loadingScreen);
-        currentScreen = loadingScreen;
     }
 
     /**
@@ -87,11 +58,10 @@ public class ScreenManager {
      */
     public void returnToPreviousScreen() {
         if (previousScreen != null) {
-            // Debug-Ausgabe
             LoggerUtil.debug(LogCategory.DEBUG,this,"Kehre zurück zum vorherigen Screen: " + previousScreen.getClass().getSimpleName());
 
             // Setze den vorherigen Screen als aktuellen Screen
-            game.setScreen(previousScreen);
+            context.setScreen(previousScreen);
             currentScreen = previousScreen;
             previousScreen = null;
 
@@ -113,32 +83,23 @@ public class ScreenManager {
     private Screen createScreen(ScreenType screenType) {
         switch (screenType) {
             case GAME:
-                return new GameScreen(game);
+                return new GameScreen(context);
             case MAIN_MENU:
-                return new MainMenuScreen(game);
+                return new MainMenuScreen(context);
+            case INFO_SCREEN_LV1:
+                return new InfoScreenLevel1(context);
             case PAUSE:
-                return new PauseGameScreen(game);
+                return new PauseGameScreen(context);
             case LOADING:
-                return new LoadingScreen(game, ScreenType.MAIN_MENU);
+                return new LoadingScreen(context);
             case SUCCESS:
-                return new SuccessScreen(game);
+                return new SuccessScreen(context);
             case SETTINGS:
-                return new SettingsScreen(game);
+                return new SettingsScreen(context);
             default:
                 LoggerUtil.error(LogCategory.ERROR,this,"Unbekannter ScreenType: " + screenType);
-                return new MainMenuScreen(game); // Fallback
+                return new MainMenuScreen(context); // Fallback
         }
-    }
-
-    /**
-     * Erstellt einen LoadingScreen mit dem angegebenen Ziel-Screen-Typ.
-     *
-     * @param targetScreenType Der Ziel-Screen-Typ, zu dem nach dem Laden gewechselt
-     *                         werden soll
-     * @return Ein neuer LoadingScreen
-     */
-    private Screen createLoadingScreen(ScreenType targetScreenType) {
-        return new LoadingScreen(game, targetScreenType);
     }
 
     /**
@@ -151,8 +112,9 @@ public class ScreenManager {
     private Screen getOrCreateScreen(ScreenType screenType) {
         // Bei LOADING immer neue Instanz erstellen, da diese spezifische Parameter
         // enthält
+        //TODO mal schauen, wegen Restart-faehigkeit, eventuell nicht noetig hier einen neuen Screen zu erstellen
         if (screenType == ScreenType.LOADING) {
-            return new LoadingScreen(game, ScreenType.MAIN_MENU);
+            return new LoadingScreen(context);
         }
 
         // Prüfe, ob der Screen bereits im Cache ist

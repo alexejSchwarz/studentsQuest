@@ -260,6 +260,7 @@ public class StudentsQuest extends Game {
      * </ul>
      * </p>
      */
+
     @Override
     public void create() {
         // Erstellt den SpriteBatch zum Zeichnen von Grafiken
@@ -316,6 +317,8 @@ public class StudentsQuest extends Game {
         // Log: Erfolgreich geladen
         LoggerUtil.log(LogCategory.DEBUG, this, "Alle Ressourcen erfolgreich erstellt.");
     }
+
+
 
     /**
      * Wird in jedem Frame aufgerufen, um das Spiel zu aktualisieren und zu rendern.
@@ -445,6 +448,7 @@ public class StudentsQuest extends Game {
     public PathingCalculationManager getPathCalcManager() {
         return pathCalcManager;
     }
+
 
     /**
      * physics example for circle falling onto a plattform
