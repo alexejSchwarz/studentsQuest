@@ -7,7 +7,7 @@ public enum AssetPaths {
     COIN_ATLAS("screens/gameScreen/coins/coins.atlas"),
     MAIN_MENU_BACKGROUND("screens/mainScreen/background.jpg"),
     MAIN_MENU_HEADING("screens/mainScreen/text.png"),
-    HERO_OLD_ATLAS("screens/gameScreen/heroAtlas.atlas"),
+    ENEMY_ATLAS("customEntities/enemyAtlas.atlas"),
     BOY_PLAYER_ATLAS("customEntities/playerAtlasCustom.atlas"),
     BUTTON_ATLAS("screens/mainScreen/button.atlas"),
     SLIDER_BACKGROUND("screens/settingsScreen/slider_background.png"),
