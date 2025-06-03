@@ -11,9 +11,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.ecs.Bits;
-import de.haw.sea2.ecs.builders.EntityCreator;
-import de.haw.sea2.ecs.components.RemoveComponent;
+import de.haw.sea2.logic.Bits;
+import de.haw.sea2.logic.ecs.builders.EntityCreator;
+import de.haw.sea2.logic.ecs.components.RemoveComponent;
 
 /**
  * Verwaltet das Laden, Aktivieren und Verwalten von Spielkarten.

@@ -1,19 +1,23 @@
 package de.haw.sea2.contact;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
 
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
-import de.haw.sea2.ecs.Bits;
+import de.haw.sea2.logic.Bits;
+import de.haw.sea2.logic.ecs.components.PlayerComponent;
 
 /**
  * WorldContactListener lauscht auf Collisions aus der Box2dWelt. Hier können neben der schon gegebenen Physik selbstdefinierte Collisions-Events an die Lauschenden gefeuert werden
@@ -22,7 +26,11 @@ public class WorldContactListener implements ContactListener {
 
     // Category Bits, that should trigger an Interaction event with the player
     // for test purposes Ball is here. Wall is not included, as no further interactions besides the predefined physics should apply
-    private static final Set<Short> INTERACTABLE_CATEGORIES = new HashSet<>(Set.of(Bits.BIT_BALL.value, Bits.BIT_GAME_ENTITY.value, Bits.BIT_TMP_ENEMY.value));
+    private static final Set<Short> PLAYER_INTERACTABLE_CATEGORIES = new HashSet<>(Set.of(
+        Bits.BIT_BALL.value, Bits.BIT_GAME_ENTITY.value, Bits.BIT_ENEMY.value
+    ));
+
+    private static final Set<PlayerComponent.Sensors> SENSORS = Arrays.stream(PlayerComponent.Sensors.values()).collect(Collectors.toSet());
 
     private Array<PlayerContactListener> listeners;
 
@@ -40,6 +48,11 @@ public class WorldContactListener implements ContactListener {
         }
     }
 
+    private void notifySensorEnemyContact(Entity enemy, PlayerComponent.Sensors sensor) {
+        LoggerUtil.log(LogCategory.GAME, WorldContactListener.class, "enemy contact with" + sensor.name());
+        // TODO implement me
+    }
+
     @Override
     public void beginContact(Contact contact) {
 
@@ -51,6 +64,10 @@ public class WorldContactListener implements ContactListener {
         final short catFixA = contact.getFixtureA().getFilterData().categoryBits;
         final short catFixB = contact.getFixtureB().getFilterData().categoryBits;
 
+        if (isSensorEnemyContact(contact.getFixtureA(), contact.getFixtureB())) {
+            return;
+        }
+
         if (catFixA == Bits.BIT_PLAYER.value) {
             player = (Entity) bodyA.getUserData();
         } else if (catFixB == Bits.BIT_PLAYER.value) {
@@ -59,9 +76,9 @@ public class WorldContactListener implements ContactListener {
             return;
         }
 
-        if (INTERACTABLE_CATEGORIES.contains(catFixA)) {
+        if (PLAYER_INTERACTABLE_CATEGORIES.contains(catFixA)) {
             interactable = (Entity) bodyA.getUserData();
-        } else if (INTERACTABLE_CATEGORIES.contains(catFixB)) {
+        } else if (PLAYER_INTERACTABLE_CATEGORIES.contains(catFixB)) {
             interactable = (Entity) bodyB.getUserData();
         } else {
             return;
@@ -69,6 +86,17 @@ public class WorldContactListener implements ContactListener {
 
         LoggerUtil.log(LogCategory.GAME, this, "Player collides with Interactable");
         notifyPlayerContact(player, interactable);
+    }
+
+    private boolean isSensorEnemyContact(Fixture a, Fixture b) {
+        if (a.getUserData() instanceof PlayerComponent.Sensors && SENSORS.contains((PlayerComponent.Sensors) a.getUserData()) && b.getFilterData().categoryBits == Bits.BIT_ENEMY.value) {
+            notifySensorEnemyContact((Entity) b.getUserData(), (PlayerComponent.Sensors) a.getUserData());
+            return true;
+        } else if (b.getUserData() instanceof PlayerComponent.Sensors && SENSORS.contains((PlayerComponent.Sensors) b.getUserData()) && a.getFilterData().categoryBits == Bits.BIT_ENEMY.value) {
+            notifySensorEnemyContact((Entity) a.getUserData(), (PlayerComponent.Sensors) b.getUserData());
+            return true;
+        }
+        return false;
     }
 
     @Override
