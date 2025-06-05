@@ -57,7 +57,9 @@ public enum GameKey {
      * Debug: Taste zum Umschalten der Path-Anzeige.
      * Wird mit der P-Taste ausgelöst.
      */
-    DEBUG_PATH(Input.Keys.P);
+    DEBUG_PATH(Input.Keys.P),
+
+    ATTACK(Input.Keys.ENTER);
 
     /**
      * Array von Tastencodes, die dieser Spielaktion zugeordnet sind.
@@ -67,7 +69,7 @@ public enum GameKey {
      * Beispiel-Arrays für verschiedene GameKey-Werte:
      * <ul>
      * <li>UP: [51, 19] (51 ist der Code für W, 19 für UP)</li>
-     * <li>BOTTOM: [47, 20] (47 ist der Code für S, 20 für BOTTOM)</li>
+     * <li>DOWN: [47, 20] (47 ist der Code für S, 20 für DOWN)</li>
      * <li>BACK: [131] (131 ist der Code für ESCAPE)</li>
      * </ul>
      * Die genauen Zahlenwerte können je nach Implementierung der Input.Keys-Klasse

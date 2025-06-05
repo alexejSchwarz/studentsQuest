@@ -2,13 +2,13 @@ package de.haw.sea2.logic.entityLogic;
 
 import com.badlogic.gdx.math.Vector2;
 
-public enum EnemyMovementDirection {
+public enum MovementDirection {
     UP, DOWN, LEFT, RIGHT;
 
     /**
      * Vector.Zero is not allowed here, as it does not correspond to a Movement Direction
      */
-    public static EnemyMovementDirection getMovementDirectionFromVectorForEnemies(Vector2 vector2) {
+    public static MovementDirection getMovementDirectionFromVectorForEnemies(Vector2 vector2) {
         if (vector2.equals(Vector2.Zero)) {
             throw new IllegalArgumentException();
         }

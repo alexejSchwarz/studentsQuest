@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
 import de.haw.sea2.debug.DebugConfig;
@@ -14,16 +15,16 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
-import de.haw.sea2.logic.ecs.ECSEngine;
+import de.haw.sea2.input.GameKey;
+import de.haw.sea2.input.InputManager;
+import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.logic.EntityUtils;
+import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.logic.gameLevel.SpawnLogic;
-import de.haw.sea2.input.GameKey;
-import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.paths.MapPaths;
 import de.haw.sea2.view.GameRenderer;
@@ -140,10 +141,6 @@ public class GameScreen implements Screen, KeyInputListener {
 
         // Map aktivieren (nicht mehr laden!)
         this.context.getMapManager().activateMap(MapPaths.MAINMAP.getPath());
-
-        // TODO auslagern?
-        // Die Position ist relativ zur Box2D-Welt und nicht zu Pixeln auf dem
-        // Bildschirm
 
         Vector2 playerSpawnPosition = this.context.getMapManager().getCurrentMap().getPlayerSpawnPoint();
         LoggerUtil.log(LogCategory.DEBUG, this, "player to be created at: " + playerSpawnPosition);

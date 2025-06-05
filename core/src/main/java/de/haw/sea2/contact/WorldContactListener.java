@@ -33,13 +33,19 @@ public class WorldContactListener implements ContactListener {
     private static final Set<PlayerComponent.Sensors> SENSORS = Arrays.stream(PlayerComponent.Sensors.values()).collect(Collectors.toSet());
 
     private Array<PlayerContactListener> listeners;
+    private Array<SensorEnemyContactListener> sensorListeners;
 
     public WorldContactListener() {
         this.listeners = new Array<>();
+        this.sensorListeners = new Array<>();
     }
 
-    public void addListener(PlayerContactListener listener) {
+    public void addPlayerContactListener(PlayerContactListener listener) {
         this.listeners.add(listener);
+    }
+
+    public void addSensorListener(SensorEnemyContactListener listener) {
+        this.sensorListeners.add(listener);
     }
 
     private void notifyPlayerContact(Entity player, Entity interactable) {
@@ -50,9 +56,14 @@ public class WorldContactListener implements ContactListener {
 
     private void notifySensorEnemyContact(Entity enemy, PlayerComponent.Sensors sensor) {
         LoggerUtil.log(LogCategory.GAME, WorldContactListener.class, "enemy contact with" + sensor.name());
-        // TODO implement me
+        for (SensorEnemyContactListener listener : this.sensorListeners) {
+            listener.onSensorContactWithEnemy(enemy);
+        }
     }
 
+    /**
+     * wird aufgerufen, wenn Kontakt in World vermerkt wird. Bei fortlaufendem Kontakt ohne Unterbrechungen wird beginContact() nicht aufgerufen
+     */
     @Override
     public void beginContact(Contact contact) {
 
@@ -64,7 +75,14 @@ public class WorldContactListener implements ContactListener {
         final short catFixA = contact.getFixtureA().getFilterData().categoryBits;
         final short catFixB = contact.getFixtureB().getFilterData().categoryBits;
 
+        // wenn true, dann wurde Event schon weitergeleitet
         if (isSensorEnemyContact(contact.getFixtureA(), contact.getFixtureB())) {
+            return;
+        }
+
+        // Falls einer der Beiden ein Sensor ist, es aber kein Sensor Gegner Kontakt, dann ignorieren.
+        // sonst koennte man man Angriff Münzen einsammeln
+        if (contact.getFixtureA().isSensor() || contact.getFixtureB().isSensor()) {
             return;
         }
 
@@ -88,12 +106,18 @@ public class WorldContactListener implements ContactListener {
         notifyPlayerContact(player, interactable);
     }
 
+    /**
+     * Gegner Entitaeten haben Referenz auf die eigene Entitaet als UserData des Box2dBodies. Spieler Sensoren haben Sensor Enum als UserData des Fixtures.
+     * Hier wird nicht nur gecheckt, sondern auch ueber Kontakt benachrichtet, da der Aufrufer ein Boolean braucht fuer seinen Methodenablauf.
+     * notifySensorEnemyContact() braucht dagegen das jeweilige Entity und den Sensor.
+     */
     private boolean isSensorEnemyContact(Fixture a, Fixture b) {
         if (a.getUserData() instanceof PlayerComponent.Sensors && SENSORS.contains((PlayerComponent.Sensors) a.getUserData()) && b.getFilterData().categoryBits == Bits.BIT_ENEMY.value) {
-            notifySensorEnemyContact((Entity) b.getUserData(), (PlayerComponent.Sensors) a.getUserData());
+            LoggerUtil.log(LogCategory.DEBUG, this, "" + b.getFilterData().categoryBits + " "  + Bits.BIT_ENEMY + " " + Bits.BIT_ENEMY.value);
+            notifySensorEnemyContact((Entity) b.getBody().getUserData(), (PlayerComponent.Sensors) a.getUserData());
             return true;
         } else if (b.getUserData() instanceof PlayerComponent.Sensors && SENSORS.contains((PlayerComponent.Sensors) b.getUserData()) && a.getFilterData().categoryBits == Bits.BIT_ENEMY.value) {
-            notifySensorEnemyContact((Entity) a.getUserData(), (PlayerComponent.Sensors) b.getUserData());
+            notifySensorEnemyContact((Entity) a.getBody().getUserData(), (PlayerComponent.Sensors) b.getUserData());
             return true;
         }
         return false;

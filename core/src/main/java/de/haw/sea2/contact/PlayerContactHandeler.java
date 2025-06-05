@@ -18,7 +18,7 @@ public class PlayerContactHandeler implements PlayerContactListener {
     private final StudentsQuest context;
 
     public PlayerContactHandeler(StudentsQuest context) {
-        context.getWorldContactListener().addListener(this);
+        context.getWorldContactListener().addPlayerContactListener(this);
         this.context = context;
     }
 

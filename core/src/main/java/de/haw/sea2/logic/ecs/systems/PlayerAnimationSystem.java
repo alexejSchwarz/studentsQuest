@@ -21,21 +21,32 @@ public class PlayerAnimationSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         final Box2DComponent box2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
         final AnimationComponent animationComp = ECSEngine.ANIMATION_COMP_MAPPER.get(entity);
+        final PlayerComponent playerComp = ECSEngine.PLAYER_COMP_MAPPER.get(entity);
+
+        switch (playerComp.curentFacing) {
+            case UP: {
+                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_UP.animationType;
+                break;
+            }
+            case DOWN: {
+                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
+                break;
+            }
+            case LEFT: {
+                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_LEFT.animationType;
+                break;
+            }
+            case RIGHT: {
+                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_RIGHT.animationType;
+                break;
+            }
+            default:
+                break;
+        }
+
         if (box2DComponent.body.getLinearVelocity().equals(Vector2.Zero)) {
             // player does not move
             animationComp.animationTime = 0;
-        } else if (box2DComponent.body.getLinearVelocity().x > 0) {
-            // player moves to the right
-            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_RIGHT.animationType;
-        } else if (box2DComponent.body.getLinearVelocity().x < 0) {
-            // player moves to the left
-            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_LEFT.animationType;
-        } else if (box2DComponent.body.getLinearVelocity().y > 0) {
-            // player moves up
-            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_UP.animationType;
-        } else if (box2DComponent.body.getLinearVelocity().y < 0) {
-            // player moves down
-            animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
         }
     }
 }

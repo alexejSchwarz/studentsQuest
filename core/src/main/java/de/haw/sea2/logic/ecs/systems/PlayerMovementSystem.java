@@ -5,6 +5,9 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
+
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
@@ -12,6 +15,7 @@ import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.logic.entityLogic.MovementDirection;
 
 /**
  * Dieses System verwaltet die Bewegung des Spielers basierend auf
@@ -26,6 +30,12 @@ import de.haw.sea2.input.KeyInputListener;
  */
 public class PlayerMovementSystem extends IteratingSystem implements KeyInputListener {
 
+    // Alle Keys, die hier verarbeitet werden sollen (Teilmenge der definierten Keys in GameKey)
+    private final ObjectSet<GameKey> keySet;
+
+    // Map, die die aktuell guelltigen gedrueckten (also aktive) Tasten speichert. Gegenteile koennen nicht gleichzeitig aktiv sein (bsp. links rechts oder oben unten)
+    private final ObjectMap<GameKey, Boolean> activeAllowedKeys;
+
     /**
      * Horizontaler Richtungsfaktor (-1 für links, 1 für rechts, 0 für keine
      * Bewegung).
@@ -36,6 +46,8 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
      * Bewegung).
      */
     private int yFactor;
+
+    private MovementDirection facingDirection;
 
     /**
      * Konstruktor des PlayerMovementSystem.
@@ -48,6 +60,13 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
         super(Family.all(PlayerComponent.class, Box2DComponent.class).get());
         context.getInputManager().addKeyInputListener(this);
         this.xFactor = this.yFactor = 0;
+        this.facingDirection = MovementDirection.DOWN;
+        this.keySet = ObjectSet.with(GameKey.UP, GameKey.DOWN, GameKey.LEFT, GameKey.RIGHT);
+
+        this.activeAllowedKeys = new ObjectMap<>();
+        for (GameKey key : this.keySet) {
+            this.activeAllowedKeys.put(key, Boolean.FALSE);
+        }
     }
 
     /**
@@ -68,6 +87,8 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
         // Zugriff auf die Komponenten der Entität mittels schneller Mappers
         final PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(entity);
         final Box2DComponent physicsBox2dComponent = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
+
+        playerComponent.curentFacing = this.facingDirection;
 
         // Erstellen eines Richtungsvektors basierend auf den Eingabefaktoren
         Vector2 movementDirection = new Vector2(this.xFactor, this.yFactor);
@@ -98,66 +119,140 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
      * Setzt das directionChange-Flag und passt den x- bzw. y-Faktor je nach
      * gedrückter Taste an. Verwendet die GameKey-Enumeration. @see GameKey
      *
+     * Links und Rechts haben Prioritaet in Setzung der FacingDirection und somit auch fuer die Animationsauswahl.
+     * Dh. Diagonale Bewegung wird durch links oder rechts Animation abgebildet (sieht besser aus als oben oder unten)
+     * Falls Diagonal als Facing und Animation implementiert wird, entfaellt diese Priorisierung
+     *
      * @param manager Der InputManager, der dieses Ereignis verarbeitet.
      * @param key     Die spezifische Taste, die gedrückt wurde.
      */
     @Override
     public void keyDown(InputManager manager, GameKey key) {
-        switch (key) {
-            case LEFT: {
-                this.xFactor = -1;
-                break;
-            }
-            case RIGHT: {
-                this.xFactor = 1;
-                break;
-            }
-            case UP: {
-                this.yFactor = 1;
-                break;
-            }
-            case DOWN: {
-                this.yFactor = -1;
-                break;
-            }
-            default: {
-                break;
-            }
+
+        if (this.keySet.contains(key)) {
+            handleKeyInput(key);
         }
     }
 
+    private void handleKeyInput(GameKey key) {
+        switch (key) {
+            case LEFT: {
+                // wenn Gegenrichtung gedrueckt ist, dann soll der Input ignoriert werden
+                if (this.activeAllowedKeys.get(GameKey.RIGHT)) {
+                    break;
+                }
+                this.xFactor = -1;
+                this.facingDirection = MovementDirection.LEFT;
+                this.activeAllowedKeys.put(key, true);
+                break;
+            }
+            case RIGHT: {
+                if (this.activeAllowedKeys.get(GameKey.LEFT)) {
+                    break;
+                }
+                this.xFactor = 1;
+                this.facingDirection = MovementDirection.RIGHT;
+                this.activeAllowedKeys.put(key, true);
+                break;
+            }
+            case UP: {
+                if (this.activeAllowedKeys.get(GameKey.DOWN)) {
+                    break;
+                }
+                this.activeAllowedKeys.put(key, true);
+                this.yFactor = 1;
+
+                //Priorisierung links / rechts Animation und Facing (damit auch Angriffsrichtung)
+                if (this.activeAllowedKeys.get(GameKey.RIGHT) || this.activeAllowedKeys.get(GameKey.LEFT)) {
+                    break;
+                }
+                this.facingDirection = MovementDirection.UP;
+                break;
+            }
+            case DOWN: {
+                if (this.activeAllowedKeys.get(GameKey.UP)) {
+                    break;
+                }
+                this.activeAllowedKeys.put(key, true);
+                this.yFactor = -1;
+
+                if (this.activeAllowedKeys.get(GameKey.RIGHT) || this.activeAllowedKeys.get(GameKey.LEFT)) {
+                    break;
+                }
+                this.facingDirection = MovementDirection.DOWN;
+                break;
+            }
+            default: {
+                throw new RuntimeException();
+            }
+        }
+
+    }
+
     /**
-     * Verarbeitet Tast losgelassen-Ereignisse.
+     * Verarbeitet Taste losgelassen-Ereignisse.
      * Passt den Bewegungsfaktor so an, dass, wenn eine Taste losgelassen wird,
-     * die Bewegung entweder gestoppt oder auf den Zustand der gegenüberliegenden
-     * Taste
-     * (falls gedrückt) umgestellt wird.
+     * die Bewegung wird gestoppt. Falls bei diagonaler Bewegung links oder rechts losgelassen wird, dann wird Facing und Animation von Oben bzw. Unten uebernommen
      *
      * @param manager Der InputManager, der dieses Ereignis verarbeitet.
      * @param key     Die spezifische Taste, die losgelassen wurde.
      */
     @Override
     public void keyUp(InputManager manager, GameKey key) {
+
+        if (!this.keySet.contains(key) || !this.activeAllowedKeys.get(key)) {
+            return;
+        }
+
         switch (key) {
             case LEFT: {
-                this.xFactor = manager.isKeyDown(GameKey.RIGHT) ? 1 : 0;
+                this.xFactor = 0;
+                this.activeAllowedKeys.put(key, false);
+
+                if (manager.isKeyDown(GameKey.RIGHT)) { // um fluessig Richtung zu wechseln, kann ein vorher als nicht gueltig eingestufter Input wiederholt werden
+                    handleKeyInput(GameKey.RIGHT);
+                } else if (this.activeAllowedKeys.get(GameKey.UP)) {
+                    this.facingDirection = MovementDirection.UP;
+                } else if (this.activeAllowedKeys.get(GameKey.DOWN)) {
+                    this.facingDirection = MovementDirection.DOWN;
+                }
                 break;
             }
             case RIGHT: {
-                this.xFactor = manager.isKeyDown(GameKey.LEFT) ? -1 : 0;
+                this.xFactor = 0;
+                this.activeAllowedKeys.put(key, false);
+
+                if (manager.isKeyDown(GameKey.LEFT)) {
+                    handleKeyInput(GameKey.LEFT);
+                } else if (this.activeAllowedKeys.get(GameKey.UP)) {
+                    this.facingDirection = MovementDirection.UP;
+                } else if (this.activeAllowedKeys.get(GameKey.DOWN)) {
+                    this.facingDirection = MovementDirection.DOWN;
+                }
                 break;
             }
             case UP: {
-                this.yFactor = manager.isKeyDown(GameKey.DOWN) ? -1 : 0;
+                this.yFactor = 0;
+                this.activeAllowedKeys.put(key, false);
+
+                if (manager.isKeyDown(GameKey.DOWN)) {
+                    handleKeyInput(GameKey.DOWN);
+                }
                 break;
             }
             case DOWN: {
-                this.yFactor = manager.isKeyDown(GameKey.UP) ? 1 : 0;
+                this.yFactor = 0;
+                this.activeAllowedKeys.put(key, false);
+
+                if (manager.isKeyDown(GameKey.UP)) {
+                    handleKeyInput(GameKey.UP);
+                }
                 break;
             }
             default: {
-                break;
+                throw new RuntimeException();
             }
         }
+
     }
 }
