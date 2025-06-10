@@ -14,6 +14,7 @@ import de.haw.sea2.logic.ecs.components.EnemyComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.InteractionComponent;
 import de.haw.sea2.logic.ecs.components.ObstacleComponent;
+import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.components.SimpleRenderComponent;
 import de.haw.sea2.paths.AssetPaths;
@@ -67,8 +68,12 @@ public class EntityCreator {
                     animationComp.width = width;
                     animationComp.height = height;
                     entity.add(animationComp);
+
+                    PlayerAttackStateComponent attackStateComponent = this.engine.createComponent(PlayerAttackStateComponent.class);
+                    attackStateComponent.engine = this.engine;
+                    entity.add(attackStateComponent);
                 })
-                .build(true);
+                .build();
     }
 
     /**
@@ -154,6 +159,11 @@ public class EntityCreator {
                 InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
                 interCopm.type = InteractionType.PLAYER_TAKES_DMG;
                 entity.add(interCopm);
+
+                HearthComponent hearthComponent = engine.createComponent(HearthComponent.class);
+                hearthComponent.currentHearths = 2;
+                hearthComponent.maxHearths = 2;
+                entity.add(hearthComponent);
             })
             .build();
     }

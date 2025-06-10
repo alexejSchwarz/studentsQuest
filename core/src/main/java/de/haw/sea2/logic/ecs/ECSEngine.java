@@ -9,12 +9,14 @@ import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.EnemyComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.InteractionComponent;
+import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.components.SimpleRenderComponent;
 import de.haw.sea2.logic.ecs.systems.AnimationSystem;
 import de.haw.sea2.logic.ecs.systems.EnemyAnimationSystem;
 import de.haw.sea2.logic.ecs.systems.EntityRemovalSystem;
 import de.haw.sea2.logic.ecs.systems.PlayerAnimationSystem;
+import de.haw.sea2.logic.ecs.systems.PlayerAttackSystem;
 import de.haw.sea2.logic.ecs.systems.PlayerCameraSystem;
 import de.haw.sea2.logic.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.logic.ecs.systems.customSystems.EnemyBatchMovementSystem;
@@ -78,6 +80,7 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<InteractionComponent> INTERACTION_COMPONENT_MAPPER = ComponentMapper.getFor(InteractionComponent.class);
     public static final ComponentMapper<HearthComponent> HEARTH_COMPONENT_MAPPER = ComponentMapper.getFor(HearthComponent.class);
     public static final ComponentMapper<EnemyComponent> ENEMY_COMPONENT_MAPPER = ComponentMapper.getFor(EnemyComponent.class);
+    public static final ComponentMapper<PlayerAttackStateComponent> PLAYER_ATTACK_STATE_COMPONENT_MAPPER = ComponentMapper.getFor(PlayerAttackStateComponent.class);
 
     //Custom System
     private final EnemyBatchMovementSystem enemyBatchMovementSystem;
@@ -102,6 +105,7 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(new PlayerAnimationSystem());
         this.addSystem(new EnemyAnimationSystem());
         this.addSystem(new EntityRemovalSystem(context));
+        this.addSystem(new PlayerAttackSystem(context));
         this.enemyBatchMovementSystem = new EnemyBatchMovementSystem(this, context);
 
     }

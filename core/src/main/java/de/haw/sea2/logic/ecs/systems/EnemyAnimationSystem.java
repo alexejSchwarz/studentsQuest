@@ -8,7 +8,7 @@ import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.components.AnimationComponent;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.EnemyComponent;
-import de.haw.sea2.logic.entityLogic.EnemyMovementDirection;
+import de.haw.sea2.logic.entityLogic.MovementDirection;
 import de.haw.sea2.view.animations.EnemyAnimation;
 
 public class EnemyAnimationSystem extends IteratingSystem {
@@ -28,7 +28,7 @@ public class EnemyAnimationSystem extends IteratingSystem {
             return;
         }
 
-        EnemyMovementDirection direction = EnemyMovementDirection.getMovementDirectionFromVectorForEnemies(box2DComponent.body.getLinearVelocity());
+        MovementDirection direction = MovementDirection.getMovementDirectionFromVectorForEnemies(box2DComponent.body.getLinearVelocity());
 
         switch (direction) {
             case UP: {

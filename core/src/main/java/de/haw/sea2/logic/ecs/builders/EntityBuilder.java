@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -15,7 +14,6 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
-import de.haw.sea2.logic.ecs.components.PlayerComponent;
 
 /**
  * Ein generischer Builder für die Erstellung von Entitäten im ECS-System.
@@ -153,24 +151,15 @@ public class EntityBuilder {
     }
 
     /**
-     * Baut eine Entität mit einer Box2D-Komponente. Fuer Spieler Entitaeten werden Sensoren noch erzeugt
+     * Baut eine Entität mit einer Box2D-Komponente.
      */
-    public void build(boolean isPlayer) {
+    public void build() {
         LoggerUtil.log(LogCategory.GAME,this,"Building entity with position: " + position + ", size: " + width + "x" + height);
         createBox2DComponent();
-        if (isPlayer) {
-            createSensors();
-        }
         additionalComponents.accept(entity);
         engine.addEntity(entity);
         LoggerUtil.log(LogCategory.GAME,this,"Entity built and added to engine: " + entity);
     }
-
-    //default isPlayer == false
-    public void build() {
-        build(false);
-    }
-
 
     /**
      * Erstellt die Box2D-Komponente für die Entität.
@@ -203,25 +192,5 @@ public class EntityBuilder {
 
         entity.add(box2dComponent);
         LoggerUtil.log(LogCategory.GAME,this,"Box2D component created and added to entity.");
-    }
-
-    private void createSensors() {
-        createASensor(PlayerComponent.Sensors.TOP, new Vector2(-width, height), new Vector2(width, height));
-        createASensor(PlayerComponent.Sensors.RIGHT, new Vector2(width, height), new Vector2(width, -height));
-        createASensor(PlayerComponent.Sensors.BOTTOM, new Vector2(width, -height), new Vector2(-width, -height));
-        createASensor(PlayerComponent.Sensors.LEFT, new Vector2(-width, -height), new Vector2(-width, height));
-    }
-
-    private void createASensor(PlayerComponent.Sensors sensorType, Vector2 left, Vector2 right) {
-        PolygonShape triangleShape = new PolygonShape();
-        Vector2[] points = {Vector2.Zero, left, right};
-        triangleShape.set(points);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = triangleShape;
-        fixtureDef.isSensor = true;
-
-        this.body.createFixture(fixtureDef).setUserData(sensorType);
-        triangleShape.dispose();
     }
 }
