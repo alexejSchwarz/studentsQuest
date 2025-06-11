@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Array;
  * </p>
  */
 public class InputManager implements InputProcessor {
+
     /**
      * Eine Zuordnungstabelle (Mapping), die jedem Tastencode eine GameKey-Aktion
      * zuweist.
@@ -53,7 +54,7 @@ public class InputManager implements InputProcessor {
      * Eine Liste aller registrierten KeyInputListener, die über Tastenereignisse
      * informiert werden sollen.
      */
-    private final Array<KeyInputListener> listeners;
+    private final Array<ScreenKeyInputListener> listeners;
 
     /**
      * Erstellt einen neuen InputManager.
@@ -106,28 +107,22 @@ public class InputManager implements InputProcessor {
      *
      * @param listener Das Objekt, das über Tastenereignisse informiert werden soll
      */
-    public void addKeyInputListener(final KeyInputListener listener) {
-        listeners.add(listener);
+    public void addKeyInputListener(final ScreenKeyInputListener listener) {
+        if (!this.listeners.contains(listener, true)) {
+            this.listeners.add(listener);
+        }
     }
 
     /**
-     * Entfernt einen registrierten KeyInputListener aus der Liste der zu
-     * benachrichtigenden Objekte.
-     *
-     * <p>
-     * Dies ist wichtig, um Speicherlecks zu vermeiden, wenn ein Objekt nicht mehr
-     * verwendet wird.
-     * </p>
-     *
-     * @param listener Das Objekt, das nicht mehr über Tastenereignisse informiert
-     *                 werden soll
+     * Auftrag einen KeyInputListener zu entfernen. Rueckwaerts Iteration, da sonst evt. NP
      */
-    public void removeKeyInputListener(final KeyInputListener listener) {
-        listeners.removeValue(listener, true);
-    }
-
-    public Array<KeyInputListener> getKeyInputListeners() {
-        return listeners;
+    public void removeKeyInputListener(final ScreenKeyInputListener listener) {
+        for (int i = this.listeners.size - 1; i >= 0; i--) {
+            if (this.listeners.get(i) == listener) {
+                this.listeners.removeIndex(i);
+                break;
+            }
+        }
     }
 
     /**
@@ -145,7 +140,7 @@ public class InputManager implements InputProcessor {
         keyState[key.ordinal()] = true;
 
         // Informiere alle registrierten Zuhörer über den Tastendruck
-        for (final KeyInputListener listener : listeners) {
+        for (final ScreenKeyInputListener listener : listeners) {
             listener.keyDown(this, key);
         }
     }
@@ -165,7 +160,7 @@ public class InputManager implements InputProcessor {
         keyState[key.ordinal()] = false;
 
         // Informiere alle registrierten Zuhörer über das Loslassen der Taste
-        for (final KeyInputListener listener : listeners) {
+        for (final ScreenKeyInputListener listener : listeners) {
             listener.keyUp(this, key);
         }
     }

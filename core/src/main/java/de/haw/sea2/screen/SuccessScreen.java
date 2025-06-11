@@ -15,13 +15,13 @@ import com.badlogic.gdx.utils.Align;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.view.ui.StageUtils;
 
 /**
  * SuccessScreen zeigt den Erfolg (Level abgeschlossen) an, wenn ein Level erfolgreich beendet wurde.
  */
-public class SuccessScreen implements Screen, KeyInputListener {
+public class SuccessScreen implements Screen, ScreenKeyInputListener {
 
     // Verweis auf den Spielkontext, um auf zentrale Spielkomponenten zuzugreifen.
     private final StudentsQuest context;

@@ -14,7 +14,7 @@ import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ResettableInputListener;
 import de.haw.sea2.logic.entityLogic.MovementDirection;
 
 /**
@@ -28,7 +28,7 @@ import de.haw.sea2.logic.entityLogic.MovementDirection;
  * IteratingSystems wird dann
  * mittels eines linearen Impulses die Bewegung der Entität angepasst.
  */
-public class PlayerMovementSystem extends IteratingSystem implements KeyInputListener {
+public class PlayerMovementSystem extends IteratingSystem implements ResettableInputListener {
 
     // Alle Keys, die hier verarbeitet werden sollen (Teilmenge der definierten Keys in GameKey)
     private final ObjectSet<GameKey> keySet;
@@ -49,16 +49,8 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
 
     private MovementDirection facingDirection;
 
-    /**
-     * Konstruktor des PlayerMovementSystem.
-     * Registriert das System als KeyInputListener im InputManager des Kontextes.
-     *
-     * @param context Der StudentsQuest Kontext, der das InputManager-Objekt
-     *                enthält.
-     */
     public PlayerMovementSystem(final StudentsQuest context) {
         super(Family.all(PlayerComponent.class, Box2DComponent.class).get());
-        context.getInputManager().addKeyInputListener(this);
         this.xFactor = this.yFactor = 0;
         this.facingDirection = MovementDirection.DOWN;
         this.keySet = ObjectSet.with(GameKey.UP, GameKey.DOWN, GameKey.LEFT, GameKey.RIGHT);
@@ -254,5 +246,14 @@ public class PlayerMovementSystem extends IteratingSystem implements KeyInputLis
             }
         }
 
+    }
+
+    @Override
+    public void reset() {
+        this.xFactor = 0;
+        this.yFactor = 0;
+        for (GameKey key : this.activeAllowedKeys.keys()) {
+            this.activeAllowedKeys.put(key, false);
+        }
     }
 }

@@ -23,12 +23,12 @@ import de.haw.sea2.logic.gameLevel.pathFinding.GridNode;
 import de.haw.sea2.logic.gameLevel.pathFinding.NavigationGrid;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ResettableInputListener;
 
 /**
  * Debug renderer for visualizing enemy movement paths and detection zones.
  */
-public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, KeyInputListener {
+public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, ResettableInputListener {
 
     private final StudentsQuest context;
     private final ShapeRenderer shapeRenderer;
@@ -45,8 +45,8 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
     private final static float GRID_CELL_SIZE = 1.0f;
 
     private ImmutableArray<Entity> enemies;
-    private boolean showGrid = true;
-    private boolean showPaths = true;
+    private boolean showGrid = false;
+    private boolean showPaths = false;
     private boolean isRegisteredAsListener = false;
     private NavigationGrid currentNavGrid;
 
@@ -57,7 +57,6 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
 
         // Nur registrieren, wenn Debug-Modus aktiv ist
         if (DebugConfig.DEBUG_ENABLED) {
-            context.getInputManager().addKeyInputListener(this);
             isRegisteredAsListener = true;
         }
     }
@@ -285,9 +284,9 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
             shapeRenderer.dispose();
         }
 
-        // Deregistrieren des KeyInputListeners
+        // ScreenKeyInputListener wird jetzt zentral im GameScreen verwaltet
+        // Nur noch den Status zurücksetzen
         if (isRegisteredAsListener) {
-            context.getInputManager().removeKeyInputListener(this);
             isRegisteredAsListener = false;
         }
     }
@@ -330,5 +329,12 @@ public class EnemyMovementDebugRenderer implements DebugRenderer, Disposable, Ke
                 break;
             }
         }
+    }
+
+    @Override
+    public void reset() {
+        // Zurücksetzen der Debug-Zustände auf Standardwerte
+        this.showGrid = false;
+        this.showPaths = false;
     }
 }

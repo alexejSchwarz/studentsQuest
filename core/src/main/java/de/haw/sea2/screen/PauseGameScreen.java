@@ -16,13 +16,13 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.view.ui.StageUtils;
 
 /**
  * Pause-Screen, der angezeigt wird, wenn das Spiel pausiert wird.
  */
-public class PauseGameScreen implements Screen, KeyInputListener {
+public class PauseGameScreen implements Screen, ScreenKeyInputListener {
 
     private final StudentsQuest context;
     private final Stage stage;

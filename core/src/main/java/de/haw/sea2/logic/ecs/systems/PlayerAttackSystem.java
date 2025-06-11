@@ -10,7 +10,7 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ResettableInputListener;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.builders.FixtureBuilder;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
@@ -27,14 +27,13 @@ import de.haw.sea2.logic.entityLogic.PlayerAttackState;
 /**
  * Lauscht auf Spieler Input und leitet die Erstellung von AngriffsSensoren bei attackRequests. Nutzung von Libgdx ai Statemachine ist hier vorhanden.
  */
-public class PlayerAttackSystem extends IteratingSystem implements KeyInputListener, SensorEnemyContactListener {
+public class PlayerAttackSystem extends IteratingSystem implements ResettableInputListener, SensorEnemyContactListener {
 
     private boolean attackRequested = false;
 
     public PlayerAttackSystem(StudentsQuest context) {
         super(Family.all(PlayerComponent.class, PlayerAttackStateComponent.class).get());
         context.getWorldContactListener().addSensorListener(this);
-        context.getInputManager().addKeyInputListener(this);
     }
 
     @Override
@@ -66,6 +65,11 @@ public class PlayerAttackSystem extends IteratingSystem implements KeyInputListe
         if (key == GameKey.ATTACK) {
             this.attackRequested = false;
         }
+    }
+
+    @Override
+    public void reset() {
+        this.attackRequested = false;
     }
 
     @Override

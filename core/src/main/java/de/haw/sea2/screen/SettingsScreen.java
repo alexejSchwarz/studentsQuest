@@ -16,7 +16,7 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.ui.StageUtils;
 
@@ -26,7 +26,7 @@ import de.haw.sea2.view.ui.StageUtils;
 /**
  * Pause-Screen, der angezeigt wird, wenn das Spiel pausiert wird.
  */
-public class SettingsScreen implements Screen, KeyInputListener {
+public class SettingsScreen implements Screen, ScreenKeyInputListener {
 
     private final StudentsQuest context;
 
