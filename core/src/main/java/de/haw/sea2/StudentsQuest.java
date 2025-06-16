@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.audio.AudioManager;
@@ -22,6 +23,7 @@ import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
+import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
@@ -56,7 +58,6 @@ import de.haw.sea2.view.GameRenderer;
  * </p>
  */
 public class StudentsQuest extends Game {
-
     /**
      * Der Skalierungsfaktor für die Umrechnung von Pixeln zu Physik-Welteinheiten.
      *
@@ -117,6 +118,8 @@ public class StudentsQuest extends Game {
      * </p>
      */
     public FitViewport viewport;
+
+    private Array<ScreenKeyInputListener> listenersTobeRemoved = new Array<>();
 
     /**
      * Manager für das Laden und Verwalten von Spiel-Assets wie Texturen, Sounds und
@@ -374,6 +377,10 @@ public class StudentsQuest extends Game {
         if (debugSystem != null) {
             debugSystem.dispose();
         }
+    }
+
+    public void sceduleInputListenerRemoval(ScreenKeyInputListener listener) {
+        this.listenersTobeRemoved.add(listener);
     }
 
     /**

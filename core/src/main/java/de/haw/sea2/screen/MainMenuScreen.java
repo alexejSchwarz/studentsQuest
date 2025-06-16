@@ -1,8 +1,5 @@
 package de.haw.sea2.screen;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -23,7 +20,7 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.ui.StageUtils;
 
@@ -36,7 +33,7 @@ import de.haw.sea2.view.ui.StageUtils;
  * Durch Drücken des Start-Buttons wird der GameScreen mit einem Ladebildschirm aufgerufen.
  * </p>
  */
-public class MainMenuScreen implements Screen, KeyInputListener {
+public class MainMenuScreen implements Screen, ScreenKeyInputListener {
 
     // Konstanten zur Positionierung und Skalierung der Buttons
     private static final float START_BUTTON_Y_VALUE = 4.5f;
@@ -120,7 +117,6 @@ public class MainMenuScreen implements Screen, KeyInputListener {
      */
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(new InputMultiplexer(context.getInputManager(), stage));
 
         context.getAudioManager().playAudio(Audio.START_SCREEN_MUSIC);
         context.getInputManager().addKeyInputListener(this);

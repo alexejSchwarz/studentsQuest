@@ -2,7 +2,7 @@ package de.haw.sea2.input;
 
 /**
  * Ein Interface für Objekte, die auf Tasteneingaben reagieren möchten.
- * 
+ *
  * <p>
  * Dieses Interface verwendet das Observer-Pattern (Beobachter-Muster), bei dem
  * der InputManager der "Beobachtbare" (Observable) ist und die Klassen, die
@@ -11,7 +11,7 @@ package de.haw.sea2.input;
  * informiert alle registrierten Beobachter, wenn eine Taste gedrückt oder
  * losgelassen wird.
  * </p>
- * 
+ *
  * <p>
  * Wenn eine Klasse auf Tastatureingaben reagieren möchte (wie z.B. das
  * PlayerMovementSystem
@@ -24,23 +24,23 @@ package de.haw.sea2.input;
  * zu reagieren</li>
  * </ol>
  * </p>
- * 
+ *
  * <p>
  * Beispiel für eine Implementierung:
- * 
+ *
  * <pre>
  * public class PlayerMovementSystem implements KeyInputListener {
  *     public PlayerMovementSystem(StudentsQuest context) {
  *         context.getInputManager().addKeyInputListener(this);
  *     }
- * 
+ *
  *     &#64;Override
  *     public void keyDown(InputManager manager, GameKey key) {
  *         if (key == GameKey.UP) {
  *             // Spieler nach oben bewegen
  *         }
  *     }
- * 
+ *
  *     &#64;Override
  *     public void keyUp(InputManager manager, GameKey key) {
  *         if (key == GameKey.UP) {
@@ -51,11 +51,11 @@ package de.haw.sea2.input;
  * </pre>
  * </p>
  */
-public interface KeyInputListener {
+public interface ScreenKeyInputListener {
 
     /**
      * Wird aufgerufen, wenn eine Taste gedrückt wird.
-     * 
+     *
      * <p>
      * Diese Methode wird vom InputManager aufgerufen, wenn der Benutzer eine Taste
      * drückt,
@@ -74,7 +74,7 @@ public interface KeyInputListener {
 
     /**
      * Wird aufgerufen, wenn eine Taste losgelassen wird.
-     * 
+     *
      * <p>
      * Diese Methode wird vom InputManager aufgerufen, wenn der Benutzer eine Taste
      * loslässt,
@@ -90,4 +90,6 @@ public interface KeyInputListener {
      * @param key     Die GameKey-Konstante, die der losgelassenen Taste entspricht
      */
     void keyUp(final InputManager manager, final GameKey key);
+
+    
 }

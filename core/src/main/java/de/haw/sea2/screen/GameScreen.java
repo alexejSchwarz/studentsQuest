@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ObjectSet;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.audio.Audio;
@@ -17,12 +18,14 @@ import de.haw.sea2.debug.render.EnemyMovementDebugRenderer;
 import de.haw.sea2.debug.render.GameScreenDebugRenderer;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.KeyInputListener;
+import de.haw.sea2.input.ResettableInputListener;
+import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.logic.EntityUtils;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
+import de.haw.sea2.logic.ecs.systems.PlayerAttackSystem;
 import de.haw.sea2.logic.ecs.systems.PlayerMovementSystem;
 import de.haw.sea2.logic.gameLevel.SpawnLogic;
 import de.haw.sea2.map.GameMap;
@@ -49,7 +52,8 @@ import de.haw.sea2.view.ui.GameUI;
  * render(), resize(), pause(), resume(), hide() und dispose().
  * </p>
  */
-public class GameScreen implements Screen, KeyInputListener {
+public class
+GameScreen implements Screen, ScreenKeyInputListener {
 
     /**
      * Der Hauptkontext des Spiels, der Zugriff auf zentrale Ressourcen und Systeme
@@ -90,6 +94,9 @@ public class GameScreen implements Screen, KeyInputListener {
 
     private HearthComponent playerHearthComp;
 
+    // Verwende ObjectSet anstelle von normalen Arrays
+    private final ObjectSet<ResettableInputListener> resettableInputListener;
+
     public GameScreen(StudentsQuest context) {
         this.context = context;
         this.engine = this.context.getEngine();
@@ -97,6 +104,10 @@ public class GameScreen implements Screen, KeyInputListener {
         this.world = this.context.getWorld();
         this.spawnLogic = new SpawnLogic(context);
         this.gameUI = new GameUI(context);
+
+        // Initialisiere das ObjectSet für die Listener
+        this.resettableInputListener = new ObjectSet<>();
+
         initialize();
     }
 
@@ -105,25 +116,20 @@ public class GameScreen implements Screen, KeyInputListener {
      */
     @Override
     public void show() {
-        // Es sollte sichergestellt werden, dass der KeyInputListener registriert ist,
-        // falls wir ihn mit hide() entfernt haben
-        if (!this.context.getInputManager().getKeyInputListeners().contains(this, true)) {
-            this.context.getInputManager().addKeyInputListener(this);
-        }
-        // Stelle sicher, dass das PlayerMovementSystem als KeyInputListener registriert
-        // ist
-        PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
-        if (!this.context.getInputManager().getKeyInputListeners().contains(playerMovementSystem, true)) {
-            this.context.getInputManager().addKeyInputListener(playerMovementSystem);
-        }
-        // Debug-Renderer erstellen und registrieren
-        if (DebugConfig.DEBUG_ENABLED) {
-            this.debugRenderer = new GameScreenDebugRenderer(this.context);
-            this.context.getDebugSystem().addRenderer(this.debugRenderer);
 
-            // EnemyMovementDebugRenderer hinzufügen - angepasst für den PathingCalculationManager
-            this.enemyMovementDebugRenderer = new EnemyMovementDebugRenderer(this.context);
+        // Registriere diesen Screen als KeyInputListener
+        this.context.getInputManager().addKeyInputListener(this);
+        LoggerUtil.log(LogCategory.DEBUG, this, "Registering GameScreen as KeyInputListener");
+
+        // Registriere alle Game-System KeyInputListener
+        for (ScreenKeyInputListener listener : resettableInputListener) {
+            this.context.getInputManager().addKeyInputListener(listener);
+            LoggerUtil.log(LogCategory.DEBUG, this, "Registering game system listener: " + listener.getClass().getSimpleName());
+        }
+
+        if (DebugConfig.DEBUG_ENABLED) {
             this.context.getDebugSystem().addRenderer(this.enemyMovementDebugRenderer);
+            this.context.getInputManager().addKeyInputListener(this.enemyMovementDebugRenderer);
         }
 
         players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
@@ -155,8 +161,20 @@ public class GameScreen implements Screen, KeyInputListener {
         // Übergebe sowohl die Spawnpunkte als auch die Kollisionswände an SpawnLogic
         this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints(), map.getCollisionAreas());
 
-        // Registriere diesen Screen als KeyInputListener
-        this.context.getInputManager().addKeyInputListener(this);
+        // Füge alle nicht-Screen Listener hinzu
+        this.resettableInputListener.add(this.context.getEngine().getSystem(PlayerMovementSystem.class));
+        this.resettableInputListener.add(this.context.getEngine().getSystem(PlayerAttackSystem.class));
+
+        // Debug-Renderer erstellen
+        if (DebugConfig.DEBUG_ENABLED) {
+            this.debugRenderer = new GameScreenDebugRenderer(this.context);
+            this.context.getDebugSystem().addRenderer(this.debugRenderer);
+
+            // EnemyMovementDebugRenderer hinzufügen
+            this.enemyMovementDebugRenderer = new EnemyMovementDebugRenderer(this.context);
+            this.context.getDebugSystem().addRenderer(this.enemyMovementDebugRenderer);
+            this.resettableInputListener.add(this.enemyMovementDebugRenderer);
+        }
 
     }
 
@@ -245,12 +263,6 @@ public class GameScreen implements Screen, KeyInputListener {
     @Override
     public void resume() {
         LoggerUtil.log(LogCategory.DEBUG, this, "GameScreen.resume() wurde aufgerufen!");
-
-        // Stelle sicher, dass das PlayerMovementSystem ein KeyInputListener ist
-        PlayerMovementSystem playerMovementSystem = this.context.getEngine().getSystem(PlayerMovementSystem.class);
-        this.context.getInputManager()
-            .addKeyInputListener(playerMovementSystem);
-        // wir müssen die Kamera hier nicht aktualisieren, da sie im render() aufgerufen wird
     }
 
     /**
@@ -263,16 +275,18 @@ public class GameScreen implements Screen, KeyInputListener {
      */
     @Override
     public void hide() {
-        // entfernt den KeyInputListener aus dem InputManager, wenn er verstekt wird
+        // Entferne diesen Screen als Listener
         this.context.getInputManager().removeKeyInputListener(this);
 
-        //Stoppen des Hintergrundlieds
+        // Stoppe die Musik
         context.getAudioManager().stopCurrentMusic();
 
-        // Stelle sicher, dass das der KeyInputListener vom PlayerMovementSystem nicht
-        // mehr aktiv ist
-        this.context.getInputManager()
-            .removeKeyInputListener(this.context.getEngine().getSystem(PlayerMovementSystem.class));
+        // Entferne alle Game-System KeyInputListener und setze sie zurück
+        for (ResettableInputListener listener : resettableInputListener) {
+            this.context.getInputManager().removeKeyInputListener(listener);
+            listener.reset();
+        }
+
         // Debug-Renderer entfernen
         if (DebugConfig.DEBUG_ENABLED) {
             if (debugRenderer != null) {
@@ -280,8 +294,6 @@ public class GameScreen implements Screen, KeyInputListener {
             }
             if (enemyMovementDebugRenderer != null) {
                 context.getDebugSystem().removeRenderer(enemyMovementDebugRenderer);
-                enemyMovementDebugRenderer.dispose();
-                enemyMovementDebugRenderer = null;
             }
         }
     }
