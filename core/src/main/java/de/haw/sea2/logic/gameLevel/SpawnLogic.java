@@ -4,12 +4,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
+import de.haw.sea2.lifeCicle.Restartable;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.ecs.components.EnemyComponent;
@@ -29,7 +29,7 @@ import de.haw.sea2.logic.EntityUtils;
  * - Dynamische Anpassung der Schwierigkeit mit Fortschritt
  * - Gelegentliche Spezialwellen für erhöhte Herausforderung
  */
-public class SpawnLogic {
+public class SpawnLogic implements Restartable {
 
     // Konstanten für bessere Wartbarkeit
     private static final String LOG_TAG = "SpawnLogic";
@@ -81,6 +81,7 @@ public class SpawnLogic {
 
         // Initialisiere die Gegnerabfrage einmalig
         this.enemies = this.context.getEngine().getEntitiesFor(Family.all(EnemyComponent.class).get());
+        registerAsListenerAfterCreation();
     }
 
     /**
@@ -89,14 +90,15 @@ public class SpawnLogic {
      * Setzt auch die Parameter für das Wellen-System zurück.
      *
      * @param spawnPoints Liste von Spawnpunkten für Gegner und Items
-     * @param walls       Kollisionswände (für zukünftige Erweiterungen)
      */
-    public void prepareLevelStart(Array<EntitySpawnPoint> spawnPoints, Array<Rectangle> walls) {
+    public void prepareLevelStart(Array<EntitySpawnPoint> spawnPoints) {
         LoggerUtil.log(LogCategory.DEBUG, LOG_TAG, "Preparing level start with " + spawnPoints.size + " spawn points");
-
         clear();
         this.spawnPoints.addAll(spawnPoints);
+        prepareLevelStart();
+    }
 
+    private void prepareLevelStart() {
         // Sortiere die Spawn-Punkte nach Typ
         for (EntitySpawnPoint spawnPoint : this.spawnPoints) {
             String entityType = spawnPoint.entityType();
@@ -107,8 +109,12 @@ public class SpawnLogic {
             }
         }
 
+        Vector2 playerSpawnPosition = this.context.getMapManager().getCurrentMap().getPlayerSpawnPoint();
+        LoggerUtil.log(LogCategory.DEBUG, this, "player to be created at: " + playerSpawnPosition);
+        this.context.getEntityCreator().createPlayer(playerSpawnPosition, 1f, 1f);
+
         LoggerUtil.log(LogCategory.DEBUG, LOG_TAG, "Found " + availableItemSpawns.size + " item spawn points and "
-                + enemySpawnPoints.size + " enemy spawn points");
+            + enemySpawnPoints.size + " enemy spawn points");
 
         // Initiales Spawnen von Items
         if (!availableItemSpawns.isEmpty()) {
@@ -197,6 +203,12 @@ public class SpawnLogic {
         this.collectedCoins = 0;
 
         resetWaveParameters();
+    }
+
+    private void clearForRestart() {
+        this.availableItemSpawns.clear();
+        this.enemySpawnPoints.clear();
+        this.collectedCoins = 0;
     }
 
     /**
@@ -389,4 +401,17 @@ public class SpawnLogic {
                 " | Next wave in: " + String.format("%.1f", waveTimer) + "s" +
                 (specialWaveActive ? " | SPECIAL WAVE!" : "");
     }
+
+    @Override
+    public void restart() {
+        clearForRestart();
+        prepareLevelStart();
+    }
+
+    @Override
+    public void registerAsListenerAfterCreation() {
+        this.context.restartables.add(this);
+    }
+
+
 }

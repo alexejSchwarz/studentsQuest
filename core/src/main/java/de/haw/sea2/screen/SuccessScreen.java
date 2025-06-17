@@ -16,6 +16,7 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.ScreenKeyInputListener;
+import de.haw.sea2.lifeCicle.GameState;
 import de.haw.sea2.view.ui.StageUtils;
 
 /**
@@ -73,13 +74,13 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
         titleLabel.setColor(Color.YELLOW);
 
         // Erstelle den Button für den Übergang zum nächsten Level
-        TextButton resumeButton = new TextButton("Weiter zum nächsten Level", buttonStyle);
+        TextButton resumeButton = new TextButton("Nochmal spielen", buttonStyle);
         resumeButton.getLabel().setAlignment(Align.center);
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Wechsle zum Spiel-Screen, um das nächste Level zu starten
-                context.getScreenManager().showScreen(ScreenType.GAME);
+                context.stateMachine.changeState(GameState.RESTART);
+                context.getScreenManager().showScreen(ScreenType.INFO_SCREEN_LV1);
             }
         });
 

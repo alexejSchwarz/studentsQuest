@@ -32,6 +32,7 @@ public class AudioManager {
         this.soundCache = new HashMap<>();
     }
 
+    //TODO restart Music function is needed
     public void playAudio(final Audio type) {
         if (type.isMusic()) {
             if (currentAudio == type) {

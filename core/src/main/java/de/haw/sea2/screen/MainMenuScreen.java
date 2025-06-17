@@ -1,7 +1,5 @@
 package de.haw.sea2.screen;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,6 +19,7 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.ScreenKeyInputListener;
+import de.haw.sea2.lifeCicle.GameState;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.ui.StageUtils;
 
@@ -184,7 +183,15 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 context.getAudioManager().stopCurrentMusic();
-                context.getScreenManager().showScreen(ScreenType.LOADING);
+                if (context.stateMachine.isInState(GameState.INIT)) {
+                    context.getScreenManager().showScreen(ScreenType.LOADING);
+                } else if (context.stateMachine.isInState(GameState.RUNNING)) {
+                    context.getScreenManager().showScreen(ScreenType.GAME);
+                } else if (context.stateMachine.isInState(GameState.OVER)) {
+                    context.stateMachine.changeState(GameState.RESTART);
+                    context.getScreenManager().showScreen(ScreenType.INFO_SCREEN_LV1);
+                }
+
             }
         });
 

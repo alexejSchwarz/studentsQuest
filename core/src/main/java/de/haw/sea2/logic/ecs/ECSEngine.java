@@ -1,14 +1,17 @@
 package de.haw.sea2.logic.ecs;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.lifeCicle.Restartable;
 import de.haw.sea2.logic.ecs.components.AnimationComponent;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.EnemyComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.InteractionComponent;
+import de.haw.sea2.logic.ecs.components.ItemComponent;
 import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.components.SimpleRenderComponent;
@@ -51,7 +54,7 @@ import de.haw.sea2.logic.ecs.systems.customSystems.EnemyBatchMovementSystem;
  * </ul>
  * </p>
  */
-public class ECSEngine extends PooledEngine {
+public class ECSEngine extends PooledEngine implements Restartable {
 
     /**
      * ComponentMapper für schnellen Zugriff auf PlayerComponent-Objekte.
@@ -65,6 +68,8 @@ public class ECSEngine extends PooledEngine {
      */
     public static final ComponentMapper<PlayerComponent> PLAYER_COMP_MAPPER = ComponentMapper
             .getFor(PlayerComponent.class);
+
+    private final StudentsQuest context;
 
     /**
      * ComponentMapper für schnellen Zugriff auf Box2DComponent-Objekte.
@@ -81,6 +86,7 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<HearthComponent> HEARTH_COMPONENT_MAPPER = ComponentMapper.getFor(HearthComponent.class);
     public static final ComponentMapper<EnemyComponent> ENEMY_COMPONENT_MAPPER = ComponentMapper.getFor(EnemyComponent.class);
     public static final ComponentMapper<PlayerAttackStateComponent> PLAYER_ATTACK_STATE_COMPONENT_MAPPER = ComponentMapper.getFor(PlayerAttackStateComponent.class);
+    public static final ComponentMapper<ItemComponent> ITEM_COMPONENT_MAPPER = ComponentMapper.getFor(ItemComponent.class);
 
     //Custom System
     private final EnemyBatchMovementSystem enemyBatchMovementSystem;
@@ -99,15 +105,16 @@ public class ECSEngine extends PooledEngine {
      */
     public ECSEngine(final StudentsQuest context) {
         super();
-        this.addSystem(new PlayerMovementSystem(context));
-        this.addSystem(new PlayerCameraSystem(context));
-        this.addSystem(new AnimationSystem(context));
+        this.context = context;
+        this.addSystem(new PlayerMovementSystem(this.context));
+        this.addSystem(new PlayerCameraSystem(this.context));
+        this.addSystem(new AnimationSystem(this.context));
         this.addSystem(new PlayerAnimationSystem());
         this.addSystem(new EnemyAnimationSystem());
-        this.addSystem(new EntityRemovalSystem(context));
-        this.addSystem(new PlayerAttackSystem(context));
-        this.enemyBatchMovementSystem = new EnemyBatchMovementSystem(this, context);
-
+        this.addSystem(new EntityRemovalSystem(this.context));
+        this.addSystem(new PlayerAttackSystem(this.context));
+        this.enemyBatchMovementSystem = new EnemyBatchMovementSystem(this, this.context);
+        registerAsListenerAfterCreation();
     }
 
     @Override
@@ -118,5 +125,15 @@ public class ECSEngine extends PooledEngine {
 
     public EnemyBatchMovementSystem getBatchMovementSystem() {
         return this.enemyBatchMovementSystem;
+    }
+
+    @Override
+    public void restart() {
+        this.removeAllEntities(Family.one(PlayerComponent.class, EnemyComponent.class, ItemComponent.class).get());
+    }
+
+    @Override
+    public void registerAsListenerAfterCreation() {
+        this.context.restartables.add(this);
     }
 }

@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
 
@@ -20,6 +19,7 @@ import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.ResettableInputListener;
 import de.haw.sea2.input.ScreenKeyInputListener;
+import de.haw.sea2.lifeCicle.GameState;
 import de.haw.sea2.logic.EntityUtils;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
@@ -107,6 +107,7 @@ GameScreen implements Screen, ScreenKeyInputListener {
 
         // Initialisiere das ObjectSet für die Listener
         this.resettableInputListener = new ObjectSet<>();
+        this.context.stateMachine.changeState(GameState.RUNNING);
 
         initialize();
     }
@@ -148,18 +149,9 @@ GameScreen implements Screen, ScreenKeyInputListener {
         // Map aktivieren (nicht mehr laden!)
         this.context.getMapManager().activateMap(MapPaths.MAINMAP.getPath());
 
-        Vector2 playerSpawnPosition = this.context.getMapManager().getCurrentMap().getPlayerSpawnPoint();
-        LoggerUtil.log(LogCategory.DEBUG, this, "player to be created at: " + playerSpawnPosition);
-        this.context.getEntityCreator().createPlayer(playerSpawnPosition, 1f, 1f);
-
-        // Example position and size for the ball
-        Vector2 ballPosition = new Vector2(5f, 5f); // Adjust as needed
-        float ballSize = 1f; // Adjust as needed
-        this.context.getEntityCreator().createBall(ballPosition, ballSize);
-
         GameMap map = this.context.getMapManager().getCurrentMap();
         // Übergebe sowohl die Spawnpunkte als auch die Kollisionswände an SpawnLogic
-        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints(), map.getCollisionAreas());
+        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints());
 
         // Füge alle nicht-Screen Listener hinzu
         this.resettableInputListener.add(this.context.getEngine().getSystem(PlayerMovementSystem.class));
@@ -194,12 +186,14 @@ GameScreen implements Screen, ScreenKeyInputListener {
         // Fixierung fuer die Physics berechnung
         this.accumulator += deltaTime;
 
-        if (playerComponent.collectedCoins == playerComponent.neededCoins) {
-            context.getScreenManager().showScreen(ScreenType.SUCCESS);
-        }
-
         if (playerHearthComp.currentHearths <= 0) {
             //TODO ersetze durch gameOverScreen
+            this.context.stateMachine.changeState(GameState.OVER);
+            this.context.getScreenManager().showScreen(ScreenType.SUCCESS);
+        }
+
+        if (playerComponent.collectedCoins == playerComponent.neededCoins) {
+            this.context.stateMachine.changeState(GameState.OVER);
             context.getScreenManager().showScreen(ScreenType.SUCCESS);
         }
 
