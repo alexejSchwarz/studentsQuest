@@ -15,8 +15,8 @@ import de.haw.sea2.logic.ecs.components.PlayerComponent;
 public class FixtureBuilder {
 
     public static void createAPlayerAttackSensor(PlayerComponent.Sensors sensorDirection, Box2DComponent playerBox2dComp) {
-        float width = playerBox2dComp.width;
-        float height = playerBox2dComp.height * 1.5f;
+        float width = EntityCreator.HUMAN_ANIMATION_WIDTH;
+        float height = EntityCreator.HUMAN_ANIMATION_HEIGHT;
         Body body = playerBox2dComp.body;
 
         switch (sensorDirection) {

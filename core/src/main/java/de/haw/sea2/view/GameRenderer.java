@@ -96,8 +96,8 @@ public class GameRenderer implements Disposable, MapChangeListener {
 
         this.spriteBatch.begin();
         if (this.mapRenderer.getMap() != null) {
-            for (final TiledMapTileLayer layer : this.tiledMapLayers) {
-                this.mapRenderer.renderTileLayer(layer);
+            for (int i = 0; i < this.tiledMapLayers.size - 2; i++) {
+                this.mapRenderer.renderTileLayer(this.tiledMapLayers.get(i));
             }
         }
 
@@ -109,6 +109,11 @@ public class GameRenderer implements Disposable, MapChangeListener {
         for (Entity entity : animatedEntities) {
             renderAnimatedEntity(entity, alpha);
         }
+        // letzte forground Layer rendern
+        // erlaubt die 2.5D Sicht im Spiel
+        this.mapRenderer.renderTileLayer(tiledMapLayers.get(tiledMapLayers.size-2));
+        this.mapRenderer.renderTileLayer(tiledMapLayers.get(tiledMapLayers.size-1));
+
         spriteBatch.end();
 
         if (DebugConfig.DEBUG_ENABLED) {
@@ -150,7 +155,7 @@ public class GameRenderer implements Disposable, MapChangeListener {
     private void drawInterpolatedEntity(Sprite frame, Box2DComponent b2dComp, float alpha, float width, float height) {
         frame.setBounds(
             b2dComp.interpolatedRenderPosition.x - width * 0.5f,
-            b2dComp.interpolatedRenderPosition.y - b2dComp.height * 0.5f, width, height
+            b2dComp.interpolatedRenderPosition.y - height * 0.5f, width, height
         );
         frame.draw(spriteBatch);
 
