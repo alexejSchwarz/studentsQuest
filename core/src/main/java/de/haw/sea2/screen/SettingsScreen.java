@@ -17,6 +17,7 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.ScreenKeyInputListener;
+import de.haw.sea2.parsing.JSONManager;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.ui.StageUtils;
 
@@ -67,14 +68,15 @@ public class SettingsScreen implements Screen, ScreenKeyInputListener {
 
         slider = new Slider(0f, 100f, 1f, false, sliderStyle);
 
-        slider.setValue(sliderStartValue);
+        slider.setValue(JSONManager.getVolume());
         slider.setWidth(sliderBackground.getWidth());
         slider.setHeight(sliderBackground.getHeight());
 
         slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                context.getAudioManager().setVolume(slider.getValue());
+                JSONManager.updateVolume(slider.getValue());
+                context.getAudioManager().setVolume(JSONManager.getVolume());
             }
         });
 
