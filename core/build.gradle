@@ -11,6 +11,7 @@ dependencies {
   api "games.rednblack.hyperlap2d:runtime-libgdx:$h2dVersion"
   api "net.onedaybeard.artemis:artemis-odb:$artemisOdbVersion"
   api "com.badlogicgames.ashley:ashley:$ashleyVersion"
+  implementation("org.json:json:$jsonVersion")
   testImplementation("junit:junit:$junitVersion")
 
 

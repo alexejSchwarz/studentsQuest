@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Sound;
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
+import de.haw.sea2.parsing.JSONManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,6 @@ public class AudioManager {
     private Audio currentAudio;
     private Music currentMusic;
     private final AssetManager assetManager;
-    private float currentSliderVolumeSetting;
     private float currentMusicMaxVolume;
 
     private final Map<Audio, Music> musicCache;
@@ -26,7 +26,6 @@ public class AudioManager {
 
         this.currentAudio = null;
         this.currentMusic = null;
-        currentSliderVolumeSetting = 100.0f;
 
         this.musicCache = new HashMap<>();
         this.soundCache = new HashMap<>();
@@ -49,7 +48,7 @@ public class AudioManager {
             currentMusic = musicCache.computeIfAbsent(type, t -> assetManager.get(t.getPath(), Music.class));
             currentMusic.setLooping(true);
             currentMusicMaxVolume = type.getVolume();
-            currentMusic.setVolume(Math.min(currentMusicMaxVolume, (currentSliderVolumeSetting / 100f) * currentMusicMaxVolume));
+            currentMusic.setVolume(Math.min(currentMusicMaxVolume, (JSONManager.getVolume() / 100f) * currentMusicMaxVolume));
             LoggerUtil.log(LogCategory.LOG, this, "Starte Musik: " + type.name());
             currentMusic.play();
         } else {
@@ -69,8 +68,7 @@ public class AudioManager {
     }
 
     public void setVolume(float volume) {
-        currentSliderVolumeSetting = volume;
-        currentMusic.setVolume(Math.min(currentMusicMaxVolume, (currentSliderVolumeSetting / 100f) * currentMusicMaxVolume));
+        currentMusic.setVolume(Math.min(currentMusicMaxVolume, (volume / 100f) * currentMusicMaxVolume));
     }
 
     //TODO Threads syncen, damit die Methode nicht ungewollt noch ein anderes Lied stoppt. Erstmal wird stopCurrentMusic() benutzt.
