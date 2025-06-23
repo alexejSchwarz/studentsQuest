@@ -14,6 +14,7 @@ import de.haw.sea2.logic.ecs.components.EnemyComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.InteractionComponent;
 import de.haw.sea2.logic.ecs.components.ItemComponent;
+import de.haw.sea2.logic.ecs.components.ItemType;
 import de.haw.sea2.logic.ecs.components.ObstacleComponent;
 import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
@@ -111,7 +112,8 @@ public class EntityCreator {
                 .build();
     }
 
-    public void createCoin(Vector2 position, float size) {
+    public void createCoin(Vector2 position) {
+        float size = 0.5f;
         LoggerUtil.log(LogCategory.GAME, this, "Creating Coin at position: " + position + ", size: " + size);
         new EntityBuilder(engine, world, createCircleShape(size / 2f))
             .position(position.x, position.y)
@@ -131,6 +133,34 @@ public class EntityCreator {
                 entity.add(interCopm);
 
                 ItemComponent itemComp = engine.createComponent(ItemComponent.class);
+                itemComp.itemType = ItemType.COIN;
+                entity.add(itemComp);
+            })
+            .build();
+    }
+
+    public void createDropedHeart(Vector2 position){
+        float size = 0.5f;
+        LoggerUtil.log(LogCategory.GAME, this, "Creating Heart at position: " + position + ", size: " + size);
+        new EntityBuilder(engine, world, createCircleShape(size / 2f))
+            .position(position.x, position.y)
+            .size(size, size)
+            .categoryBits(Bits.BIT_GAME_ENTITY.value)
+            .maskBits((short) (Bits.BIT_WALL.value | Bits.BIT_PLAYER.value))
+            .setSensor(true)
+            .addComponents(entity -> {
+                SimpleRenderComponent renderComp = engine.createComponent(SimpleRenderComponent.class);
+                renderComp.textureFilePath = AssetPaths.HEARTH.getPath();
+                renderComp.width = size;
+                renderComp.height = size;
+                entity.add(renderComp);
+
+                InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
+                interCopm.type = InteractionType.OBJECT_COLLECT;
+                entity.add(interCopm);
+
+                ItemComponent itemComp = engine.createComponent(ItemComponent.class);
+                itemComp.itemType = ItemType.HEART;
                 entity.add(itemComp);
             })
             .build();

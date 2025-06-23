@@ -80,6 +80,10 @@ public class WorldContactListener implements ContactListener {
             return;
         }
 
+        if (isSensorHeartContact(contact.getFixtureA(), contact.getFixtureB())) {
+            return;
+        }
+
         // Falls einer der Beiden ein Sensor ist, es aber kein Sensor Gegner Kontakt, dann ignorieren.
         // sonst koennte man man Angriff Münzen einsammeln
         if (contact.getFixtureA().isSensor() || contact.getFixtureB().isSensor()) {
@@ -118,6 +122,23 @@ public class WorldContactListener implements ContactListener {
             return true;
         } else if (b.getUserData() instanceof PlayerComponent.Sensors && SENSORS.contains((PlayerComponent.Sensors) b.getUserData()) && a.getFilterData().categoryBits == Bits.BIT_ENEMY.value) {
             notifySensorEnemyContact((Entity) a.getBody().getUserData(), (PlayerComponent.Sensors) b.getUserData());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isSensorHeartContact(Fixture a, Fixture b) {
+        // Prüfe, ob einer der beiden ein Spieler ist und der andere ein Sensor-Item (Herz/Coin) und ignoriere Sensoren, die nicht zu den Items gehören
+        boolean aIsPlayer = a.getFilterData().categoryBits == Bits.BIT_PLAYER.value && !(a.getUserData() instanceof PlayerComponent.Sensors);
+        boolean bIsPlayer = b.getFilterData().categoryBits == Bits.BIT_PLAYER.value && !(b.getUserData() instanceof PlayerComponent.Sensors);
+        boolean aIsHeartSensor = a.isSensor() && (a.getFilterData().categoryBits == Bits.BIT_GAME_ENTITY.value);
+        boolean bIsHeartSensor = b.isSensor() && (b.getFilterData().categoryBits == Bits.BIT_GAME_ENTITY.value);
+    
+        if ((aIsPlayer && bIsHeartSensor) || (bIsPlayer && aIsHeartSensor)) {
+            // Hier kannst du direkt notifyPlayerContact aufrufen oder true zurückgeben
+            Entity player = aIsPlayer ? (Entity) a.getBody().getUserData() : (Entity) b.getBody().getUserData();
+            Entity interactable = aIsHeartSensor ? (Entity) a.getBody().getUserData() : (Entity) b.getBody().getUserData();
+            notifyPlayerContact(player, interactable);
             return true;
         }
         return false;

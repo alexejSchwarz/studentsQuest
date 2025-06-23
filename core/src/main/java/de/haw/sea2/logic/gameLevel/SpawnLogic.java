@@ -48,6 +48,8 @@ public class SpawnLogic implements Restartable {
     private final Array<EntitySpawnPoint> spawnPoints;
     private final Array<EntitySpawnPoint> availableItemSpawns;
     private final Array<EntitySpawnPoint> enemySpawnPoints;
+    //hier erstellen von herzen, dann in update dann durchlaufen und spawnen, diese dann in  Player Attack System. bei libgdx von hinten iterieren
+    public static Array<Vector2> heartSpawnPoints;
     private final EntityCreator creator;
     private final StudentsQuest context;
 
@@ -76,6 +78,7 @@ public class SpawnLogic implements Restartable {
         this.enemySpawnPoints = new Array<>();
         this.creator = context.getEntityCreator();
         this.collectedCoins = 0;
+        this.heartSpawnPoints = new Array<>();
 
         // Initialisiere die Spielerabfrage einmalig
         this.players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
@@ -123,7 +126,7 @@ public class SpawnLogic implements Restartable {
             //spawnItem();
 
             for (EntitySpawnPoint spawnPoint : this.availableItemSpawns) {
-                this.creator.createCoin(spawnPoint.spawnPoint(), 0.5f);
+                this.creator.createCoin(spawnPoint.spawnPoint());
             }
         }
 
@@ -154,6 +157,11 @@ public class SpawnLogic implements Restartable {
 
             // Reset timer for next wave
             waveTimer = currentWaveInterval;
+        }
+        for (int i = heartSpawnPoints.size - 1; i >= 0; i--) {
+            Vector2 position = heartSpawnPoints.get(i);
+            this.creator.createDropedHeart(position);
+            heartSpawnPoints.removeIndex(i); 
         }
     }
 
@@ -193,7 +201,7 @@ public class SpawnLogic implements Restartable {
 
         int randomIndex = MathUtils.random(this.availableItemSpawns.size - 1);
         EntitySpawnPoint newUsedItemSpawn = this.availableItemSpawns.removeIndex(randomIndex);
-        this.creator.createCoin(newUsedItemSpawn.spawnPoint(), 0.5f);
+        this.creator.createCoin(newUsedItemSpawn.spawnPoint());
 
         if (this.lastUsedItemSpawn != null) {
             this.availableItemSpawns.add(this.lastUsedItemSpawn);

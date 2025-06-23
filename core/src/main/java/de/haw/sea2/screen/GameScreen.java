@@ -28,7 +28,6 @@ import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.systems.PlayerAttackSystem;
 import de.haw.sea2.logic.ecs.systems.PlayerMovementSystem;
-import de.haw.sea2.logic.gameLevel.SpawnLogic;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.paths.MapPaths;
 import de.haw.sea2.view.GameRenderer;
@@ -81,8 +80,6 @@ GameScreen implements Screen, ScreenKeyInputListener {
 
     private final World world;
 
-    private final SpawnLogic spawnLogic;
-
     private GameScreenDebugRenderer debugRenderer;
 
     private EnemyMovementDebugRenderer enemyMovementDebugRenderer;
@@ -103,7 +100,6 @@ GameScreen implements Screen, ScreenKeyInputListener {
         this.engine = this.context.getEngine();
         this.gameRenderer = this.context.getGameRenderer();
         this.world = this.context.getWorld();
-        this.spawnLogic = new SpawnLogic(context);
         this.gameUI = new GameUI(context);
 
         // Initialisiere das ObjectSet für die Listener
@@ -152,7 +148,7 @@ GameScreen implements Screen, ScreenKeyInputListener {
 
         GameMap map = this.context.getMapManager().getCurrentMap();
         // Übergebe sowohl die Spawnpunkte als auch die Kollisionswände an SpawnLogic
-        this.spawnLogic.prepareLevelStart(map.getEntitySpawnPoints());
+        this.context.getSpawnLogic().prepareLevelStart(map.getEntitySpawnPoints());
 
         // Füge alle nicht-Screen Listener hinzu
         this.resettableInputListener.add(this.context.getEngine().getSystem(PlayerMovementSystem.class));
@@ -182,7 +178,7 @@ GameScreen implements Screen, ScreenKeyInputListener {
         this.engine.update(deltaTime);
 
         // naehcstes Tick fuer SpawnLogik
-        this.spawnLogic.update(deltaTime);
+        this.context.getSpawnLogic().update(deltaTime);
 
         // Fixierung fuer die Physics berechnung
         this.accumulator += deltaTime;

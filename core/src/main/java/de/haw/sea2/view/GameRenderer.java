@@ -26,7 +26,9 @@ import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.logic.ecs.components.AnimationComponent;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
+import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.components.SimpleRenderComponent;
+import de.haw.sea2.logic.EntityUtils;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.map.MapChangeListener;
@@ -60,6 +62,8 @@ public class GameRenderer implements Disposable, MapChangeListener {
 
     private final Array<TiledMapTileLayer> tiledMapLayers;
 
+    private final ImmutableArray<Entity> players;
+
     public GameRenderer(StudentsQuest context) {
         this.assetManager = context.getAssetManager();
         this.viewport = context.viewport;
@@ -69,6 +73,8 @@ public class GameRenderer implements Disposable, MapChangeListener {
                 .getEntitiesFor(Family.all(AnimationComponent.class, Box2DComponent.class).get());
         this.unanimatedEntities = context.getEngine()
                 .getEntitiesFor(Family.all(SimpleRenderComponent.class, Box2DComponent.class).get());
+        
+        players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
 
         // Richtet den TiledMapRenderer für die Spielkarten ein
         this.mapRenderer = new OrthogonalTiledMapRenderer(null, StudentsQuest.UNIT_SCALE, this.spriteBatch);
@@ -105,12 +111,21 @@ public class GameRenderer implements Disposable, MapChangeListener {
         for (Entity entity : this.unanimatedEntities) {
             renderNonAnimatedEntities(entity, alpha);
         }
+        Entity playerEntity = EntityUtils.checkAndGetPlayer(this.players);
 
+        // Alle animierten Entities außer Spieler rendern
         for (Entity entity : animatedEntities) {
-            renderAnimatedEntity(entity, alpha);
+            if (entity != playerEntity) {
+                renderAnimatedEntity(entity, alpha);
+            }
         }
-        // letzte forground Layer rendern
-        // erlaubt die 2.5D Sicht im Spiel
+
+        // Spieler zuletzt rendern (über Herzen etc.)
+        if (playerEntity != null) {
+            renderAnimatedEntity(playerEntity, alpha);
+        }
+
+        // letzte forground Layer rendern (2.5D)
         this.mapRenderer.renderTileLayer(tiledMapLayers.get(tiledMapLayers.size-2));
         this.mapRenderer.renderTileLayer(tiledMapLayers.get(tiledMapLayers.size-1));
 
