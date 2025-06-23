@@ -13,6 +13,7 @@ import de.haw.sea2.logic.ecs.components.AnimationComponent;
 import de.haw.sea2.logic.ecs.components.EnemyComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.InteractionComponent;
+import de.haw.sea2.logic.ecs.components.ItemComponent;
 import de.haw.sea2.logic.ecs.components.ObstacleComponent;
 import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
@@ -120,11 +121,14 @@ public class EntityCreator {
                 animComp.height = size;
                 entity.add(animComp);
 
-                    InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
-                    interCopm.type = InteractionType.OBJECT_COLLECT;
-                    entity.add(interCopm);
-                })
-                .build();
+                InteractionComponent interCopm = engine.createComponent(InteractionComponent.class);
+                interCopm.type = InteractionType.OBJECT_COLLECT;
+                entity.add(interCopm);
+
+                ItemComponent itemComp = engine.createComponent(ItemComponent.class);
+                entity.add(itemComp);
+            })
+            .build();
     }
 
     /**

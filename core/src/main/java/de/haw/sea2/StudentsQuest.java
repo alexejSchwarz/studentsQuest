@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.audio.AudioManager;
@@ -23,11 +24,12 @@ import de.haw.sea2.debug.DebugConfig;
 import de.haw.sea2.debug.DebugSystem;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
-import de.haw.sea2.input.ScreenKeyInputListener;
+import de.haw.sea2.input.InputManager;
+import de.haw.sea2.lifeCicle.GameState;
+import de.haw.sea2.lifeCicle.Restartable;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
-import de.haw.sea2.input.InputManager;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
 import de.haw.sea2.screen.ScreenType;
@@ -119,7 +121,9 @@ public class StudentsQuest extends Game {
      */
     public FitViewport viewport;
 
-    private Array<ScreenKeyInputListener> listenersTobeRemoved = new Array<>();
+    public DefaultStateMachine<StudentsQuest, GameState> stateMachine;
+
+    public ObjectSet<Restartable> restartables = new ObjectSet<>();
 
     /**
      * Manager für das Laden und Verwalten von Spiel-Assets wie Texturen, Sounds und
@@ -269,6 +273,8 @@ public class StudentsQuest extends Game {
 
     @Override
     public void create() {
+        this.stateMachine = new DefaultStateMachine<>(this, GameState.INIT);
+
         // Erstellt den SpriteBatch zum Zeichnen von Grafiken
         this.spriteBatch = new SpriteBatch();
 
@@ -377,10 +383,6 @@ public class StudentsQuest extends Game {
         if (debugSystem != null) {
             debugSystem.dispose();
         }
-    }
-
-    public void sceduleInputListenerRemoval(ScreenKeyInputListener listener) {
-        this.listenersTobeRemoved.add(listener);
     }
 
     /**
