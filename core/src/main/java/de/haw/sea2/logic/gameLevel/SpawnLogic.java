@@ -29,6 +29,7 @@ import de.haw.sea2.logic.EntityUtils;
  * - Dynamische Anpassung der Schwierigkeit mit Fortschritt
  * - Gelegentliche Spezialwellen für erhöhte Herausforderung
  */
+//TODO Vorschlag alle Coins gleich spawnen lassen. Wenn angenommen, dann Todo raus und unnoetige Methoden raus
 public class SpawnLogic implements Restartable {
 
     // Konstanten für bessere Wartbarkeit
@@ -36,11 +37,11 @@ public class SpawnLogic implements Restartable {
 
     // Spawn-Einstellungen
     private static final float DEFAULT_WAVE_INTERVAL = 30f; // Zeitintervall zwischen Wellen (Sekunden)
-    private static final int MAX_ENEMIES_PER_WAVE = 5; // Maximale Anzahl von Gegnern pro Welle (Startwert)
+    private static final int MAX_ENEMIES_PER_WAVE = 3; // Maximale Anzahl von Gegnern pro Welle (Startwert)
     private static final float SPAWN_POINT_PERCENTAGE = 0.5f; // Prozentsatz der zu verwendenden Spawnpunkte
-    private static final int MAX_ACTIVE_ENEMIES = 20; // Maximale Anzahl gleichzeitig aktiver Gegner
+    private static final int MAX_ACTIVE_ENEMIES = 10; // Maximale Anzahl gleichzeitig aktiver Gegner
     private static final float SPECIAL_WAVE_CHANCE = 0.15f; // Wahrscheinlichkeit für eine Spezialwelle (15%)
-    private static final float PLAYER_SAFE_DISTANCE = 3.0f; // Sicherer Abstand zum Spieler für Spawns
+    private static final float PLAYER_SAFE_DISTANCE = 9f; // Sicherer Abstand zum Spieler für Spawns
     private static final float FIRST_WAVE_DELAY_FACTOR = 0.5f; // Die erste Welle startet früher (Faktor)
 
     // Ressourcenreferenzen
@@ -111,14 +112,19 @@ public class SpawnLogic implements Restartable {
 
         Vector2 playerSpawnPosition = this.context.getMapManager().getCurrentMap().getPlayerSpawnPoint();
         LoggerUtil.log(LogCategory.DEBUG, this, "player to be created at: " + playerSpawnPosition);
-        this.context.getEntityCreator().createPlayer(playerSpawnPosition, 1f, 1f);
+        this.context.getEntityCreator().createPlayer(playerSpawnPosition, EntityCreator.HUMAN_HITBOX_WIDTH, EntityCreator.HUMAN_HITBOX_HEIGHT, EntityCreator.HUMAN_ANIMATION_WIDTH, EntityCreator.HUMAN_ANIMATION_HEIGHT);
 
         LoggerUtil.log(LogCategory.DEBUG, LOG_TAG, "Found " + availableItemSpawns.size + " item spawn points and "
             + enemySpawnPoints.size + " enemy spawn points");
 
         // Initiales Spawnen von Items
         if (!availableItemSpawns.isEmpty()) {
-            spawnItem();
+            //TODO
+            //spawnItem();
+
+            for (EntitySpawnPoint spawnPoint : this.availableItemSpawns) {
+                this.creator.createCoin(spawnPoint.spawnPoint(), 0.5f);
+            }
         }
 
         // Setze die Wellen-Parameter zurück
@@ -132,7 +138,8 @@ public class SpawnLogic implements Restartable {
      */
     public void update(float delta) {
         // Prüfe auf neu gesammelte Münzen und spawne ggf. neue
-        checkAndSpawnCoins();
+        //TODO
+        //checkAndSpawnCoins();
 
         // Reduce wave timer
         waveTimer -= delta;
@@ -168,9 +175,10 @@ public class SpawnLogic implements Restartable {
      * @param spawnPoint Der Spawnpunkt für den Gegner
      */
     private void spawnEnemy(EntitySpawnPoint spawnPoint) {
+        // TODO fuers erste ohne spezialWave, wenn Param gesetzt sind, koennen wir noch schauen
         // Gegner in Spezialwellen sind etwas größer und schneller
-        float size = specialWaveActive ? 1.2f : 1.0f;
-        this.creator.createEnemy(spawnPoint.spawnPoint(), size, size);
+        //float size = specialWaveActive ? 1.2f : 1.0f;
+        this.creator.createEnemy(spawnPoint.spawnPoint(), 0.5f, 0.5f, EntityCreator.HUMAN_ANIMATION_WIDTH, EntityCreator.HUMAN_ANIMATION_HEIGHT);
     }
 
     /**

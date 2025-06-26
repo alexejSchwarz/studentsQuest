@@ -31,6 +31,11 @@ import de.haw.sea2.view.animations.EnemyAnimation;
  */
 public class EntityCreator {
 
+    public final static float HUMAN_HITBOX_WIDTH = 0.75f;
+    public final static float HUMAN_HITBOX_HEIGHT = 1f;
+    public final static float HUMAN_ANIMATION_WIDTH = 2f;
+    public final static float HUMAN_ANIMATION_HEIGHT = 2f;
+
     private final ECSEngine engine;
     private final World world;
 
@@ -46,7 +51,7 @@ public class EntityCreator {
      * @param width               Die Breite des Spielers in Spieleinheiten
      * @param height              Die Höhe des Spielers in Spieleinheiten
      */
-    public void createPlayer(final Vector2 playerSpawnLocation, final float width, final float height) {
+    public void createPlayer(final Vector2 playerSpawnLocation, final float width, final float height, float animationWidth, float animationHeight) {
         LoggerUtil.log(LogCategory.GAME, this,
                 "Creating player at position: " + playerSpawnLocation + ", width: " + width + ", height: " + height);
         new EntityBuilder(engine, world, createBoxShape(width, height))
@@ -66,8 +71,8 @@ public class EntityCreator {
 
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
                     animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
-                    animationComp.width = width;
-                    animationComp.height = height;
+                    animationComp.width = animationWidth;
+                    animationComp.height = animationHeight;
                     entity.add(animationComp);
 
                     PlayerAttackStateComponent attackStateComponent = this.engine.createComponent(PlayerAttackStateComponent.class);
@@ -138,10 +143,10 @@ public class EntityCreator {
      * @param width    The width of the enemy in game units
      * @param height   The height of the enemy in game units
      */
-    public void createEnemy(final Vector2 position, final float width, final float height) {
+    public void createEnemy(Vector2 position, float width, float height, float animationWidth, float animationHeight) {
         LoggerUtil.log(LogCategory.GAME, this,
                 "Creating enemy at position: " + position + ", width: " + width + ", height: " + height);
-        new EntityBuilder(engine, world, createBoxShape(width * 0.7f, height * 0.8f))
+        new EntityBuilder(engine, world, createBoxShape(width, height))
                 .position(position.x, position.y)
                 .size(width, height)
                 .categoryBits(Bits.BIT_ENEMY.value)
@@ -149,8 +154,8 @@ public class EntityCreator {
                 .addComponents(entity -> {
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
                     animationComp.animationType = EnemyAnimation.ENEMY_MOVE_DOWN.animationType;
-                    animationComp.width = width;
-                    animationComp.height = height;
+                    animationComp.width = animationWidth;
+                    animationComp.height = animationHeight;
                     entity.add(animationComp);
 
                 // Add the enemy component for pathfinding behavior

@@ -22,6 +22,7 @@ import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.lifeCicle.GameState;
 import de.haw.sea2.logic.EntityUtils;
 import de.haw.sea2.logic.ecs.ECSEngine;
+import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;

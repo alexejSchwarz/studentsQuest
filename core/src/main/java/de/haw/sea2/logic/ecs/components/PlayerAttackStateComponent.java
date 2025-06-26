@@ -15,7 +15,7 @@ public class PlayerAttackStateComponent implements Component, Pool.Poolable {
 
     public StateMachine<PlayerAttackStateComponent, PlayerAttackState> stateMachine = new DefaultStateMachine<>(this, PlayerAttackState.NOT_ATTACKING);
     public ECSEngine engine;
-    public float attackCoolDown = 1f;
+    public float attackCoolDown = 0.75f;
     public float attackDuration = 0.25f;
     public PlayerComponent.Sensors activatedSensor = PlayerComponent.Sensors.NONE;
 

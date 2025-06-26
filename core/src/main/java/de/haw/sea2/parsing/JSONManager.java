@@ -6,20 +6,26 @@ import org.json.JSONObject;
 
 public class JSONManager {
 
-    private static FileHandle gameConfigJson;
-    private static String jsonString;
-    private static JSONObject gameConfigJSONObject;
+
+    private static FileHandle USER_SOUND_CONFIG;
+    private static JSONObject USER_SOUND_JSON_OBJECT;
+
+    private static final String USER_CONFIG_FILENAME = "../soundConfig.json"; // relative to working dir
+    private static final String DEFAULT_CONFIG_PATH = "resources/config.json";
 
     static {
-        gameConfigJson = Gdx.files.local("resources/config.json");
-        jsonString = gameConfigJson.readString();
-        gameConfigJSONObject = new JSONObject(jsonString);
+        FileHandle userFile = Gdx.files.local(USER_CONFIG_FILENAME);
+        if (!userFile.exists()) {
+            FileHandle defaultFile = Gdx.files.internal(DEFAULT_CONFIG_PATH);
+            userFile.writeString(defaultFile.readString(), false);
+        }
 
-        System.out.println("Game config: " + gameConfigJSONObject);
+        USER_SOUND_CONFIG = userFile;
+        USER_SOUND_JSON_OBJECT = new JSONObject(userFile.readString());
     }
 
     public static float getVolume() {
-        Object audioJSON = gameConfigJSONObject.get("audio");
+        Object audioJSON = USER_SOUND_JSON_OBJECT.get("audio");
         if (audioJSON instanceof JSONObject) {
             return ((JSONObject) audioJSON).getFloat("music_volume");
         }
@@ -27,7 +33,7 @@ public class JSONManager {
     }
 
     public static void updateVolume(float newVolume) {
-        Object audioJSON = gameConfigJSONObject.get("audio");
+        Object audioJSON = USER_SOUND_JSON_OBJECT.get("audio");
         if (audioJSON instanceof JSONObject) {
             ((JSONObject) audioJSON).put("music_volume", newVolume);
         }
@@ -35,6 +41,6 @@ public class JSONManager {
     }
 
     public static void updateJson() {
-        gameConfigJson.writeString(gameConfigJSONObject.toString(), false);
+        USER_SOUND_CONFIG.writeString(USER_SOUND_JSON_OBJECT.toString(), false);
     }
 }
