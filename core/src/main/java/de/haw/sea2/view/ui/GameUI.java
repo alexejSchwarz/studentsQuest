@@ -81,7 +81,7 @@ public class GameUI implements Disposable {
         HearthComponent hearthComponent = ECSEngine.HEARTH_COMPONENT_MAPPER.get(players.first());
 
         for (int i = 1; i <= hearthComponent.currentHearths; i++) {
-            batch.draw(heartIdleTexture, camera.position.x-7.5f+i*0.6f, camera.position.y+3.8f, 0.5f, 0.5f);
+            batch.draw(heartIdleTexture, camera.position.x-8f+i*0.6f, camera.position.y+3.8f, 0.5f, 0.5f);
         }
     }
 

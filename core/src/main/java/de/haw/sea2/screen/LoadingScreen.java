@@ -73,6 +73,8 @@ public class LoadingScreen implements Screen {
         // Optional: Weitere Assets hier laden
         // z.B. Sound-Effekte, Musik, UI-Elemente
         context.getAssetManager().load(AssetPaths.BALL.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.RESTART_BUTTON.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.SUCCESS_SCREEN.getPath(), Texture.class);
 
         //Musik und Sounds laden
         for (final Audio audioType : Audio.values()) {

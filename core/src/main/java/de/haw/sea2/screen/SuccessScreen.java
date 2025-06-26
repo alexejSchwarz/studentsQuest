@@ -3,26 +3,27 @@ package de.haw.sea2.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import de.haw.sea2.StudentsQuest;
-import de.haw.sea2.input.GameKey;
-import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.lifeCicle.GameState;
+import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.ui.StageUtils;
 
 /**
  * SuccessScreen zeigt den Erfolg (Level abgeschlossen) an, wenn ein Level erfolgreich beendet wurde.
  */
-public class SuccessScreen implements Screen, ScreenKeyInputListener {
+public class SuccessScreen implements Screen {
 
     // Verweis auf den Spielkontext, um auf zentrale Spielkomponenten zuzugreifen.
     private final StudentsQuest context;
@@ -30,8 +31,11 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
     private final Stage stage;
     // BitmapFont für die Anzeige von Text in der UI.
     private final BitmapFont font;
-    // Erstelle ein Table-Layout, das für die Positionierung der UI-Elemente verwendet wird
-    private final Table table = new Table();
+
+    private final Image background;
+
+    private ImageButton hauptmenuButton;
+    private ImageButton neuStartenButton;
 
     /**
      * Konstruktor: Initialisiert den SuccessScreen mit dem gegebenen Spielkontext.
@@ -51,6 +55,9 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
         // Setze den Skalierungsfaktor für den Font
         this.font.getData().setScale(scaleFactor);
 
+        this.background = new Image(this.context.getAssetManager().get(AssetPaths.SUCCESS_SCREEN.getPath(), Texture.class));
+        this.background.setSize(16f, 9f);
+
         // UI-Elemente initialisieren und konfigurieren
         setupUI();
     }
@@ -59,7 +66,6 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
      * Richtet die UI-Elemente ein und positioniert sie auf dem Bildschirm.
      */
     private void setupUI() {
-        this.table.setFillParent(true); // Table füllt den gesamten Stage-Bereich
 
         // Definiere die UI-Stile für Labels und Buttons
         Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
@@ -74,9 +80,10 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
         titleLabel.setColor(Color.YELLOW);
 
         // Erstelle den Button für den Übergang zum nächsten Level
-        TextButton resumeButton = new TextButton("Nochmal spielen", buttonStyle);
-        resumeButton.getLabel().setAlignment(Align.center);
-        resumeButton.addListener(new ClickListener() {
+        neuStartenButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.RESTART_BUTTON.getPath(), Texture.class)));
+        neuStartenButton.setSize(2f,2f);
+        neuStartenButton.setPosition(8f, 2.0f);
+        neuStartenButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 context.stateMachine.changeState(GameState.RESTART);
@@ -85,21 +92,16 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
         });
 
         // Erstelle den Button für den Wechsel zum Hauptmenü
-        TextButton mainMenuButton = new TextButton("Hauptmenü", buttonStyle);
-        mainMenuButton.getLabel().setAlignment(Align.center);
-        mainMenuButton.addListener(new ClickListener() {
+        hauptmenuButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.BACK_TO_MAIN_MENU_BUTTON.getPath(), Texture.class)));
+        hauptmenuButton.setSize(2f, 2f);
+        hauptmenuButton.setPosition(5.5f, 2.0f);
+        hauptmenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Wechsle zum Hauptmenü-Screen
                 context.getScreenManager().showScreen(ScreenType.MAIN_MENU);
             }
         });
-
-        // Baue das Layout des Tables auf, sodass alle Elemente zentriert und mit Abständen angeordnet sind
-        table.center();
-        table.add(titleLabel).width(4.0f).align(Align.center).padBottom(1.0f).padTop(1.0f).row();
-        table.add(resumeButton).width(4.0f).height(1.0f).align(Align.center).padBottom(0.5f).row();
-        table.add(mainMenuButton).width(4.0f).height(1.0f).align(Align.center).row();
     }
 
     /**
@@ -108,9 +110,9 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
      */
     @Override
     public void show() {
-        // Füge diesen Screen als KeyInputListener hinzu, um Tasteneingaben zu verarbeiten
-        context.getInputManager().addKeyInputListener(this);
-        this.stage.addActor(this.table);
+        this.stage.addActor(this.background);
+        this.stage.addActor(this.hauptmenuButton);
+        this.stage.addActor(this.neuStartenButton);
     }
 
     /**
@@ -156,8 +158,6 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
      */
     @Override
     public void hide() {
-        // Entferne diesen Screen als KeyInputListener, wenn er nicht mehr aktiv ist
-        this.context.getInputManager().removeKeyInputListener(this);
         this.stage.clear();
     }
 
@@ -168,30 +168,5 @@ public class SuccessScreen implements Screen, ScreenKeyInputListener {
     public void dispose() {
         // Entsorge den Font, um Speicher freizugeben
         font.dispose();
-    }
-
-    /**
-     * Verarbeitet Tastatureingaben: Wird aufgerufen, wenn eine Taste gedrückt wird.
-     *
-     * @param manager Der InputManager
-     * @param key     Die gedrückte GameKey
-     */
-    @Override
-    public void keyDown(InputManager manager, GameKey key) {
-        // Wenn die Pause-Taste erneut gedrückt wird, kehre zum vorherigen Screen zurück
-        if (key == GameKey.PAUSE) {
-            context.getScreenManager().returnToPreviousScreen();
-        }
-    }
-
-    /**
-     * Verarbeitet Tastatureingaben: Wird aufgerufen, wenn eine Taste losgelassen wird.
-     *
-     * @param manager Der InputManager
-     * @param key     Die losgelassene GameKey
-     */
-    @Override
-    public void keyUp(InputManager manager, GameKey key) {
-        // Keine Aktion erforderlich, wenn die Taste losgelassen wird
     }
 }

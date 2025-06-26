@@ -82,6 +82,7 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
         context.getAssetManager().load(Audio.START_SCREEN_MUSIC.getPath(), Music.class);
         context.getAssetManager().load(AssetPaths.SLIDER_BACKGROUND.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.SLIDER_KNOB.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.BACK_TO_MAIN_MENU_BUTTON.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.HOME_BUTTON.getPath(), Texture.class);
         context.getAssetManager().finishLoading();
 

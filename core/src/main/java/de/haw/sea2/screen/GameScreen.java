@@ -184,9 +184,8 @@ GameScreen implements Screen, ScreenKeyInputListener {
         this.accumulator += deltaTime;
 
         if (playerHearthComp.currentHearths <= 0) {
-            //TODO ersetze durch gameOverScreen
             this.context.stateMachine.changeState(GameState.OVER);
-            this.context.getScreenManager().showScreen(ScreenType.SUCCESS);
+            this.context.getScreenManager().showScreen(ScreenType.GAME_OVER);
         }
 
         if (playerComponent.collectedCoins == playerComponent.neededCoins) {
