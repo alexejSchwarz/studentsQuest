@@ -29,6 +29,7 @@ import de.haw.sea2.lifeCicle.GameState;
 import de.haw.sea2.lifeCicle.Restartable;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.builders.EntityCreator;
+import de.haw.sea2.logic.gameLevel.SpawnLogic;
 import de.haw.sea2.logic.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
 import de.haw.sea2.map.MapManager;
 import de.haw.sea2.screen.ScreenManager;
@@ -165,6 +166,8 @@ public class StudentsQuest extends Game {
     private WorldContactListener worldContactListener;
 
     private PlayerContactHandeler playerContactHandeler;
+    
+    private SpawnLogic spawnLogic;
 
     /**
      * Die virtuelle Kamera, die den sichtbaren Bereich der Spielwelt bestimmt.
@@ -318,6 +321,8 @@ public class StudentsQuest extends Game {
 
         this.mapManager = new MapManager(this);
 
+        this.spawnLogic = new SpawnLogic(this);
+
         // Debug-System initialisieren
         this.debugSystem = new DebugSystem();
 
@@ -460,6 +465,9 @@ public class StudentsQuest extends Game {
 
     public PathingCalculationManager getPathCalcManager() {
         return pathCalcManager;
+    }
+    public SpawnLogic getSpawnLogic(){
+        return spawnLogic;
     }
 
 

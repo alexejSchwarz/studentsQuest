@@ -40,6 +40,7 @@ public class EntityBuilder {
     private Consumer<Entity> additionalComponents = e -> {};
     private Shape shape;
     private Body body;
+    private boolean isSensor = false;
 
     /**
      * Konstruktor für den GenericEntityBuilder.
@@ -57,6 +58,17 @@ public class EntityBuilder {
         this.entity = engine.createEntity();
         this.box2dComponent = engine.createComponent(Box2DComponent.class);
         this.shape = shape; // Shape is now required in the constructor
+    }
+
+    /**
+     * Setzt den Body-Typ der Entität.
+     *
+     * @param bodyType Der Body-Typ (z. B. Static, Dynamic, Kinematic).
+     * @return Der aktuelle Builder für method chaining.
+     */
+    public EntityBuilder setSensor(boolean isSensor) {
+        this.isSensor = isSensor;
+        return this;
     }
 
     /**
@@ -186,6 +198,7 @@ public class EntityBuilder {
         fixtureDef.filter.maskBits = maskBits;
 
         fixtureDef.shape = shape;
+        fixtureDef.isSensor = isSensor;
 
         body.createFixture(fixtureDef);
         shape.dispose();
