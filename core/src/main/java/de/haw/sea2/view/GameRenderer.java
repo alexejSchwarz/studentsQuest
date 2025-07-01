@@ -1,5 +1,7 @@
 package de.haw.sea2.view;
 
+import static de.haw.sea2.logic.ecs.builders.EntityCreator.*;
+
 import java.util.Optional;
 
 import com.badlogic.ashley.core.Entity;
@@ -15,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -24,16 +27,21 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.debug.DebugConfig;
+import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.ecs.components.AnimationComponent;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
+import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.components.SimpleRenderComponent;
 import de.haw.sea2.logic.EntityUtils;
 import de.haw.sea2.logic.ecs.ECSEngine;
+import de.haw.sea2.logic.entityLogic.PlayerAttackState;
 import de.haw.sea2.map.GameMap;
 import de.haw.sea2.map.MapChangeListener;
+import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.animations.AnimationType;
 import de.haw.sea2.view.animations.AnimationUtils;
+import de.haw.sea2.view.animations.PlayerAttackAnimation;
 
 /**
  * responsible for drawing the map, Character, Entities in general, light,
@@ -64,7 +72,12 @@ public class GameRenderer implements Disposable, MapChangeListener {
 
     private final ImmutableArray<Entity> players;
 
+    private final StudentsQuest context;
+
+    private TextureAtlas attackAtlas;
+
     public GameRenderer(StudentsQuest context) {
+        this.context = context;
         this.assetManager = context.getAssetManager();
         this.viewport = context.viewport;
         this.gameCamera = context.getGameCamera();
@@ -73,8 +86,8 @@ public class GameRenderer implements Disposable, MapChangeListener {
                 .getEntitiesFor(Family.all(AnimationComponent.class, Box2DComponent.class).get());
         this.unanimatedEntities = context.getEngine()
                 .getEntitiesFor(Family.all(SimpleRenderComponent.class, Box2DComponent.class).get());
-        
-        players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+
+        this.players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
 
         // Richtet den TiledMapRenderer für die Spielkarten ein
         this.mapRenderer = new OrthogonalTiledMapRenderer(null, StudentsQuest.UNIT_SCALE, this.spriteBatch);
@@ -129,6 +142,12 @@ public class GameRenderer implements Disposable, MapChangeListener {
         this.mapRenderer.renderTileLayer(tiledMapLayers.get(tiledMapLayers.size-2));
         this.mapRenderer.renderTileLayer(tiledMapLayers.get(tiledMapLayers.size-1));
 
+
+        PlayerAttackStateComponent playerAttackStateComponent = ECSEngine.PLAYER_ATTACK_STATE_COMPONENT_MAPPER.get(playerEntity);
+        if (playerAttackStateComponent.stateMachine.isInState(PlayerAttackState.ATTACKING)) {
+            renderAttack(playerEntity, playerAttackStateComponent);
+        }
+
         spriteBatch.end();
 
         if (DebugConfig.DEBUG_ENABLED) {
@@ -160,6 +179,50 @@ public class GameRenderer implements Disposable, MapChangeListener {
 
     }
 
+    private void renderAttack(Entity player, PlayerAttackStateComponent playerAttackStateComponent) {
+        Box2DComponent b2dComp = ECSEngine.BOX2D_COMP_MAPPER.get(player);
+        switch (playerAttackStateComponent.activatedSensor) {
+            case UP: {
+                Sprite sprite = new Sprite(this.attackAtlas.findRegion(PlayerAttackAnimation.ATTACK_TOP.attalasKey));
+                Vector2 startPosition = new Vector2(b2dComp.interpolatedRenderPosition.x - 0.5f * HUMAN_ANIMATION_HEIGHT, b2dComp.interpolatedRenderPosition.y);
+                drawAttack(sprite, startPosition);
+                break;
+            }
+            case LEFT: {
+                Sprite sprite = new Sprite(this.attackAtlas.findRegion(PlayerAttackAnimation.ATTACK_LEFT.attalasKey));
+                Vector2 startPosition = new Vector2(b2dComp.interpolatedRenderPosition.x - HUMAN_ANIMATION_WIDTH, b2dComp.interpolatedRenderPosition.y - 0.5f * HUMAN_ANIMATION_HEIGHT);
+                drawAttack(sprite, startPosition);
+                break;
+            }
+            case RIGHT: {
+                Sprite sprite = new Sprite(this.attackAtlas.findRegion(PlayerAttackAnimation.ATTACK_RIGHT.attalasKey));
+                Vector2 startPosition = new Vector2(b2dComp.interpolatedRenderPosition.x, b2dComp.interpolatedRenderPosition.y - 0.5f * HUMAN_ANIMATION_HEIGHT);
+                drawAttack(sprite, startPosition);
+                break;
+            }
+            case DOWN: {
+                Sprite sprite = new Sprite(this.attackAtlas.findRegion(PlayerAttackAnimation.ATTACK_DOWN.attalasKey));
+                Vector2 startPosition = new Vector2(b2dComp.interpolatedRenderPosition.x - 0.5f * HUMAN_ANIMATION_WIDTH, b2dComp.interpolatedRenderPosition.y - HUMAN_ANIMATION_HEIGHT);
+                drawAttack(sprite, startPosition);
+                break;
+            }
+            default: {
+                throw new RuntimeException();
+            }
+        }
+    }
+
+    private void drawAttack(Sprite sprite, Vector2 startPoint) {
+        sprite.setOriginCenter();
+        sprite.setBounds(
+            startPoint.x,
+            startPoint.y,
+            HUMAN_ANIMATION_WIDTH,
+            HUMAN_ANIMATION_HEIGHT
+        );
+        sprite.draw(spriteBatch);
+    }
+
     /**
      * Uses Interpolation for smoother in between rendering of frames.
      * For reference see:
@@ -187,6 +250,7 @@ public class GameRenderer implements Disposable, MapChangeListener {
     public void onMapChange(GameMap map) {
         this.mapRenderer.setMap(map.getTiledMap());
         map.getTiledMap().getLayers().getByType(TiledMapTileLayer.class, tiledMapLayers);
+        this.attackAtlas = context.getAssetManager().get(AssetPaths.ATTACK_ATLAS.getPath(), TextureAtlas.class);
     }
 
     public OrthogonalTiledMapRenderer getMapRenderer() {

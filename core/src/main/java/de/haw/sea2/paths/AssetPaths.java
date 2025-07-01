@@ -13,6 +13,7 @@ public enum AssetPaths {
     MISSION_SCREEN("screens/missionScreen.png"),
     SLIDER_BACKGROUND("screens/settingsScreen/slider_background.png"),
     SLIDER_KNOB("screens/settingsScreen/slider_knob.png"),
+    ATTACK_ATLAS("customEntities/AttackAtlas.atlas"),
     HOME_BUTTON("screens/settingsScreen/home_button.png");
 
     private final String path;

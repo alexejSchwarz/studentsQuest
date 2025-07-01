@@ -1,0 +1,11 @@
+AttackAtlas.png
+size:32,32
+repeat:none
+attackDown
+bounds:0,0,16,16
+attackLeft
+bounds:16,0,16,16
+attackRight
+bounds:16,16,16,16
+attackTop
+bounds:0,16,16,16
