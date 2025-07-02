@@ -11,5 +11,6 @@ public enum ScreenType {
     PAUSE,
     LOADING,
     SUCCESS,
-    INFO_SCREEN_LV1
+    INFO_SCREEN_LV1,
+    GAME_OVER,
 }

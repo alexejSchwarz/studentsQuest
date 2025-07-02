@@ -96,6 +96,8 @@ public class ScreenManager {
                 return new SuccessScreen(context);
             case SETTINGS:
                 return new SettingsScreen(context);
+            case GAME_OVER:
+                return new GameOverScreen(context);
             default:
                 LoggerUtil.error(LogCategory.ERROR,this,"Unbekannter ScreenType: " + screenType);
                 return new MainMenuScreen(context); // Fallback
