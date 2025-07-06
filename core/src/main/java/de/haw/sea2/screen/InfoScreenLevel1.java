@@ -1,12 +1,15 @@
 package de.haw.sea2.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -38,7 +41,8 @@ public class InfoScreenLevel1 implements Screen {
     private TextureRegionDrawable letsGoButtonDrawable;
 
     private Image missionImage;
-    private ImageButton letsGoButton;
+    private TextButton girlButton;
+    private TextButton boyButton;
 
     // Konstanten für Positionierung und Skalierung
     private static final float MISSION_IMAGE_WIDTH = 16f;
@@ -92,20 +96,38 @@ public class InfoScreenLevel1 implements Screen {
         float centerY = (context.viewport.getWorldHeight() - MISSION_IMAGE_HEIGHT) / 2;
         missionImage.setPosition(centerX, centerY);
 
-        // Erstelle den "Let's Go"-Button
-        letsGoButton = new ImageButton(letsGoButtonDrawable);
-        letsGoButton.setSize(BUTTON_SCALE, BUTTON_SCALE);
+        //-------------------------
+        //TODO temporaer bis Bilder fuer char Wahl vorhanden sind. Dann Imagebuttons
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
 
-        // Positioniere den Button unten rechts im Bild
-        float buttonX = centerX + MISSION_IMAGE_WIDTH - BUTTON_SCALE - BUTTON_MARGIN;
-        float buttonY = centerY + BUTTON_MARGIN;
-        letsGoButton.setPosition(buttonX, buttonY);
+        buttonStyle.font = new BitmapFont();
+        ;
+        buttonStyle.fontColor = Color.YELLOW;
+        buttonStyle.downFontColor = Color.LIGHT_GRAY;
+
+        // Schriftgröße anpassen
+        buttonStyle.font.setUseIntegerPositions(false);
+        float scaleFactor = (this.context.viewport.getWorldHeight() / Gdx.graphics.getHeight()) * 3.0f;
+        buttonStyle.font.getData().setScale(scaleFactor);
+
+        this.girlButton = new TextButton("Mädchen", buttonStyle);
+        this.girlButton.setPosition(2f, 2f);
+        this.boyButton = new TextButton("Junge", buttonStyle);
+        this.boyButton.setPosition(12f, 2f);
+        //-------------------------
 
         // Füge einen ClickListener hinzu, um zum Game-Screen zu wechseln
-        letsGoButton.addListener(new ClickListener() {
+        this.girlButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG, this, "Let's Go button pressed - starting game");
+                context.chosenPlayerAnimationAtlas = AssetPaths.GIRL_PLAYER_ATLAS;
+                context.getScreenManager().showScreen(ScreenType.GAME);
+            }
+        });
+        this.boyButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                context.chosenPlayerAnimationAtlas = AssetPaths.BOY_PLAYER_ATLAS;
                 context.getScreenManager().showScreen(ScreenType.GAME);
             }
         });
@@ -117,7 +139,8 @@ public class InfoScreenLevel1 implements Screen {
     @Override
     public void show() {
         stage.addActor(missionImage);
-        stage.addActor(letsGoButton);
+        stage.addActor(girlButton);
+        stage.addActor(boyButton);
     }
 
     /**

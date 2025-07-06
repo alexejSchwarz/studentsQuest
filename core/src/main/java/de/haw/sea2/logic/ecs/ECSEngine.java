@@ -109,7 +109,7 @@ public class ECSEngine extends PooledEngine implements Restartable {
         this.addSystem(new PlayerMovementSystem(this.context));
         this.addSystem(new PlayerCameraSystem(this.context));
         this.addSystem(new AnimationSystem(this.context));
-        this.addSystem(new PlayerAnimationSystem());
+        this.addSystem(new PlayerAnimationSystem(this.context));
         this.addSystem(new EnemyAnimationSystem());
         this.addSystem(new EntityRemovalSystem(this.context));
         this.addSystem(new PlayerAttackSystem(this.context));

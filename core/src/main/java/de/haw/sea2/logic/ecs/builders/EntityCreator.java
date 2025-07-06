@@ -23,6 +23,7 @@ import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.animations.BoyPlayerAnimation;
 import de.haw.sea2.view.animations.CoinAnimation;
 import de.haw.sea2.view.animations.EnemyAnimation;
+import de.haw.sea2.view.animations.GirlPlayerAnimation;
 
 /**
  * Diese Klasse bietet Methoden zur Erstellung von Spieler- und Ball-Entitäten
@@ -39,10 +40,12 @@ public class EntityCreator {
 
     private final ECSEngine engine;
     private final World world;
+    private final StudentsQuest context;
 
     public EntityCreator(StudentsQuest context) {
         this.engine = context.getEngine();
         this.world = context.getWorld();
+        this.context = context;
     }
 
     /**
@@ -71,7 +74,13 @@ public class EntityCreator {
                     entity.add(hearthComponent);
 
                     AnimationComponent animationComp = engine.createComponent(AnimationComponent.class);
-                    animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
+
+                    if (context.chosenPlayerAnimationAtlas == AssetPaths.BOY_PLAYER_ATLAS) {
+                        animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
+                    } else {
+                        animationComp.animationType = GirlPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
+                    }
+
                     animationComp.width = animationWidth;
                     animationComp.height = animationHeight;
                     entity.add(animationComp);

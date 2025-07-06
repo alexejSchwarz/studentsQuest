@@ -32,6 +32,7 @@ import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.gameLevel.SpawnLogic;
 import de.haw.sea2.logic.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
 import de.haw.sea2.map.MapManager;
+import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.screen.ScreenManager;
 import de.haw.sea2.screen.ScreenType;
 import de.haw.sea2.view.GameRenderer;
@@ -126,6 +127,8 @@ public class StudentsQuest extends Game {
 
     public ObjectSet<Restartable> restartables = new ObjectSet<>();
 
+    public AssetPaths chosenPlayerAnimationAtlas;
+
     /**
      * Manager für das Laden und Verwalten von Spiel-Assets wie Texturen, Sounds und
      * Karten.
@@ -166,7 +169,7 @@ public class StudentsQuest extends Game {
     private WorldContactListener worldContactListener;
 
     private PlayerContactHandeler playerContactHandeler;
-    
+
     private SpawnLogic spawnLogic;
 
     /**
