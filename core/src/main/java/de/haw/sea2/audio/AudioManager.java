@@ -55,8 +55,8 @@ public class AudioManager {
         } else {
             //Sound abspielen
             LoggerUtil.log(LogCategory.LOG, this, "Starte Sound: " + type.name());
-            soundCache.computeIfAbsent(type, t -> assetManager.get(t.getPath(), Sound.class)).play();
-
+            soundCache.computeIfAbsent(type, t -> assetManager.get(t.getPath(), Sound.class))
+                .play(Math.min(type.getVolume(), type.getVolume() * (JSONManager.getVolume() / 100f)));
         }
     }
 
