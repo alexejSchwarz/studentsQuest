@@ -44,12 +44,14 @@ public class PlayerContactHandeler implements PlayerContactListener {
             } else if (itemType == ItemType.HEART && ECSEngine.HEARTH_COMPONENT_MAPPER.get(player).currentHearths < ECSEngine.HEARTH_COMPONENT_MAPPER.get(player).maxHearths) {
                 RemoveComponent removeComponent = this.context.getEngine().createComponent(RemoveComponent.class);
                 interactable.add(removeComponent);
+                context.getAudioManager().playAudio(Audio.HEART_PICKUP_SOUND);
                 HearthComponent hearths = ECSEngine.HEARTH_COMPONENT_MAPPER.get(player);
                 hearths.currentHearths++;
             }
         }  else if (interactionType == InteractionType.PLAYER_TAKES_DMG) {
             HearthComponent hearths = ECSEngine.HEARTH_COMPONENT_MAPPER.get(player);
             hearths.currentHearths--;
+            context.getAudioManager().playAudio(Audio.PLAYER_HIT_SOUND);
         }
     }
 }

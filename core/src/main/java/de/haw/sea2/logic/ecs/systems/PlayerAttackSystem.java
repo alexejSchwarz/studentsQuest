@@ -6,6 +6,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.audio.Audio;
 import de.haw.sea2.contact.SensorEnemyContactListener;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
@@ -22,6 +23,8 @@ import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.RemoveComponent;
 import de.haw.sea2.logic.entityLogic.PlayerAttackState;
 import de.haw.sea2.logic.gameLevel.SpawnLogic;
+
+import java.util.Random;
 
 //TODO refactoring von KeyInputListener. Eine zenztrale Klasse die auf Input lauscht.
 // Diese zusammen mit Game State (bsp. mit libgdx ai statemachoine fuer States, wie Pausiert, GameLevel, Hauptmenue etc) entscheidet
@@ -49,6 +52,11 @@ public class PlayerAttackSystem extends IteratingSystem implements ResettableInp
             if (playerAttackStateComponent.stateMachine.isInState(PlayerAttackState.NOT_ATTACKING)) {
                 PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(entity);
                 PlayerComponent.Sensors sensorDircetion = PlayerComponent.Sensors.fromFacingDirection(playerComponent.curentFacing);
+                Random random = new Random();
+                if (random.nextFloat() <= 0.5) {
+                    context.getAudioManager().playAudio(Audio.PLAYER_ATTACK_SOUND_1);
+                } else context.getAudioManager().playAudio(Audio.PLAYER_ATTACK_SOUND_2);
+
                 playerAttackStateComponent.activatedSensor = sensorDircetion;
                 Box2DComponent playerBox2dComp = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
                 FixtureBuilder.createAPlayerAttackSensor(sensorDircetion, playerBox2dComp);
@@ -81,6 +89,7 @@ public class PlayerAttackSystem extends IteratingSystem implements ResettableInp
     public void onSensorContactWithEnemy(Entity enemy) {
         HearthComponent enemyHearthComponent = ECSEngine.HEARTH_COMPONENT_MAPPER.get(enemy);
         enemyHearthComponent.currentHearths--;
+        context.getAudioManager().playAudio(Audio.ENEMY_HIT_SOUND);
         LoggerUtil.log(LogCategory.GAME, this, "Enemy hit, Enemy HP = " + enemyHearthComponent.currentHearths);
         if (enemyHearthComponent.currentHearths <= 0 ) {
             Vector2 position = new Vector2(ECSEngine.BOX2D_COMP_MAPPER.get(enemy).previousX,ECSEngine.BOX2D_COMP_MAPPER.get(enemy).previousY);
