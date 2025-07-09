@@ -3,6 +3,7 @@ package de.haw.sea2.logic.ecs.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 
 import de.haw.sea2.StudentsQuest;
@@ -13,6 +14,7 @@ import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.ResettableInputListener;
+import de.haw.sea2.logic.EntityUtils;
 import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.ecs.builders.FixtureBuilder;
@@ -21,6 +23,7 @@ import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.RemoveComponent;
+import de.haw.sea2.logic.entityLogic.MovementDirection;
 import de.haw.sea2.logic.entityLogic.PlayerAttackState;
 import de.haw.sea2.logic.gameLevel.SpawnLogic;
 
@@ -88,9 +91,24 @@ public class PlayerAttackSystem extends IteratingSystem implements ResettableInp
     @Override
     public void onSensorContactWithEnemy(Entity enemy) {
         HearthComponent enemyHearthComponent = ECSEngine.HEARTH_COMPONENT_MAPPER.get(enemy);
+        ImmutableArray<Entity> players = context.getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get());
+        Entity player = EntityUtils.checkAndGetPlayer(players);
+
         enemyHearthComponent.currentHearths--;
         context.getAudioManager().playAudio(Audio.ENEMY_HIT_SOUND);
         LoggerUtil.log(LogCategory.GAME, this, "Enemy hit, Enemy HP = " + enemyHearthComponent.currentHearths);
+
+
+        Box2DComponent enemyComponent = ECSEngine.BOX2D_COMP_MAPPER.get(enemy);
+        PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(player);
+
+        switch (playerComponent.curentFacing) {
+            case UP -> pushEnemy(enemyComponent,0f,50f);
+            case DOWN -> pushEnemy(enemyComponent, 0f, -50f);
+            case LEFT -> pushEnemy(enemyComponent, -50f, 0f);
+            case RIGHT -> pushEnemy(enemyComponent, 50f, 0f);
+        }
+
         if (enemyHearthComponent.currentHearths <= 0 ) {
             Vector2 position = new Vector2(ECSEngine.BOX2D_COMP_MAPPER.get(enemy).previousX,ECSEngine.BOX2D_COMP_MAPPER.get(enemy).previousY);
             // füge nur zu 30% hinzu /spawn nur zu 30%
@@ -100,5 +118,14 @@ public class PlayerAttackSystem extends IteratingSystem implements ResettableInp
             }
             enemy.add(this.context.getEngine().createComponent(RemoveComponent.class));
         }
+    }
+
+    private void pushEnemy(Box2DComponent enemyComponent, float xToPush, float yToPush) {
+        enemyComponent.body.applyLinearImpulse(
+            xToPush * 0.3f,
+            yToPush * 0.3f,
+            enemyComponent.body.getWorldCenter().x,
+            enemyComponent.body.getWorldCenter().y,
+            true);
     }
 }
