@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.ObjectSet;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.audio.AudioManager;
@@ -125,7 +125,7 @@ public class StudentsQuest extends Game {
 
     public DefaultStateMachine<StudentsQuest, GameState> stateMachine;
 
-    public ObjectSet<Restartable> restartables = new ObjectSet<>();
+    public Array<Restartable> restartables = new Array<>();
 
     public AssetPaths chosenPlayerAnimationAtlas;
 

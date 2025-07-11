@@ -59,7 +59,7 @@ public enum GameKey {
      */
     DEBUG_PATH(Input.Keys.P),
 
-    ATTACK(Input.Keys.ENTER);
+    ATTACK(Input.Keys.ENTER, Input.Keys.SPACE);
 
     /**
      * Array von Tastencodes, die dieser Spielaktion zugeordnet sind.

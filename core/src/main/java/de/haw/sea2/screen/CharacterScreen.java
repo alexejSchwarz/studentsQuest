@@ -38,7 +38,7 @@ public class CharacterScreen implements Screen {
         boyButton.setPosition(5.5f, 2f);
 
         girlButton.setSize(2f, 2f);
-        girlButton.setPosition(8f, 2f);
+        girlButton.setPosition(8.5f, 2f);
 
         this.buttons = new Array<>();
         this.buttons.add(boyButton);

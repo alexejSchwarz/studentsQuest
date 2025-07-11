@@ -13,7 +13,7 @@ public enum AssetPaths {
     M_KEYBINDS("screens/mainScreen/Tutorial.jpg"),
     ENEMY_ATLAS("customEntities/enemyAtlas.atlas"),
     BOY_PLAYER_ATLAS("customEntities/BoyPlayerAtlasCustom.atlas"),
-    GIRL_PLAYER_ATLAS("customEntities/GirlPlayerAtlas.atlas"),
+    GIRL_PLAYER_ATLAS("customEntities/GirlPlayerAtlasV2.atlas"),
     BUTTON_ATLAS("screens/mainScreen/button.atlas"),
     MISSION_SCREEN("screens/InfoScreen/InfoScreen.png"),
     SLIDER_BACKGROUND("screens/settingsScreen/slider_background.png"),
