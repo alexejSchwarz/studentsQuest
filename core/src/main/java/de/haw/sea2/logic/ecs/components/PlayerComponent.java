@@ -42,7 +42,7 @@ public class PlayerComponent implements Component, Pool.Poolable {
 
     public Vector2 speed = new Vector2();
 
-    public int neededCoins = 10;
+    public int neededCoins = 1;
 
     public int collectedCoins = 0;
 

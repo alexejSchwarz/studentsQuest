@@ -1,15 +1,12 @@
 package de.haw.sea2.screen;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -36,13 +33,11 @@ public class InfoScreenLevel1 implements Screen {
     // Mission-Textur (16:9 Verhältnis)
     private Texture missionTexture;
 
-    // Button-Atlas und Drawables
-    private TextureAtlas buttonAtlas;
+    // Drawables
     private TextureRegionDrawable letsGoButtonDrawable;
 
     private Image missionImage;
-    private TextButton girlButton;
-    private TextButton boyButton;
+    private ImageButton playButton;
 
     // Konstanten für Positionierung und Skalierung
     private static final float MISSION_IMAGE_WIDTH = 16f;
@@ -70,17 +65,12 @@ public class InfoScreenLevel1 implements Screen {
      * Lädt die erforderlichen Assets für diesen Screen.
      */
     private void loadAssets() {
-        context.getAssetManager().load(AssetPaths.MISSION_SCREEN.getPath(), Texture.class);
-        context.getAssetManager().finishLoading();
-
-        // Lade den Button-Atlas
-        buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
 
         // Setze vorübergehend ein Platzhalter-Missionsbild
         missionTexture = context.getAssetManager().get(AssetPaths.MISSION_SCREEN.getPath(), Texture.class);
 
         // Setze den "Let's Go"-Button-Drawable
-        letsGoButtonDrawable = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
+        letsGoButtonDrawable = new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.PLAY_BUTTON.getPath(), Texture.class));
     }
 
     /**
@@ -97,37 +87,13 @@ public class InfoScreenLevel1 implements Screen {
         missionImage.setPosition(centerX, centerY);
 
         //-------------------------
-        //TODO temporaer bis Bilder fuer char Wahl vorhanden sind. Dann Imagebuttons
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        this.playButton = new ImageButton(this.letsGoButtonDrawable);
+        this.playButton.setSize(5f, 2f);
+        this.playButton.setPosition(5.5f, 2f);
 
-        buttonStyle.font = new BitmapFont();
-        ;
-        buttonStyle.fontColor = Color.YELLOW;
-        buttonStyle.downFontColor = Color.LIGHT_GRAY;
-
-        // Schriftgröße anpassen
-        buttonStyle.font.setUseIntegerPositions(false);
-        float scaleFactor = (this.context.viewport.getWorldHeight() / Gdx.graphics.getHeight()) * 3.0f;
-        buttonStyle.font.getData().setScale(scaleFactor);
-
-        this.girlButton = new TextButton("Mädchen", buttonStyle);
-        this.girlButton.setPosition(2f, 2f);
-        this.boyButton = new TextButton("Junge", buttonStyle);
-        this.boyButton.setPosition(12f, 2f);
-        //-------------------------
-
-        // Füge einen ClickListener hinzu, um zum Game-Screen zu wechseln
-        this.girlButton.addListener(new ClickListener() {
+        this.playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                context.chosenPlayerAnimationAtlas = AssetPaths.GIRL_PLAYER_ATLAS;
-                context.getScreenManager().showScreen(ScreenType.GAME);
-            }
-        });
-        this.boyButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                context.chosenPlayerAnimationAtlas = AssetPaths.BOY_PLAYER_ATLAS;
                 context.getScreenManager().showScreen(ScreenType.GAME);
             }
         });
@@ -138,9 +104,8 @@ public class InfoScreenLevel1 implements Screen {
      */
     @Override
     public void show() {
-        stage.addActor(missionImage);
-        stage.addActor(girlButton);
-        stage.addActor(boyButton);
+        stage.addActor(this.missionImage);
+        stage.addActor(this.playButton);
     }
 
     /**

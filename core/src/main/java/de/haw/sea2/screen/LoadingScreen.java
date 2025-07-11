@@ -77,6 +77,14 @@ public class LoadingScreen implements Screen {
         context.getAssetManager().load(AssetPaths.RESTART_BUTTON.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.SUCCESS_SCREEN.getPath(), Texture.class);
 
+        context.getAssetManager().load(AssetPaths.CHAR_SCREEN.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.BOY_BUTTON.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.GIRL_BUTTON.getPath(), Texture.class);
+
+        context.getAssetManager().load(AssetPaths.MISSION_SCREEN.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.PLAY_BUTTON.getPath(), Texture.class);
+
+
         //Musik und Sounds laden
         for (final Audio audioType : Audio.values()) {
             Class<?> type = audioType.isMusic() ? Music.class : Sound.class;
@@ -146,7 +154,7 @@ public class LoadingScreen implements Screen {
         // Wenn fertig und Mindestanzeigezeit überschritten, zum Zielscreen wechseln
         if (finished && (!useSimulatedLoading || elapsedTime >= minLoadTime)) {
             // Wechsel zum Ziel-Screen
-            context.getScreenManager().showScreen(ScreenType.INFO_SCREEN_LV1);
+            context.getScreenManager().showScreen(ScreenType.CHAR_SCREEN);
         }
     }
 

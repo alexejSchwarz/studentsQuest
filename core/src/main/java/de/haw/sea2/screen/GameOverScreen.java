@@ -92,7 +92,7 @@ public class GameOverScreen implements Screen {
                 // Logge, dass der Neu Starten Button gedrückt wurde
                 LoggerUtil.log(LogCategory.LOG, this, "Neu Start button pressed");
                 context.stateMachine.changeState(GameState.RESTART);
-                context.getScreenManager().showScreen(ScreenType.INFO_SCREEN_LV1);
+                context.getScreenManager().showScreen(ScreenType.CHAR_SCREEN);
             }
         });
     }
