@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import de.haw.sea2.StudentsQuest;
+import de.haw.sea2.audio.Audio;
 import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.lifeCicle.GameState;
@@ -92,6 +93,7 @@ public class GameOverScreen implements Screen {
                 // Logge, dass der Neu Starten Button gedrückt wurde
                 LoggerUtil.log(LogCategory.LOG, this, "Neu Start button pressed");
                 context.stateMachine.changeState(GameState.RESTART);
+                context.getAudioManager().resetCurrentMusic();
                 context.getScreenManager().showScreen(ScreenType.CHAR_SCREEN);
             }
         });

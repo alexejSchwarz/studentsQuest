@@ -64,6 +64,14 @@ public class AudioManager {
         if (currentMusic != null) {
             currentMusic.pause();
         } else {
+            LoggerUtil.log(LogCategory.ERROR,this,"Es spielt gerade kein Song, Musik kann daher nicht pausiert werden.");
+        }
+    }
+
+    public void resetCurrentMusic() {
+        if (currentMusic != null) {
+            currentMusic.stop();
+        } else {
             LoggerUtil.log(LogCategory.ERROR,this,"Es spielt gerade kein Song, Musik kann daher nicht gestoppt werden.");
         }
     }

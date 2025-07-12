@@ -65,7 +65,7 @@ public class MainMenuScreen implements Screen {
         context.getAssetManager().load(AssetPaths.SLIDER_BACKGROUND.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.SLIDER_KNOB.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.BACK_TO_MAIN_MENU_BUTTON.getPath(), Texture.class);
-        context.getAssetManager().load(AssetPaths.HOME_BUTTON.getPath(), Texture.class);
+        context.getAssetManager().load(AssetPaths.BACKGROUND_SETTINGS_SCREEN.getPath(), Texture.class);
 
         this.context.getAssetManager().load(AssetPaths.M_PLAY.getPath(), Texture.class);
         this.context.getAssetManager().load(AssetPaths.M_CREDITS.getPath(), Texture.class);
