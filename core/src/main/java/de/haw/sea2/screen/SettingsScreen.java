@@ -4,6 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -47,8 +48,9 @@ public class SettingsScreen implements Screen, ScreenKeyInputListener {
     //Image Button für den Home Knopf
     private final ImageButton homeButton;
 
-    private static final float sliderStartValue = 100f;
-
+    //Hintergrundbild
+    private final Texture background;
+    private final Image backgroundImage;
 
     /**
      * Erstellt einen neuen Settings Screen.
@@ -80,9 +82,16 @@ public class SettingsScreen implements Screen, ScreenKeyInputListener {
             }
         });
 
-        homeButtonRegion = new TextureRegionDrawable(context.getAssetManager().get(AssetPaths.HOME_BUTTON.getPath(), Texture.class));
+        homeButtonRegion = new TextureRegionDrawable(context.getAssetManager().get(AssetPaths.HAUPT_MENU_TEXT_BUTTON.getPath(), Texture.class));
 
         homeButton = new ImageButton(homeButtonRegion);
+
+        homeButton.setSize(500f,200f);
+
+        background = context.getAssetManager().get(AssetPaths.BACKGROUND_SETTINGS_SCREEN.getPath());
+        backgroundImage = new Image(background);
+        backgroundImage.setSize(1920f, 1080f);
+
 
         homeButton.addListener(new ClickListener() {
             @Override
@@ -102,10 +111,11 @@ public class SettingsScreen implements Screen, ScreenKeyInputListener {
 
         slider.setPosition((context.getStage().getWidth() / 2f) - slider.getWidth() / 2f, context.getStage().getHeight() / 2f);
 
-        homeButton.setPosition((context.getStage().getWidth() / 2f) - homeButton.getWidth() / 2f,300f);
+        homeButton.setPosition((context.getStage().getWidth() / 2f) - homeButton.getWidth() / 2f,200f);
 
         context.getInputManager().addKeyInputListener(this);
 
+        context.getStage().addActor(backgroundImage);
         context.getStage().addActor(slider);
         context.getStage().addActor(homeButton);
     }

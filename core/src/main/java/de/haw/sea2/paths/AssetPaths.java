@@ -33,7 +33,7 @@ public enum AssetPaths {
     PAUSE_SCREEN("screens/pauseScreen/PausenScreen.png"),
     KEY_BIND_SCREEN("screens/keybindScreen/keyScreen.jpg"),
     CREDIT_SCREEN("screens/creditScreen/CreditsScreen.png"),
-    HOME_BUTTON("screens/settingsScreen/home_button.png");
+    BACKGROUND_SETTINGS_SCREEN("screens/settingsScreen/background_screen.png");
 
     private final String path;
 
