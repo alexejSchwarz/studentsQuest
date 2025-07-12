@@ -72,7 +72,7 @@ public class GameUI implements Disposable {
     }
 
     /**
-     * Zeichnet ein Herz für die Spieler-Lebensanzeige
+     * Zeichnet die Herzen für die Spieler-Lebensanzeige
      */
     private void renderHearts(SpriteBatch batch) {
         Camera camera = context.viewport.getCamera();
@@ -80,9 +80,17 @@ public class GameUI implements Disposable {
         //Es gibt nur einen Spieler, daher kann hier mit .first() gearbeitet werden.
         HearthComponent hearthComponent = ECSEngine.HEARTH_COMPONENT_MAPPER.get(players.first());
 
+        // Draw current hearts (normal color)
         for (int i = 1; i <= hearthComponent.currentHearths; i++) {
             batch.draw(heartIdleTexture, camera.position.x-8f+i*0.6f, camera.position.y+3.8f, 0.5f, 0.5f);
         }
+
+        // Draw lost hearts (gray color)
+        batch.setColor(0.5f, 0.5f, 0.5f, 0.7f); // Gray with some transparency
+        for (int i = hearthComponent.currentHearths + 1; i <= hearthComponent.maxHearths; i++) {
+            batch.draw(heartIdleTexture, camera.position.x-8f+i*0.6f, camera.position.y+3.8f, 0.5f, 0.5f);
+        }
+        batch.setColor(1, 1, 1, 1); // Reset color back to normal
     }
 
     /**
