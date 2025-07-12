@@ -87,6 +87,7 @@ public class SuccessScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 context.stateMachine.changeState(GameState.RESTART);
+                context.getAudioManager().resetCurrentMusic();
                 context.getScreenManager().showScreen(ScreenType.CHAR_SCREEN);
             }
         });
