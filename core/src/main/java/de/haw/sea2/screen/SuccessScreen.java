@@ -82,19 +82,19 @@ public class SuccessScreen implements Screen {
         // Erstelle den Button für den Übergang zum nächsten Level
         neuStartenButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.RESTART_BUTTON.getPath(), Texture.class)));
         neuStartenButton.setSize(2f,2f);
-        neuStartenButton.setPosition(8f, 2.0f);
+        neuStartenButton.setPosition(8f, 1.5f);
         neuStartenButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 context.stateMachine.changeState(GameState.RESTART);
-                context.getScreenManager().showScreen(ScreenType.INFO_SCREEN_LV1);
+                context.getScreenManager().showScreen(ScreenType.CHAR_SCREEN);
             }
         });
 
         // Erstelle den Button für den Wechsel zum Hauptmenü
         hauptmenuButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.BACK_TO_MAIN_MENU_BUTTON.getPath(), Texture.class)));
         hauptmenuButton.setSize(2f, 2f);
-        hauptmenuButton.setPosition(5.5f, 2.0f);
+        hauptmenuButton.setPosition(5.5f, 1.5f);
         hauptmenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

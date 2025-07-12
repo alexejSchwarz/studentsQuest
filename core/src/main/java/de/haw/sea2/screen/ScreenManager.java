@@ -98,6 +98,14 @@ public class ScreenManager {
                 return new SettingsScreen(context);
             case GAME_OVER:
                 return new GameOverScreen(context);
+            case CHAR_SCREEN:
+                return new CharacterScreen(context);
+            case STORY_SCREEN:
+                return new StoryScreen(context);
+            case KEY_SCREEN:
+                return new KeyBindScreen(context);
+            case CREDITS_SCREEN:
+                return new CreditScreen(context);
             default:
                 LoggerUtil.error(LogCategory.ERROR,this,"Unbekannter ScreenType: " + screenType);
                 return new MainMenuScreen(context); // Fallback

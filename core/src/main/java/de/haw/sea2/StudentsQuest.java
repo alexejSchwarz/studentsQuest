@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.ObjectSet;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.haw.sea2.audio.AudioManager;
@@ -32,6 +32,7 @@ import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.gameLevel.SpawnLogic;
 import de.haw.sea2.logic.gameLevel.pathFinding.multiThreading.PathingCalculationManager;
 import de.haw.sea2.map.MapManager;
+import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.screen.ScreenManager;
 import de.haw.sea2.screen.ScreenType;
 import de.haw.sea2.view.GameRenderer;
@@ -124,7 +125,9 @@ public class StudentsQuest extends Game {
 
     public DefaultStateMachine<StudentsQuest, GameState> stateMachine;
 
-    public ObjectSet<Restartable> restartables = new ObjectSet<>();
+    public Array<Restartable> restartables = new Array<>();
+
+    public AssetPaths chosenPlayerAnimationAtlas;
 
     /**
      * Manager für das Laden und Verwalten von Spiel-Assets wie Texturen, Sounds und
@@ -166,7 +169,7 @@ public class StudentsQuest extends Game {
     private WorldContactListener worldContactListener;
 
     private PlayerContactHandeler playerContactHandeler;
-    
+
     private SpawnLogic spawnLogic;
 
     /**

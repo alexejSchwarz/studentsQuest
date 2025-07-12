@@ -5,16 +5,22 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 
+import de.haw.sea2.StudentsQuest;
 import de.haw.sea2.logic.ecs.components.AnimationComponent;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.ECSEngine;
+import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.animations.BoyPlayerAnimation;
+import de.haw.sea2.view.animations.GirlPlayerAnimation;
 
 public class PlayerAnimationSystem extends IteratingSystem {
 
-    public PlayerAnimationSystem() {
+    private final StudentsQuest context;
+
+    public PlayerAnimationSystem(StudentsQuest context) {
         super(Family.all(AnimationComponent.class, PlayerComponent.class, Box2DComponent.class).get());
+        this.context = context;
     }
 
     @Override
@@ -25,19 +31,35 @@ public class PlayerAnimationSystem extends IteratingSystem {
 
         switch (playerComp.curentFacing) {
             case UP: {
-                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_UP.animationType;
+                if (this.context.chosenPlayerAnimationAtlas == AssetPaths.BOY_PLAYER_ATLAS) {
+                    animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_UP.animationType;
+                } else {
+                    animationComp.animationType = GirlPlayerAnimation.PLAYER_MOVE_UP.animationType;
+                }
                 break;
             }
             case DOWN: {
-                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
+                if (this.context.chosenPlayerAnimationAtlas == AssetPaths.BOY_PLAYER_ATLAS) {
+                    animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
+                } else {
+                    animationComp.animationType = GirlPlayerAnimation.PLAYER_MOVE_DOWN.animationType;
+                }
                 break;
             }
             case LEFT: {
-                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_LEFT.animationType;
+                if (this.context.chosenPlayerAnimationAtlas == AssetPaths.BOY_PLAYER_ATLAS) {
+                    animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_LEFT.animationType;
+                } else {
+                    animationComp.animationType = GirlPlayerAnimation.PLAYER_MOVE_LEFT.animationType;
+                }
                 break;
             }
             case RIGHT: {
-                animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_RIGHT.animationType;
+                if (this.context.chosenPlayerAnimationAtlas == AssetPaths.BOY_PLAYER_ATLAS) {
+                    animationComp.animationType = BoyPlayerAnimation.PLAYER_MOVE_RIGHT.animationType;
+                } else {
+                    animationComp.animationType = GirlPlayerAnimation.PLAYER_MOVE_RIGHT.animationType;
+                }
                 break;
             }
             default:

@@ -13,4 +13,8 @@ public enum ScreenType {
     SUCCESS,
     INFO_SCREEN_LV1,
     GAME_OVER,
+    CHAR_SCREEN,
+    STORY_SCREEN,
+    KEY_SCREEN,
+    CREDITS_SCREEN,
 }

@@ -3,7 +3,6 @@ package de.haw.sea2.screen;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -18,7 +17,6 @@ import de.haw.sea2.debug.LogCategory;
 import de.haw.sea2.debug.LoggerUtil;
 import de.haw.sea2.input.GameKey;
 import de.haw.sea2.input.InputManager;
-import de.haw.sea2.input.ScreenKeyInputListener;
 import de.haw.sea2.lifeCicle.GameState;
 import de.haw.sea2.paths.AssetPaths;
 import de.haw.sea2.view.ui.StageUtils;
@@ -32,10 +30,10 @@ import de.haw.sea2.view.ui.StageUtils;
  * Durch Drücken des Start-Buttons wird der GameScreen mit einem Ladebildschirm aufgerufen.
  * </p>
  */
-public class MainMenuScreen implements Screen, ScreenKeyInputListener {
+public class MainMenuScreen implements Screen {
 
     // Konstanten zur Positionierung und Skalierung der Buttons
-    private static final float START_BUTTON_Y_VALUE = 4.5f;
+    private static final float START_BUTTON_Y_VALUE = 3.5f;
     private static final float START_BUTTON_X_VALUE = 5f;
     private static final float PADDING = 0.05f;
     private static final float BUTTON_SCALE = 2f;
@@ -44,25 +42,10 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
     private final StudentsQuest context;
     private final Stage stage;
 
-    // TextureAtlas enthält die Schaltflächen-Grafiken
-    private final TextureAtlas buttonAtlas;
-
-    // TextureRegionDrawables für die einzelnen Buttons
-    private final TextureRegionDrawable startButtonRegion;
-    private final TextureRegionDrawable keyBindsRegion;
-    private final TextureRegionDrawable settingsRegion;
-    private final TextureRegionDrawable creditsRegion;
-    private final TextureRegionDrawable storyRegion;
-    private final TextureRegionDrawable tutorialRegion;
-
     // Hintergrundtextur
     private final Texture background;
 
-    //Schriftzug des Menüs
-    private final Texture heading;
-
     private final Image backgroundImage;
-    private final Image headingImage;
 
     private Array<ImageButton> imageButtons;
 
@@ -76,36 +59,36 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
         this.stage = this.context.getStage();
 
         // Main Menu Assets Loading
-        context.getAssetManager().load(AssetPaths.BUTTON_ATLAS.getPath(), TextureAtlas.class);
         context.getAssetManager().load(AssetPaths.MAIN_MENU_BACKGROUND.getPath(), Texture.class);
-        context.getAssetManager().load(AssetPaths.MAIN_MENU_HEADING.getPath(), Texture.class);
         context.getAssetManager().load(Audio.START_SCREEN_MUSIC.getPath(), Music.class);
+
         context.getAssetManager().load(AssetPaths.SLIDER_BACKGROUND.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.SLIDER_KNOB.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.BACK_TO_MAIN_MENU_BUTTON.getPath(), Texture.class);
         context.getAssetManager().load(AssetPaths.HOME_BUTTON.getPath(), Texture.class);
+
+        this.context.getAssetManager().load(AssetPaths.M_PLAY.getPath(), Texture.class);
+        this.context.getAssetManager().load(AssetPaths.M_CREDITS.getPath(), Texture.class);
+        this.context.getAssetManager().load(AssetPaths.M_SOUND.getPath(), Texture.class);
+        this.context.getAssetManager().load(AssetPaths.M_STORY.getPath(), Texture.class);
+        this.context.getAssetManager().load(AssetPaths.M_KEYBINDS.getPath(), Texture.class);
+
+        this.context.getAssetManager().load(AssetPaths.STORY_SCREEN.getPath(), Texture.class);
+        this.context.getAssetManager().load(AssetPaths.HAUPT_MENU_TEXT_BUTTON.getPath(), Texture.class);
+
+        this.context.getAssetManager().load(AssetPaths.PAUSE_SCREEN.getPath(), Texture.class);
+        this.context.getAssetManager().load(AssetPaths.FORTSETZEN_BUTTON.getPath(), Texture.class);
+
+        this.context.getAssetManager().load(AssetPaths.KEY_BIND_SCREEN.getPath(), Texture.class);
+
+        this.context.getAssetManager().load(AssetPaths.CREDIT_SCREEN.getPath(), Texture.class);
+
         context.getAssetManager().finishLoading();
-
-        this.buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
-
-        // Initialisiere die Drawable-Regionen für die Buttons
-        this.startButtonRegion = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
-        this.keyBindsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("keybinds_button"));
-        this.creditsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("credits_button"));
-        this.settingsRegion = new TextureRegionDrawable(buttonAtlas.findRegion("settings_button"));
-        this.storyRegion = new TextureRegionDrawable(buttonAtlas.findRegion("story_button"));
-        this.tutorialRegion = new TextureRegionDrawable(buttonAtlas.findRegion("tutorial_button"));
 
         // Lade und füge den Hintergrund hinzu
         this.background = context.getAssetManager().get(AssetPaths.MAIN_MENU_BACKGROUND.getPath());
         this.backgroundImage = new Image(this.background);
-        this.backgroundImage.setSize(17f, 12f);
-
-        //Lade und füge die Überschrift hinzu
-        this.heading = context.getAssetManager().get(AssetPaths.MAIN_MENU_HEADING.getPath());
-        this.headingImage = new Image(this.heading);
-        this.headingImage.setSize(9f, 1f);
-        this.headingImage.setPosition(16f / 2f - 4.3f, START_BUTTON_Y_VALUE + BUTTON_SCALE * 1.3f);
+        this.backgroundImage.setSize(16f, 9f);
 
         // Erstelle und positioniere die Buttons
         createButtons();
@@ -117,13 +100,10 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
      */
     @Override
     public void show() {
-
         context.getAudioManager().playAudio(Audio.START_SCREEN_MUSIC);
-        context.getInputManager().addKeyInputListener(this);
 
         LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen wird angezeigt, InputProcessor gesetzt");
         this.stage.addActor(this.backgroundImage);
-        this.stage.addActor(headingImage);
         this.imageButtons.forEach(this.stage::addActor);
     }
 
@@ -143,21 +123,19 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
      */
     private void createButtons() {
         // Erstelle die einzelnen Buttons
-        ImageButton startButton = new ImageButton(startButtonRegion);
-        ImageButton keyBindsButton = new ImageButton(keyBindsRegion);
-        ImageButton settingsButton = new ImageButton(settingsRegion);
-        ImageButton creditsButton = new ImageButton(creditsRegion);
-        ImageButton storyButton = new ImageButton(storyRegion);
-        ImageButton tutorialButton = new ImageButton(tutorialRegion);
+        ImageButton startButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.M_PLAY.getPath(), Texture.class)));
+        ImageButton keyBindsButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.M_KEYBINDS.getPath(), Texture.class)));
+        ImageButton settingsButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.M_SOUND.getPath(), Texture.class)));
+        ImageButton creditsButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.M_CREDITS.getPath(), Texture.class)));
+        ImageButton storyButton = new ImageButton(new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.M_STORY.getPath(), Texture.class)));
 
         // Füge die Buttons einer Liste hinzu, um sie leichter verarbeiten zu können
         this.imageButtons = new Array<>();
         this.imageButtons.add(startButton);
         this.imageButtons.add(keyBindsButton);
-        this.imageButtons.add(settingsButton);
         this.imageButtons.add(creditsButton);
         this.imageButtons.add(storyButton);
-        this.imageButtons.add(tutorialButton);
+        this.imageButtons.add(settingsButton);
 
         // Setze die Größe aller Buttons auf den definierten Wert
         for (ImageButton button : this.imageButtons) {
@@ -190,9 +168,8 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
                     context.getScreenManager().showScreen(ScreenType.GAME);
                 } else if (context.stateMachine.isInState(GameState.OVER)) {
                     context.stateMachine.changeState(GameState.RESTART);
-                    context.getScreenManager().showScreen(ScreenType.INFO_SCREEN_LV1);
+                    context.getScreenManager().showScreen(ScreenType.CHAR_SCREEN);
                 }
-
             }
         });
 
@@ -201,6 +178,7 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 LoggerUtil.log(LogCategory.LOG, this, "Keybindings button pressed");
+                context.getScreenManager().showScreen(ScreenType.KEY_SCREEN);
             }
         });
 
@@ -216,6 +194,7 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 LoggerUtil.log(LogCategory.LOG, this, "Credits button pressed");
+                context.getScreenManager().showScreen(ScreenType.CREDITS_SCREEN);
             }
         });
 
@@ -223,13 +202,7 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 LoggerUtil.log(LogCategory.LOG, this, "Story button pressed");
-            }
-        });
-
-        tutorialButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG, this, "Tutorial button pressed");
+                context.getScreenManager().showScreen(ScreenType.STORY_SCREEN);
             }
         });
     }
@@ -267,7 +240,6 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
        //Funktioniert gerade noch nicht richtig, da der Game Screen zu schnell geladen wird.
        //Wenn man useSimulatedLoading im Loading Screen auf true setzt, funktioniert es.
         stage.clear();
-        context.getInputManager().removeKeyInputListener(this);
         LoggerUtil.log(LogCategory.LOG,this,"Stage cleared!");
         LoggerUtil.log(LogCategory.DEBUG, this, "MainMenuScreen hidden");
     }
@@ -277,20 +249,6 @@ public class MainMenuScreen implements Screen, ScreenKeyInputListener {
      */
     @Override
     public void dispose() {
-        buttonAtlas.dispose();
         background.dispose();
-        heading.dispose();
-    }
-
-    @Override
-    public void keyDown(InputManager manager, GameKey key) {
-        if (key == GameKey.PAUSE) {
-            context.getScreenManager().showScreen(ScreenType.SETTINGS);
-        }
-    }
-
-    @Override
-    public void keyUp(InputManager manager, GameKey key) {
-
     }
 }

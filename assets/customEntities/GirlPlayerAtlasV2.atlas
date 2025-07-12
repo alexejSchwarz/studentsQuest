@@ -1,0 +1,11 @@
+GirlPlayerAtlasV2.png
+size:1280,64
+repeat:none
+links
+bounds:320,0,320,64
+oben
+bounds:960,0,320,64
+rechts
+bounds:0,0,320,64
+unten
+bounds:640,0,320,64

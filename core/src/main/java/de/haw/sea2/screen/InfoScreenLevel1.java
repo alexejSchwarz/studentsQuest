@@ -33,12 +33,11 @@ public class InfoScreenLevel1 implements Screen {
     // Mission-Textur (16:9 Verhältnis)
     private Texture missionTexture;
 
-    // Button-Atlas und Drawables
-    private TextureAtlas buttonAtlas;
+    // Drawables
     private TextureRegionDrawable letsGoButtonDrawable;
 
     private Image missionImage;
-    private ImageButton letsGoButton;
+    private ImageButton playButton;
 
     // Konstanten für Positionierung und Skalierung
     private static final float MISSION_IMAGE_WIDTH = 16f;
@@ -66,17 +65,12 @@ public class InfoScreenLevel1 implements Screen {
      * Lädt die erforderlichen Assets für diesen Screen.
      */
     private void loadAssets() {
-        context.getAssetManager().load(AssetPaths.MISSION_SCREEN.getPath(), Texture.class);
-        context.getAssetManager().finishLoading();
-
-        // Lade den Button-Atlas
-        buttonAtlas = context.getAssetManager().get(AssetPaths.BUTTON_ATLAS.getPath());
 
         // Setze vorübergehend ein Platzhalter-Missionsbild
         missionTexture = context.getAssetManager().get(AssetPaths.MISSION_SCREEN.getPath(), Texture.class);
 
         // Setze den "Let's Go"-Button-Drawable
-        letsGoButtonDrawable = new TextureRegionDrawable(buttonAtlas.findRegion("start_button"));
+        letsGoButtonDrawable = new TextureRegionDrawable(this.context.getAssetManager().get(AssetPaths.PLAY_BUTTON.getPath(), Texture.class));
     }
 
     /**
@@ -92,20 +86,14 @@ public class InfoScreenLevel1 implements Screen {
         float centerY = (context.viewport.getWorldHeight() - MISSION_IMAGE_HEIGHT) / 2;
         missionImage.setPosition(centerX, centerY);
 
-        // Erstelle den "Let's Go"-Button
-        letsGoButton = new ImageButton(letsGoButtonDrawable);
-        letsGoButton.setSize(BUTTON_SCALE, BUTTON_SCALE);
+        //-------------------------
+        this.playButton = new ImageButton(this.letsGoButtonDrawable);
+        this.playButton.setSize(5f, 2f);
+        this.playButton.setPosition(5.5f, 2f);
 
-        // Positioniere den Button unten rechts im Bild
-        float buttonX = centerX + MISSION_IMAGE_WIDTH - BUTTON_SCALE - BUTTON_MARGIN;
-        float buttonY = centerY + BUTTON_MARGIN;
-        letsGoButton.setPosition(buttonX, buttonY);
-
-        // Füge einen ClickListener hinzu, um zum Game-Screen zu wechseln
-        letsGoButton.addListener(new ClickListener() {
+        this.playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LoggerUtil.log(LogCategory.LOG, this, "Let's Go button pressed - starting game");
                 context.getScreenManager().showScreen(ScreenType.GAME);
             }
         });
@@ -116,8 +104,8 @@ public class InfoScreenLevel1 implements Screen {
      */
     @Override
     public void show() {
-        stage.addActor(missionImage);
-        stage.addActor(letsGoButton);
+        stage.addActor(this.missionImage);
+        stage.addActor(this.playButton);
     }
 
     /**

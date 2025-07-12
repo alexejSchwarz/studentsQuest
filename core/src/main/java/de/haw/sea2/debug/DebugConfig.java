@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 public class DebugConfig {
 
     /** Aktivierung des gesamten Debug-Systems */
-    public static final boolean DEBUG_ENABLED = true;
+    public static final boolean DEBUG_ENABLED = false;
 
     /** Aktualisierungsintervall der Debug-Informationen in Sekunden */
     public static final float UPDATE_INTERVAL = 0.5f; // TODO: research if Fixed timestep is a better approach see
