@@ -8,8 +8,10 @@ import de.haw.sea2.logic.ecs.ECSEngine;
 import de.haw.sea2.logic.ecs.components.AnimationComponent;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
 import de.haw.sea2.logic.ecs.components.EnemyComponent;
+import de.haw.sea2.logic.entityLogic.EnemyState;
 import de.haw.sea2.logic.entityLogic.MovementDirection;
 import de.haw.sea2.view.animations.EnemyAnimation;
+import de.haw.sea2.view.animations.EnemyHitAnimation;
 
 public class EnemyAnimationSystem extends IteratingSystem {
 
@@ -17,11 +19,12 @@ public class EnemyAnimationSystem extends IteratingSystem {
         super(Family.all(AnimationComponent.class, EnemyComponent.class, Box2DComponent.class).get());
     }
 
-    // TODO spaeter States Berücksichtigen
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         final Box2DComponent box2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(entity);
         final AnimationComponent animationComp = ECSEngine.ANIMATION_COMP_MAPPER.get(entity);
+        EnemyComponent enemyComponent = ECSEngine.ENEMY_COMPONENT_MAPPER.get(entity);
+        enemyComponent.update(deltaTime);
 
         if (box2DComponent.body.getLinearVelocity().equals(Vector2.Zero)) {
             animationComp.animationTime = 0;
@@ -32,19 +35,35 @@ public class EnemyAnimationSystem extends IteratingSystem {
 
         switch (direction) {
             case UP: {
-                animationComp.animationType = EnemyAnimation.ENEMY_MOVE_UP.animationType;
+                if (enemyComponent.stateMachine.isInState(EnemyState.WAS_JUST_HIT)) {
+                    animationComp.animationType = EnemyHitAnimation.ENEMY_MOVE_UP.animationType;
+                } else {
+                    animationComp.animationType = EnemyAnimation.ENEMY_MOVE_UP.animationType;
+                }
                 break;
             }
             case DOWN: {
-                animationComp.animationType = EnemyAnimation.ENEMY_MOVE_DOWN.animationType;
+                if (enemyComponent.stateMachine.isInState(EnemyState.WAS_JUST_HIT)) {
+                    animationComp.animationType = EnemyHitAnimation.ENEMY_MOVE_DOWN.animationType;
+                } else {
+                    animationComp.animationType = EnemyAnimation.ENEMY_MOVE_DOWN.animationType;
+                }
                 break;
             }
             case LEFT: {
-                animationComp.animationType = EnemyAnimation.ENEMY_MOVE_LEFT.animationType;
+                if (enemyComponent.stateMachine.isInState(EnemyState.WAS_JUST_HIT)) {
+                    animationComp.animationType = EnemyHitAnimation.ENEMY_MOVE_LEFT.animationType;
+                } else {
+                    animationComp.animationType = EnemyAnimation.ENEMY_MOVE_LEFT.animationType;
+                }
                 break;
             }
             case RIGHT: {
-                animationComp.animationType = EnemyAnimation.ENEMY_MOVE_RIGHT.animationType;
+                if (enemyComponent.stateMachine.isInState(EnemyState.WAS_JUST_HIT)) {
+                    animationComp.animationType = EnemyHitAnimation.ENEMY_MOVE_RIGHT.animationType;
+                } else {
+                    animationComp.animationType = EnemyAnimation.ENEMY_MOVE_RIGHT.animationType;
+                }
                 break;
             }
             default: {
