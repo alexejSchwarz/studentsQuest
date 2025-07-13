@@ -33,6 +33,7 @@ public enum AssetPaths {
     PAUSE_SCREEN("screens/pauseScreen/PausenScreen.png"),
     KEY_BIND_SCREEN("screens/keybindScreen/keyScreen.jpg"),
     CREDIT_SCREEN("screens/creditScreen/CreditsScreen.png"),
+    ENEMY_HIT_ATLAS("customEntities/EnemyHitAtlas.atlas"),
     BACKGROUND_SETTINGS_SCREEN("screens/settingsScreen/background_screen.png");
 
     private final String path;

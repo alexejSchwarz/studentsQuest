@@ -70,6 +70,7 @@ public class LoadingScreen implements Screen {
         context.getAssetManager().load(AssetPaths.BOY_PLAYER_ATLAS.getPath(), TextureAtlas.class);
         context.getAssetManager().load(AssetPaths.GIRL_PLAYER_ATLAS.getPath(), TextureAtlas.class);
         this.context.getAssetManager().load(AssetPaths.ATTACK_ATLAS.getPath(), TextureAtlas.class);
+        this.context.getAssetManager().load(AssetPaths.ENEMY_HIT_ATLAS.getPath(), TextureAtlas.class);
 
         // Optional: Weitere Assets hier laden
         // z.B. Sound-Effekte, Musik, UI-Elemente

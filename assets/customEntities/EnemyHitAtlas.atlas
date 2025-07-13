@@ -1,0 +1,11 @@
+EnemyHitAtlas.png
+size:1280,64
+repeat:none
+linksW
+bounds:0,0,320,64
+obenW
+bounds:640,0,320,64
+rechtsW
+bounds:960,0,320,64
+untenW
+bounds:320,0,320,64

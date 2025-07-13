@@ -16,14 +16,14 @@ import de.haw.sea2.input.InputManager;
 import de.haw.sea2.input.ResettableInputListener;
 import de.haw.sea2.logic.EntityUtils;
 import de.haw.sea2.logic.ecs.ECSEngine;
-import de.haw.sea2.logic.ecs.builders.EntityCreator;
 import de.haw.sea2.logic.ecs.builders.FixtureBuilder;
 import de.haw.sea2.logic.ecs.components.Box2DComponent;
+import de.haw.sea2.logic.ecs.components.EnemyComponent;
 import de.haw.sea2.logic.ecs.components.HearthComponent;
 import de.haw.sea2.logic.ecs.components.PlayerComponent;
 import de.haw.sea2.logic.ecs.components.PlayerAttackStateComponent;
 import de.haw.sea2.logic.ecs.components.RemoveComponent;
-import de.haw.sea2.logic.entityLogic.MovementDirection;
+import de.haw.sea2.logic.entityLogic.EnemyState;
 import de.haw.sea2.logic.entityLogic.PlayerAttackState;
 import de.haw.sea2.logic.gameLevel.SpawnLogic;
 
@@ -99,14 +99,14 @@ public class PlayerAttackSystem extends IteratingSystem implements ResettableInp
         LoggerUtil.log(LogCategory.GAME, this, "Enemy hit, Enemy HP = " + enemyHearthComponent.currentHearths);
 
 
-        Box2DComponent enemyComponent = ECSEngine.BOX2D_COMP_MAPPER.get(enemy);
+        Box2DComponent enemyB2DComponent = ECSEngine.BOX2D_COMP_MAPPER.get(enemy);
         PlayerComponent playerComponent = ECSEngine.PLAYER_COMP_MAPPER.get(player);
 
         switch (playerComponent.curentFacing) {
-            case UP -> pushEnemy(enemyComponent,0f,50f);
-            case DOWN -> pushEnemy(enemyComponent, 0f, -50f);
-            case LEFT -> pushEnemy(enemyComponent, -50f, 0f);
-            case RIGHT -> pushEnemy(enemyComponent, 50f, 0f);
+            case UP -> pushEnemy(enemyB2DComponent,0f,50f);
+            case DOWN -> pushEnemy(enemyB2DComponent, 0f, -50f);
+            case LEFT -> pushEnemy(enemyB2DComponent, -50f, 0f);
+            case RIGHT -> pushEnemy(enemyB2DComponent, 50f, 0f);
         }
 
         if (enemyHearthComponent.currentHearths <= 0 ) {
@@ -117,6 +117,13 @@ public class PlayerAttackSystem extends IteratingSystem implements ResettableInp
                 LoggerUtil.log(LogCategory.GAME, this, "Spawn heart at " + position);
             }
             enemy.add(this.context.getEngine().createComponent(RemoveComponent.class));
+        } else {
+            EnemyComponent enemyComp = ECSEngine.ENEMY_COMPONENT_MAPPER.get(enemy);
+            if (enemyComp.stateMachine.isInState(EnemyState.WAS_JUST_HIT)) {
+              enemyComp.hitTimer = 1f;
+            } else {
+                enemyComp.stateMachine.changeState(EnemyState.WAS_JUST_HIT);
+            }
         }
     }
 
