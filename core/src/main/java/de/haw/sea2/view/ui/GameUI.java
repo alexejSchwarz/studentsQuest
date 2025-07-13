@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -77,6 +78,8 @@ public class GameUI implements Disposable {
     private void renderHearts(SpriteBatch batch) {
         Camera camera = context.viewport.getCamera();
 
+        Color oldColor = batch.getColor();
+
         //Es gibt nur einen Spieler, daher kann hier mit .first() gearbeitet werden.
         HearthComponent hearthComponent = ECSEngine.HEARTH_COMPONENT_MAPPER.get(players.first());
 
@@ -90,7 +93,7 @@ public class GameUI implements Disposable {
         for (int i = hearthComponent.currentHearths + 1; i <= hearthComponent.maxHearths; i++) {
             batch.draw(heartIdleTexture, camera.position.x-8f+i*0.6f, camera.position.y+3.8f, 0.5f, 0.5f);
         }
-        batch.setColor(1, 1, 1, 1); // Reset color back to normal
+        batch.setColor(oldColor); // Reset color back to normal
     }
 
     /**
