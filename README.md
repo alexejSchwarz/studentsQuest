@@ -1,9 +1,8 @@
 # StudentsQuest
-StudentsQuest ist ein Desktop-Spiel, das mit dem modernen [libgdx](https://libgdx.com) Framework
-entwickelt wurde. Es basiert auf Java SDK 17 und vereint effiziente Grafikdarstellung mit innovativer
-Spielmechanik. Weitere Details finden Sie im zugehörigen
-[Wiki](https://git.haw-hamburg.de/infwvc276/SEA2-StudentQuest/-/wikis/home).
-
+StudentsQuest ist ein Desktop-Spiel, das mit dem [libgdx](https://libgdx.com) Framework
+entwickelt wurde. Das Projekt wurde im Rahmen der Vorlesung Software-Engineering und Architecture 2 entwickelt.
+Empfohlenes Betriebssystem: Windows 10. Bei Mac OS kann es zu Abstürzen des Spiels führen.  
+Start des Spiels im Terminal via "gradle lwjgl3:run"
 
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
